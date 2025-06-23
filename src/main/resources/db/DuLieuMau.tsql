@@ -7,64 +7,64 @@ GO
 
 -- 1. Thương hiệu
 INSERT INTO ThuongHieu (ten_thuong_hieu) VALUES 
-('Adidas'),
-('Nike'),
-('Converse'),
-('MLB'),
-('Puma'),
-('Vans');
+(N'Adidas'),
+(N'Nike'),
+(N'Converse'),
+(N'MLB'),
+(N'Puma'),
+(N'Vans');
 GO
 
 -- 2. Loại sản phẩm
 INSERT INTO LoaiSanPham (ten_loai_san_pham) VALUES 
-('Giày thể thao'),
-('Giày chạy bộ'),
-('Giày tennis'),
-('Giày bóng rổ'),
-('Giày lifestyle'),
-('Giày cao cổ'),
-('Giày thấp cổ');
+(N'Giày thể thao'),
+(N'Giày chạy bộ'),
+(N'Giày tennis'),
+(N'Giày bóng rổ'),
+(N'Giày lifestyle'),
+(N'Giày cao cổ'),
+(N'Giày thấp cổ');
 GO
 
 -- 3. Danh mục
 INSERT INTO DanhMuc (ten_danh_muc) VALUES 
-('Nam'),
-('Nữ'),
-('Unisex'),
-('Trẻ em');
+(N'Nam'),
+(N'Nữ'),
+(N'Unisex'),
+(N'Trẻ em');
 GO
 
 -- 4. Xuất xứ
 INSERT INTO XuatXu (ten_xuat_xu) VALUES 
-('Việt Nam'),
-('Trung Quốc'),
-('Indonesia'),
-('Thái Lan'),
-('Hàn Quốc'),
-('Đức'),
-('Mỹ');
+(N'Việt Nam'),
+(N'Trung Quốc'),
+(N'Indonesia'),
+(N'Thái Lan'),
+(N'Hàn Quốc'),
+(N'Đức'),
+(N'Mỹ');
 GO
 
 -- 5. Kiểu dáng
 INSERT INTO KieuDang (ten_kieu_dang) VALUES 
-('Cổ thấp'),
-('Cổ cao'),
-('Cổ giữa'),
-('Slip-on'),
-('Lace-up'),
-('Velcro');
+(N'Cổ thấp'),
+(N'Cổ cao'),
+(N'Cổ giữa'),
+(N'Slip-on'),
+(N'Lace-up'),
+(N'Velcro');
 GO
 
 -- 6. Chất liệu
 INSERT INTO ChatLieu (ten_chat_lieu) VALUES 
-('Da thật'),
-('Da tổng hợp'),
-('Vải canvas'),
-('Mesh'),
-('Flyknit'),
-('Suede'),
-('Cao su'),
-('EVA');
+(N'Da thật'),
+(N'Da tổng hợp'),
+(N'Vải canvas'),
+(N'Mesh'),
+(N'Flyknit'),
+(N'Suede'),
+(N'Cao su'),
+(N'EVA');
 GO
 
 -- 7. Kích cỡ
@@ -75,105 +75,105 @@ GO
 
 -- 8. Màu sắc
 INSERT INTO MauSac (ten_mau_sac) VALUES 
-('Đen'),
-('Trắng'),
-('Xám'),
-('Đỏ'),
-('Xanh dương'),
-('Xanh lá'),
-('Vàng'),
-('Hồng'),
-('Nâu'),
-('Be'),
-('Tím'),
-('Cam');
+(N'Đen'),
+(N'Trắng'),
+(N'Xám'),
+(N'Đỏ'),
+(N'Xanh dương'),
+(N'Xanh lá'),
+(N'Vàng'),
+(N'Hồng'),
+(N'Nâu'),
+(N'Be'),
+(N'Tím'),
+(N'Cam');
 GO
 
 -- 9. Tài khoản Admin và Users
 INSERT INTO TaiKhoan (tai_khoan, mat_khau, email, ho_ten_tai_khoan, sdt, gioi_tinh, dia_chi, hinh_anh) VALUES 
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'admin@urbansteps.com', 'Quản trị viên', '0123456789', 1, 'Hà Nội', 'admin.jpg'),
-('user001', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'nguyenvana@gmail.com', 'Nguyễn Văn A', '0987654321', 1, '123 Phố Huế, Hà Nội', 'user1.jpg'),
-('user002', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'tranthib@gmail.com', 'Trần Thị B', '0976543210', 0, '456 Lê Lợi, TP.HCM', 'user2.jpg'),
-('user003', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'lequangc@gmail.com', 'Lê Quang C', '0965432109', 1, '789 Trần Phú, Đà Nẵng', 'user3.jpg'),
-('user004', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'phamthid@gmail.com', 'Phạm Thị D', '0954321098', 0, '321 Nguyễn Huệ, Cần Thơ', 'user4.jpg'),
-('user005', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'hoangvane@gmail.com', 'Hoàng Văn E', '0943210987', 1, '654 Hai Bà Trưng, Hải Phòng', 'user5.jpg'),
-('user006', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'vuongthif@gmail.com', 'Vương Thị F', '0932109876', 0, '987 Lý Thường Kiệt, Huế', 'user6.jpg');
+(N'admin', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'admin@urbansteps.com', N'Quản trị viên', N'0123456789', 1, N'Hà Nội', N'admin.jpg'),
+(N'user001', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'nguyenvana@gmail.com', N'Nguyễn Văn A', N'0987654321', 1, N'123 Phố Huế, Hà Nội', N'user1.jpg'),
+(N'user002', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'tranthib@gmail.com', N'Trần Thị B', N'0976543210', 0, N'456 Lê Lợi, TP.HCM', N'user2.jpg'),
+(N'user003', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'lequangc@gmail.com', N'Lê Quang C', N'0965432109', 1, N'789 Trần Phú, Đà Nẵng', N'user3.jpg'),
+(N'user004', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'phamthid@gmail.com', N'Phạm Thị D', N'0954321098', 0, N'321 Nguyễn Huệ, Cần Thơ', N'user4.jpg'),
+(N'user005', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'hoangvane@gmail.com', N'Hoàng Văn E', N'0943210987', 1, N'654 Hai Bà Trưng, Hải Phòng', N'user5.jpg'),
+(N'user006', N'$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', N'vuongthif@gmail.com', N'Vương Thị F', N'0932109876', 0, N'987 Lý Thường Kiệt, Huế', N'user6.jpg');
 GO
 
 -- 10. Khách hàng
 INSERT INTO KhachHang (ho_ten_khach_hang, sdt, gioi_tinh, dia_chi) VALUES 
-('Nguyễn Minh Tuấn', '0912345678', 1, '12 Phố Cổ, Hà Nội'),
-('Lê Thị Hương', '0923456789', 0, '34 Nguyễn Văn Cừ, TP.HCM'),
-('Trần Đức Anh', '0934567890', 1, '56 Lê Duẩn, Đà Nẵng'),
-('Phạm Thị Lan', '0945678901', 0, '78 Trần Hưng Đạo, Hải Phòng'),
-('Võ Minh Khoa', '0956789012', 1, '90 Nguyễn Thị Minh Khai, Cần Thơ');
+(N'Nguyễn Minh Tuấn', N'0912345678', 1, N'12 Phố Cổ, Hà Nội'),
+(N'Lê Thị Hương', N'0923456789', 0, N'34 Nguyễn Văn Cừ, TP.HCM'),
+(N'Trần Đức Anh', N'0934567890', 1, N'56 Lê Duẩn, Đà Nẵng'),
+(N'Phạm Thị Lan', N'0945678901', 0, N'78 Trần Hưng Đạo, Hải Phòng'),
+(N'Võ Minh Khoa', N'0956789012', 1, N'90 Nguyễn Thị Minh Khai, Cần Thơ');
 GO
 
 -- 11. Phiếu giảm giá
 INSERT INTO phieu_giam_gia (ma_phieu_giam_gia, ten_phieu_giam_gia, so_luong, ngay_bat_dau, ngay_ket_thuc, giam_theo_phan_tram, gia_tri_giam, giam_toi_da, don_toi_thieu) VALUES 
-('WELCOME10', 'Chào mừng khách hàng mới', 100, '2025-01-01', '2025-12-31', 1, 10.00, 100000, 500000),
-('SUMMER20', 'Giảm giá mùa hè', 50, '2025-06-01', '2025-08-31', 1, 20.00, 200000, 1000000),
-('VIP30', 'Khách hàng VIP', 20, '2025-01-01', '2025-12-31', 1, 30.00, 500000, 2000000),
-('FIXED50K', 'Giảm cố định 50K', 200, '2025-01-01', '2025-06-30', 0, 50000, 50000, 300000),
-('NEWBIE15', 'Khách hàng lần đầu', 150, '2025-01-01', '2025-12-31', 1, 15.00, 150000, 800000);
+(N'WELCOME10', N'Chào mừng khách hàng mới', 100, '2025-01-01', '2025-12-31', 1, 10.00, 100000, 500000),
+(N'SUMMER20', N'Giảm giá mùa hè', 50, '2025-06-01', '2025-08-31', 1, 20.00, 200000, 1000000),
+(N'VIP30', N'Khách hàng VIP', 20, '2025-01-01', '2025-12-31', 1, 30.00, 500000, 2000000),
+(N'FIXED50K', N'Giảm cố định 50K', 200, '2025-01-01', '2025-06-30', 0, 50000, 50000, 300000),
+(N'NEWBIE15', N'Khách hàng lần đầu', 150, '2025-01-01', '2025-12-31', 1, 15.00, 150000, 800000);
 GO
 
 -- 12. Hình ảnh sản phẩm (dựa trên danh sách ảnh thực tế)
 INSERT INTO HinhAnh (duong_dan, mo_ta, thu_tu, la_anh_chinh) VALUES 
 -- Adidas adiFOM Supernova
-('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh chính', 1, 1),
-('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-2.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh 2', 2, 0),
-('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-3.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh 3', 3, 0),
+(N'adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915.jpg.jpeg', N'Giày Adidas adiFOM Supernova Triple Black - Ảnh chính', 1, 1),
+(N'adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-2.jpg.jpeg', N'Giày Adidas adiFOM Supernova Triple Black - Ảnh 2', 2, 0),
+(N'adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-3.jpg.jpeg', N'Giày Adidas adiFOM Supernova Triple Black - Ảnh 3', 3, 0),
 
 -- Adidas Barricade 13 Tennis
-('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh chính', 1, 1),
-('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-2.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh 2', 2, 0),
-('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-3.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh 3', 3, 0),
+(N'adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466.jpg.jpeg', N'Giày Adidas Barricade 13 Tennis Black - Ảnh chính', 1, 1),
+(N'adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-2.jpg.jpeg', N'Giày Adidas Barricade 13 Tennis Black - Ảnh 2', 2, 0),
+(N'adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-3.jpg.jpeg', N'Giày Adidas Barricade 13 Tennis Black - Ảnh 3', 3, 0),
 
 -- Adidas Gazelle Bold Year of the Snake
-('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh chính', 1, 1),
-('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-2.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh 2', 2, 0),
-('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-3.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh 3', 3, 0),
+(N'adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977.jpg.jpeg', N'Giày adidas Gazelle Bold Year of the Snake - Ảnh chính', 1, 1),
+(N'adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-2.jpg.jpeg', N'Giày adidas Gazelle Bold Year of the Snake - Ảnh 2', 2, 0),
+(N'adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-3.jpg.jpeg', N'Giày adidas Gazelle Bold Year of the Snake - Ảnh 3', 3, 0),
 
 -- Adidas Samba OG
-('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/25.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh chính', 1, 1),
-('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/24.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh 2', 2, 0),
-('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/26.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh 3', 3, 0),
+(N'adidas/Giày adidas Samba OG ''White Black Gum'' B75806/25.jpg.jpeg', N'Giày adidas Samba OG White Black Gum - Ảnh chính', 1, 1),
+(N'adidas/Giày adidas Samba OG ''White Black Gum'' B75806/24.jpg.jpeg', N'Giày adidas Samba OG White Black Gum - Ảnh 2', 2, 0),
+(N'adidas/Giày adidas Samba OG ''White Black Gum'' B75806/26.jpg.jpeg', N'Giày adidas Samba OG White Black Gum - Ảnh 3', 3, 0),
 
 -- Adidas Yeezy Boost 350 V2
-('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh chính', 1, 1),
-('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-2.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 2', 2, 0),
-('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-4.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 3', 3, 0),
+(N'adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219.jpg.jpeg', N'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh chính', 1, 1),
+(N'adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-2.jpg.jpeg', N'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 2', 2, 0),
+(N'adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-4.jpg.jpeg', N'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 3', 3, 0),
 
 -- Converse Chuck Taylor
-('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh chính', 1, 1),
-('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-2.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 2', 2, 0),
-('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-3.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 3', 3, 0),
+(N'converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C.jpg.jpeg', N'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh chính', 1, 1),
+(N'converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-2.jpg.jpeg', N'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 2', 2, 0),
+(N'converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-3.jpg.jpeg', N'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 3', 3, 0),
 
 -- Converse Run Star Hike
-('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c.jpg.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh chính', 1, 1),
-('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-2.png.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh 2', 2, 0),
-('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-3.jpg.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh 3', 3, 0),
+(N'converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c.jpg.webp', N'Giày Converse Run Star Hike Low Black Gum - Ảnh chính', 1, 1),
+(N'converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-2.png.webp', N'Giày Converse Run Star Hike Low Black Gum - Ảnh 2', 2, 0),
+(N'converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-3.jpg.webp', N'Giày Converse Run Star Hike Low Black Gum - Ảnh 3', 3, 0),
 
 -- MLB BigBall Chunky
-('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-1.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh chính', 1, 1),
-('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-2.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh 2', 2, 0),
-('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-4.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh 3', 3, 0),
+(N'mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-1.jpg.webp', N'Giày MLB Bigball Chunky A New York Yankees - Ảnh chính', 1, 1),
+(N'mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-2.jpg.webp', N'Giày MLB Bigball Chunky A New York Yankees - Ảnh 2', 2, 0),
+(N'mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-4.jpg.webp', N'Giày MLB Bigball Chunky A New York Yankees - Ảnh 3', 3, 0),
 
 -- MLB Chunky Liner
-('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh chính', 1, 1),
-('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-1.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 2', 2, 0),
-('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-2.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 3', 3, 0);
+(N'mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl.jpg.webp', N'Giày MLB Chunky Liner New York Yankees Grey - Ảnh chính', 1, 1),
+(N'mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-1.jpg.webp', N'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 2', 2, 0),
+(N'mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-2.jpg.webp', N'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 3', 3, 0);
 GO
 
 -- 13. Sản phẩm chính (dựa trên danh sách ảnh - 40 sản phẩm)
 INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, trang_thai) VALUES 
 -- ADIDAS PRODUCTS (13 sản phẩm)
-(1, 3, 1, 2, 1, 2, 1, 'ADI-IF3915', 'Giày Adidas adiFOM Supernova ''Triple Black''', 'Giày thể thao Adidas với công nghệ adiFOM tiên tiến', 1800000, 2500000, 1),
-(3, 1, 1, 2, 1, 4, 4, 'ADI-IF0466', 'Giày Adidas Barricade 13 Tennis ''Black''', 'Giày tennis chuyên nghiệp với độ bền cao', 2200000, 3200000, 1),
-(5, 3, 1, 2, 1, 6, 7, 'ADI-JQ5977', 'Giày adidas Gazelle Bold ''Year of the Snake''', 'Phiên bản đặc biệt kỷ niệm năm Rắn', 2500000, 3800000, 1),
-(2, 1, 1, 2, 1, 4, 10, 'ADI-GY2190', 'Giày adidas Run EQ21 ''Black''', 'Giày chạy bộ với thiết kế hiện đại và thoải mái', 1200000, 1800000, 1),
-(5, 2, 1, 2, 1, 6, 13, 'ADI-IH2751', 'Giày Adidas Samba OG ''Cloud White Wonder Quartz'' (Wmns)', 'Phiên bản nữ với màu sắc nhẹ nhàng', 2000000, 2900000, 1),
+(1, 3, 1, 2, 1, 2, 1, N'ADI-IF3915', N'Giày Adidas adiFOM Supernova ''Triple Black''', N'Giày thể thao Adidas với công nghệ adiFOM tiên tiến', 1800000, 2500000, 1),
+(3, 1, 1, 2, 1, 4, 4, N'ADI-IF0466', N'Giày Adidas Barricade 13 Tennis ''Black''', N'Giày tennis chuyên nghiệp với độ bền cao', 2200000, 3200000, 1),
+(5, 3, 1, 2, 1, 6, 7, N'ADI-JQ5977', N'Giày adidas Gazelle Bold ''Year of the Snake''', N'Phiên bản đặc biệt kỷ niệm năm Rắn', 2500000, 3800000, 1),
+(2, 1, 1, 2, 1, 4, 10, N'ADI-GY2190', N'Giày adidas Run EQ21 ''Black''', N'Giày chạy bộ với thiết kế hiện đại và thoải mái', 1200000, 1800000, 1),
+(5, 2, 1, 2, 1, 6, 13, N'ADI-IH2751', N'Giày Adidas Samba OG ''Cloud White Wonder Quartz'' (Wmns)', N'Phiên bản nữ với màu sắc nhẹ nhàng', 2000000, 2900000, 1),
 (5, 3, 1, 2, 1, 6, 10, 'ADI-B75806', 'Giày adidas Samba OG ''White Black Gum''', 'Giày lifestyle kinh điển với đế gum', 2000000, 2900000, 1),
 (5, 3, 1, 2, 1, 6, 13, 'ADI-IG1987', 'Giày adidas Samba OG ''Wonder White Maroon''', 'Phối màu trắng đỏ maroon nổi bật', 2000000, 2900000, 1),
 (1, 3, 1, 2, 1, 5, 16, 'ADI-IF3219', 'Giày adidas Yeezy Boost 350 V2 ''Steel Grey''', 'Giày thể thao cao cấp với công nghệ Boost', 4500000, 6500000, 1),
