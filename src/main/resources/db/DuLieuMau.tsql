@@ -1,0 +1,322 @@
+-- ========================================
+-- DỮ LIỆU MẪU CHO URBANSTEPS DATABASE
+-- ========================================
+
+USE UrbanStepsDB;
+GO
+
+-- 1. Thương hiệu
+INSERT INTO ThuongHieu (ten_thuong_hieu) VALUES 
+('Adidas'),
+('Nike'),
+('Converse'),
+('MLB'),
+('Puma'),
+('Vans');
+GO
+
+-- 2. Loại sản phẩm
+INSERT INTO LoaiSanPham (ten_loai_san_pham) VALUES 
+('Giày thể thao'),
+('Giày chạy bộ'),
+('Giày tennis'),
+('Giày bóng rổ'),
+('Giày lifestyle'),
+('Giày cao cổ'),
+('Giày thấp cổ');
+GO
+
+-- 3. Danh mục
+INSERT INTO DanhMuc (ten_danh_muc) VALUES 
+('Nam'),
+('Nữ'),
+('Unisex'),
+('Trẻ em');
+GO
+
+-- 4. Xuất xứ
+INSERT INTO XuatXu (ten_xuat_xu) VALUES 
+('Việt Nam'),
+('Trung Quốc'),
+('Indonesia'),
+('Thái Lan'),
+('Hàn Quốc'),
+('Đức'),
+('Mỹ');
+GO
+
+-- 5. Kiểu dáng
+INSERT INTO KieuDang (ten_kieu_dang) VALUES 
+('Cổ thấp'),
+('Cổ cao'),
+('Cổ giữa'),
+('Slip-on'),
+('Lace-up'),
+('Velcro');
+GO
+
+-- 6. Chất liệu
+INSERT INTO ChatLieu (ten_chat_lieu) VALUES 
+('Da thật'),
+('Da tổng hợp'),
+('Vải canvas'),
+('Mesh'),
+('Flyknit'),
+('Suede'),
+('Cao su'),
+('EVA');
+GO
+
+-- 7. Kích cỡ
+INSERT INTO KichCo (ten_kich_co) VALUES 
+('35'), ('36'), ('37'), ('38'), ('39'), ('40'), 
+('41'), ('42'), ('43'), ('44'), ('45'), ('46');
+GO
+
+-- 8. Màu sắc
+INSERT INTO MauSac (ten_mau_sac) VALUES 
+('Đen'),
+('Trắng'),
+('Xám'),
+('Đỏ'),
+('Xanh dương'),
+('Xanh lá'),
+('Vàng'),
+('Hồng'),
+('Nâu'),
+('Be'),
+('Tím'),
+('Cam');
+GO
+
+-- 9. Tài khoản Admin và Users
+INSERT INTO TaiKhoan (tai_khoan, mat_khau, email, ho_ten_tai_khoan, sdt, gioi_tinh, dia_chi, hinh_anh) VALUES 
+('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'admin@urbansteps.com', 'Quản trị viên', '0123456789', 1, 'Hà Nội', 'admin.jpg'),
+('user001', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'nguyenvana@gmail.com', 'Nguyễn Văn A', '0987654321', 1, '123 Phố Huế, Hà Nội', 'user1.jpg'),
+('user002', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'tranthib@gmail.com', 'Trần Thị B', '0976543210', 0, '456 Lê Lợi, TP.HCM', 'user2.jpg'),
+('user003', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'lequangc@gmail.com', 'Lê Quang C', '0965432109', 1, '789 Trần Phú, Đà Nẵng', 'user3.jpg'),
+('user004', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'phamthid@gmail.com', 'Phạm Thị D', '0954321098', 0, '321 Nguyễn Huệ, Cần Thơ', 'user4.jpg'),
+('user005', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'hoangvane@gmail.com', 'Hoàng Văn E', '0943210987', 1, '654 Hai Bà Trưng, Hải Phòng', 'user5.jpg'),
+('user006', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lbELZrxLmkGYifxfe', 'vuongthif@gmail.com', 'Vương Thị F', '0932109876', 0, '987 Lý Thường Kiệt, Huế', 'user6.jpg');
+GO
+
+-- 10. Khách hàng
+INSERT INTO KhachHang (ho_ten_khach_hang, sdt, gioi_tinh, dia_chi) VALUES 
+('Nguyễn Minh Tuấn', '0912345678', 1, '12 Phố Cổ, Hà Nội'),
+('Lê Thị Hương', '0923456789', 0, '34 Nguyễn Văn Cừ, TP.HCM'),
+('Trần Đức Anh', '0934567890', 1, '56 Lê Duẩn, Đà Nẵng'),
+('Phạm Thị Lan', '0945678901', 0, '78 Trần Hưng Đạo, Hải Phòng'),
+('Võ Minh Khoa', '0956789012', 1, '90 Nguyễn Thị Minh Khai, Cần Thơ');
+GO
+
+-- 11. Phiếu giảm giá
+INSERT INTO phieu_giam_gia (ma_phieu_giam_gia, ten_phieu_giam_gia, so_luong, ngay_bat_dau, ngay_ket_thuc, giam_theo_phan_tram, gia_tri_giam, giam_toi_da, don_toi_thieu) VALUES 
+('WELCOME10', 'Chào mừng khách hàng mới', 100, '2025-01-01', '2025-12-31', 1, 10.00, 100000, 500000),
+('SUMMER20', 'Giảm giá mùa hè', 50, '2025-06-01', '2025-08-31', 1, 20.00, 200000, 1000000),
+('VIP30', 'Khách hàng VIP', 20, '2025-01-01', '2025-12-31', 1, 30.00, 500000, 2000000),
+('FIXED50K', 'Giảm cố định 50K', 200, '2025-01-01', '2025-06-30', 0, 50000, 50000, 300000),
+('NEWBIE15', 'Khách hàng lần đầu', 150, '2025-01-01', '2025-12-31', 1, 15.00, 150000, 800000);
+GO
+
+-- 12. Hình ảnh sản phẩm (dựa trên danh sách ảnh thực tế)
+INSERT INTO HinhAnh (duong_dan, mo_ta, thu_tu, la_anh_chinh) VALUES 
+-- Adidas adiFOM Supernova
+('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh chính', 1, 1),
+('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-2.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh 2', 2, 0),
+('adidas/Giày Adidas adiFOM Supernova ''Triple Black'' IF3915/Giay-Adidas-adiFOM-Supernova-Triple-Black-IF3915-3.jpg.jpeg', 'Giày Adidas adiFOM Supernova Triple Black - Ảnh 3', 3, 0),
+
+-- Adidas Barricade 13 Tennis
+('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh chính', 1, 1),
+('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-2.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh 2', 2, 0),
+('adidas/Giày Adidas Barricade 13 Tennis ''Black'' IF0466/Giay-Adidas-Barricade-13-Tennis-Black-IF0466-3.jpg.jpeg', 'Giày Adidas Barricade 13 Tennis Black - Ảnh 3', 3, 0),
+
+-- Adidas Gazelle Bold Year of the Snake
+('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh chính', 1, 1),
+('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-2.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh 2', 2, 0),
+('adidas/Giày adidas Gazelle Bold ''Year of the Snake'' JQ5977/Giay-adidas-Gazelle-Bold-Year-of-the-Snake-JQ5977-3.jpg.jpeg', 'Giày adidas Gazelle Bold Year of the Snake - Ảnh 3', 3, 0),
+
+-- Adidas Samba OG
+('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/25.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh chính', 1, 1),
+('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/24.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh 2', 2, 0),
+('adidas/Giày adidas Samba OG ''White Black Gum'' B75806/26.jpg.jpeg', 'Giày adidas Samba OG White Black Gum - Ảnh 3', 3, 0),
+
+-- Adidas Yeezy Boost 350 V2
+('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh chính', 1, 1),
+('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-2.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 2', 2, 0),
+('adidas/Giày adidas Yeezy Boost 350 V2 ''Steel Grey'' IF3219/Giay-adidas-Yeezy-Boost-350-V2-Steel-Grey-IF3219-4.jpg.jpeg', 'Giày adidas Yeezy Boost 350 V2 Steel Grey - Ảnh 3', 3, 0),
+
+-- Converse Chuck Taylor
+('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh chính', 1, 1),
+('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-2.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 2', 2, 0),
+('converse/Giày Converse Chuck Taylor All Star Cruise OX ''Black White'' A08789C/Giay-Converse-Chuck-Taylor-All-Star-Cruise-OX-Black-White-A08789C-3.jpg.jpeg', 'Giày Converse Chuck Taylor All Star Cruise OX - Ảnh 3', 3, 0),
+
+-- Converse Run Star Hike
+('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c.jpg.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh chính', 1, 1),
+('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-2.png.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh 2', 2, 0),
+('converse/Giày Converse Run Star Hike Low ''Black Gum'' 168816C/converse-run-star-hike-low-black-gum-168816c-3.jpg.webp', 'Giày Converse Run Star Hike Low Black Gum - Ảnh 3', 3, 0),
+
+-- MLB BigBall Chunky
+('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-1.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh chính', 1, 1),
+('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-2.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh 2', 2, 0),
+('mlb/Giày MLB Bigball Chunky A New York Yankees 3ASHC101N-50IVS/MLB-Bigball-Chunky-A-New-York-Yankees-32SHC1111-50I-4.jpg.webp', 'Giày MLB Bigball Chunky A New York Yankees - Ảnh 3', 3, 0),
+
+-- MLB Chunky Liner
+('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh chính', 1, 1),
+('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-1.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 2', 2, 0),
+('mlb/Giày MLB Chunky Liner New York Yankees ''Grey'' 3ASXCA12N-50GRL/giay-mlb-chunky-liner-new-york-yankees-grey-3asxca12n-50grl-2.jpg.webp', 'Giày MLB Chunky Liner New York Yankees Grey - Ảnh 3', 3, 0);
+GO
+
+-- 13. Sản phẩm chính (dựa trên danh sách ảnh - 40 sản phẩm)
+INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, trang_thai) VALUES 
+-- ADIDAS PRODUCTS (13 sản phẩm)
+(1, 3, 1, 2, 1, 2, 1, 'ADI-IF3915', 'Giày Adidas adiFOM Supernova ''Triple Black''', 'Giày thể thao Adidas với công nghệ adiFOM tiên tiến', 1800000, 2500000, 1),
+(3, 1, 1, 2, 1, 4, 4, 'ADI-IF0466', 'Giày Adidas Barricade 13 Tennis ''Black''', 'Giày tennis chuyên nghiệp với độ bền cao', 2200000, 3200000, 1),
+(5, 3, 1, 2, 1, 6, 7, 'ADI-JQ5977', 'Giày adidas Gazelle Bold ''Year of the Snake''', 'Phiên bản đặc biệt kỷ niệm năm Rắn', 2500000, 3800000, 1),
+(2, 1, 1, 2, 1, 4, 10, 'ADI-GY2190', 'Giày adidas Run EQ21 ''Black''', 'Giày chạy bộ với thiết kế hiện đại và thoải mái', 1200000, 1800000, 1),
+(5, 2, 1, 2, 1, 6, 13, 'ADI-IH2751', 'Giày Adidas Samba OG ''Cloud White Wonder Quartz'' (Wmns)', 'Phiên bản nữ với màu sắc nhẹ nhàng', 2000000, 2900000, 1),
+(5, 3, 1, 2, 1, 6, 10, 'ADI-B75806', 'Giày adidas Samba OG ''White Black Gum''', 'Giày lifestyle kinh điển với đế gum', 2000000, 2900000, 1),
+(5, 3, 1, 2, 1, 6, 13, 'ADI-IG1987', 'Giày adidas Samba OG ''Wonder White Maroon''', 'Phối màu trắng đỏ maroon nổi bật', 2000000, 2900000, 1),
+(1, 3, 1, 2, 1, 5, 16, 'ADI-IF3219', 'Giày adidas Yeezy Boost 350 V2 ''Steel Grey''', 'Giày thể thao cao cấp với công nghệ Boost', 4500000, 6500000, 1),
+(5, 3, 1, 2, 1, 8, 1, 'ADI-HQ8752', 'Giày adiFOM Superstar ''Core Black''', 'Phiên bản đen của dòng adiFOM Superstar', 1600000, 2300000, 1),
+(5, 3, 1, 2, 1, 8, 4, 'ADI-HQ8750', 'Giày adiFOM Superstar ''Core White''', 'Phiên bản trắng của dòng adiFOM Superstar', 1600000, 2300000, 1),
+(3, 1, 1, 2, 1, 4, 7, 'ADI-IF0445', 'Giày TennisPickleball adidas Adizero Ubersonic 4', 'Giày tennis/pickleball chuyên nghiệp', 2400000, 3500000, 1),
+(3, 1, 1, 2, 1, 4, 10, 'ADI-ID5680', 'Giày TennisPickleball adidas Solematch Control 2', 'Giày tennis với độ kiểm soát tuyệt vời', 2200000, 3200000, 1),
+(1, 3, 1, 2, 1, 5, 13, 'ADI-S23708', 'Giày Thể Thao Adidas UltraBoost 21 Cloud White', 'Giày chạy với công nghệ Boost 21', 3000000, 4200000, 1),
+
+-- CONVERSE PRODUCTS (14 sản phẩm)
+(6, 3, 3, 2, 2, 3, 16, 'CVS-31312630', 'Giày Back To The Future × Converse All Star US MT Hi ''Black''', 'Collab đặc biệt với Back To The Future', 2500000, 3800000, 1),
+(6, 3, 3, 2, 2, 3, 19, 'CVS-150204C', 'Giày Comme des Garcons Play x Converse Chuck Taylor All Star 70 Hi', 'Collaboration với CDG Play', 3000000, 4500000, 1),
+(1, 3, 3, 2, 1, 8, 22, 'CVS-172958C', 'Giày Converse Aeon Active CX OX ''Egret''', 'Giày thể thao với công nghệ CX hiện đại', 1800000, 2600000, 1),
+(1, 3, 3, 2, 1, 8, 25, 'CVS-171554C', 'Giày Converse Aeon Active CX ''Himalayan Salt''', 'Màu muối Himalaya độc đáo', 1800000, 2600000, 1),
+(7, 3, 3, 2, 1, 3, 16, 'CVS-A08789C', 'Giày Converse Chuck Taylor All Star Cruise OX ''Black White''', 'Phiên bản Cruise với thiết kế thoải mái', 800000, 1200000, 1),
+(6, 2, 3, 2, 2, 8, 19, 'CVS-A09121C', 'Giày Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top', 'Platform cao với thiết kế Y2K', 1500000, 2200000, 1),
+(7, 3, 3, 2, 1, 3, 22, 'CVS-560251C', 'Giày Converse Chuck Taylor All Star Lift Ox ''White Black''', 'Phiên bản Lift với đế cao', 1200000, 1800000, 1),
+(7, 3, 3, 2, 1, 3, 25, 'CVS-166259F', 'Giày Converse Chuck Taylor All Star Low ''Flame''', 'Họa tiết lửa nổi bật', 1000000, 1500000, 1),
+(7, 3, 3, 2, 1, 3, 1, 'CVS-150206C', 'Giày Converse Comme des Garçons Play x Chuck 70 Low ''Black White''', 'CDG Play phiên bản thấp cổ', 2800000, 4200000, 1),
+(6, 3, 3, 2, 2, 3, 4, 'CVS-150205C', 'Giày Converse Comme des Garçons x Chuck Taylor All Star Hi ''Milk''', 'Màu sữa thanh lịch', 2800000, 4200000, 1),
+(1, 3, 3, 2, 1, 7, 19, 'CVS-168816C', 'Giày Converse Run Star Hike Low ''Black Gum''', 'Đế chunky độc đáo', 1500000, 2200000, 1),
+(1, 3, 3, 2, 1, 8, 22, 'CVS-172896C', 'Giày Converse Run Star Motion Low ''White''', 'Công nghệ Motion mới', 1600000, 2400000, 1),
+(5, 3, 3, 2, 2, 6, 25, 'CVS-A06758C', 'Giày Converse x Rick Owens DRKSHDW Weapon ''Beige Black''', 'Collaboration với Rick Owens', 4000000, 6000000, 1),
+(6, 3, 3, 2, 2, 3, 27, 'CVS-171257C', 'Giày Kim Jones x Converse Chuck 70 All Star Black', 'Collaboration với Kim Jones', 3500000, 5200000, 1),
+
+-- MLB PRODUCTS (13 sản phẩm)
+(5, 3, 4, 5, 1, 2, 22, 'MLB-3ASHC101N', 'Giày MLB Bigball Chunky A New York Yankees', 'Phong cách Hàn Quốc với logo NY Yankees', 1800000, 2800000, 1),
+(5, 3, 4, 5, 1, 2, 25, 'MLB-3ASHCDM2N-43', 'Giày MLB BigBall Chunky Diamond Monogram Boston Red Sox', 'Họa tiết diamond monogram', 2000000, 3000000, 1),
+(5, 3, 4, 5, 1, 2, 1, 'MLB-3ASHCDM2N-50', 'Giày MLB BigBall Chunky Diamond Monogram New York Yankees Black', 'Phiên bản đen với diamond monogram', 2000000, 3000000, 1),
+(5, 3, 4, 5, 1, 2, 4, 'MLB-32SHC2111', 'Giày MLB BigBall Chunky P Boston Red Sox', 'Phiên bản P với logo Red Sox', 1800000, 2800000, 1),
+(5, 3, 4, 5, 1, 2, 7, 'MLB-3ASXCA12N-43', 'Giày MLB Chunky Liner Low Boston Red Sox ''Beige''', 'Màu be thanh lịch', 1600000, 2400000, 1),
+(5, 3, 4, 5, 3, 2, 10, 'MLB-3ASXCDN3N-43', 'Giày MLB Chunky Liner Mid Denim Boston Red Sox ''D.Blue''', 'Chất liệu denim cao cấp', 1800000, 2600000, 1),
+(5, 3, 4, 5, 3, 2, 13, 'MLB-3ASXCDN3N-50', 'Giày MLB Chunky Liner Mid Denim New York Yankees ''D.Navy''', 'Denim xanh navy', 1800000, 2600000, 1),
+(5, 3, 4, 5, 1, 2, 25, 'MLB-3ASXCA12N-50', 'Giày MLB Chunky Liner New York Yankees ''Grey''', 'Màu xám thanh lịch', 1600000, 2400000, 1),
+(5, 3, 4, 5, 1, 1, 16, 'MLB-3ASXCLS4N', 'Giày MLB Chunky Liner SL Saffiano Boston Red Sox', 'Chất liệu Saffiano cao cấp', 2200000, 3200000, 1),
+(5, 3, 4, 5, 1, 2, 19, 'MLB-3ASXCLB3N-50B', 'Giày MLB Liner Basic New York Yankees "Black"', 'Phiên bản basic màu đen', 1400000, 2000000, 1),
+(5, 3, 4, 5, 1, 2, 22, 'MLB-3ASXCLB3N-50G', 'Giày MLB Liner Basic New York Yankees "Green"', 'Phiên bản basic màu xanh', 1400000, 2000000, 1),
+(4, 3, 4, 5, 4, 2, 27, 'MLB-3AMUMDA2N', 'Giày MLB Playball Mule Dia Monogram New York Yankees ''Beige''', 'Dép thể thao với họa tiết monogram', 1200000, 1800000, 1),
+(4, 3, 4, 5, 4, 2, 1, 'MLB-32SHSM111', 'Giày MLB Playball Mule Mono NY New York Yankees', 'Dép mono với logo NY', 1200000, 1800000, 1);
+GO
+
+-- 14. Chi tiết sản phẩm với kích cỡ và màu sắc
+INSERT INTO SanPhamChiTiet (id_san_pham, id_kich_co, id_mau_sac, so_luong, trang_thai) VALUES 
+-- Adidas adiFOM Supernova (ID: 1) - Màu đen
+(1, 3, 1, 15, 1), (1, 4, 1, 20, 1), (1, 5, 1, 18, 1), (1, 6, 1, 22, 1), (1, 7, 1, 25, 1), (1, 8, 1, 20, 1), (1, 9, 1, 15, 1), (1, 10, 1, 12, 1),
+
+-- Adidas Barricade 13 Tennis (ID: 2) - Màu đen
+(2, 4, 1, 10, 1), (2, 5, 1, 12, 1), (2, 6, 1, 15, 1), (2, 7, 1, 18, 1), (2, 8, 1, 20, 1), (2, 9, 1, 15, 1), (2, 10, 1, 10, 1), (2, 11, 1, 8, 1),
+
+-- Adidas Gazelle Bold (ID: 3) - Màu đa dạng
+(3, 3, 1, 8, 1), (3, 4, 1, 10, 1), (3, 5, 1, 12, 1), (3, 6, 1, 15, 1), (3, 7, 1, 18, 1), (3, 8, 1, 15, 1), (3, 9, 1, 10, 1),
+(3, 4, 4, 5, 1), (3, 5, 4, 8, 1), (3, 6, 4, 10, 1), (3, 7, 4, 12, 1), (3, 8, 4, 8, 1),
+
+-- Adidas Samba OG (ID: 4) - Màu trắng đen
+(4, 3, 2, 12, 1), (4, 4, 2, 15, 1), (4, 5, 2, 18, 1), (4, 6, 2, 22, 1), (4, 7, 2, 25, 1), (4, 8, 2, 20, 1), (4, 9, 2, 15, 1), (4, 10, 2, 10, 1),
+
+-- Adidas Yeezy Boost 350 V2 (ID: 5) - Màu xám
+(5, 4, 3, 5, 1), (5, 5, 3, 8, 1), (5, 6, 3, 10, 1), (5, 7, 3, 12, 1), (5, 8, 3, 15, 1), (5, 9, 3, 12, 1), (5, 10, 3, 8, 1), (5, 11, 3, 5, 1),
+
+-- Converse Chuck Taylor (ID: 6) - Màu đen trắng
+(6, 2, 1, 20, 1), (6, 3, 1, 25, 1), (6, 4, 1, 30, 1), (6, 5, 1, 35, 1), (6, 6, 1, 40, 1), (6, 7, 1, 35, 1), (6, 8, 1, 30, 1), (6, 9, 1, 25, 1), (6, 10, 1, 20, 1),
+(6, 3, 2, 15, 1), (6, 4, 2, 20, 1), (6, 5, 2, 25, 1), (6, 6, 2, 30, 1), (6, 7, 2, 25, 1), (6, 8, 2, 20, 1), (6, 9, 2, 15, 1),
+
+-- Converse Run Star Hike (ID: 7) - Màu đen
+(7, 3, 1, 10, 1), (7, 4, 1, 15, 1), (7, 5, 1, 18, 1), (7, 6, 1, 22, 1), (7, 7, 1, 25, 1), (7, 8, 1, 20, 1), (7, 9, 1, 15, 1), (7, 10, 1, 10, 1),
+
+-- MLB BigBall Chunky (ID: 8) - Màu trắng
+(8, 4, 2, 12, 1), (8, 5, 2, 15, 1), (8, 6, 2, 18, 1), (8, 7, 2, 22, 1), (8, 8, 2, 25, 1), (8, 9, 2, 20, 1), (8, 10, 2, 15, 1), (8, 11, 2, 10, 1),
+
+-- MLB Chunky Liner (ID: 9) - Màu xám
+(9, 4, 3, 15, 1), (9, 5, 3, 18, 1), (9, 6, 3, 22, 1), (9, 7, 3, 25, 1), (9, 8, 3, 22, 1), (9, 9, 3, 18, 1), (9, 10, 3, 15, 1), (9, 11, 3, 12, 1);
+GO
+
+-- 15. Liên kết hình ảnh với sản phẩm chi tiết
+INSERT INTO HinhAnh_SanPhamChiTiet (id_hinh_anh, id_san_pham_chi_tiet) VALUES 
+-- Adidas adiFOM Supernova - các size màu đen
+(1, 1), (2, 1), (3, 1), -- Size 37
+(1, 2), (2, 2), (3, 2), -- Size 38
+(1, 3), (2, 3), (3, 3), -- Size 39
+(1, 4), (2, 4), (3, 4), -- Size 40
+(1, 5), (2, 5), (3, 5), -- Size 41
+(1, 6), (2, 6), (3, 6), -- Size 42
+(1, 7), (2, 7), (3, 7), -- Size 43
+(1, 8), (2, 8), (3, 8), -- Size 44
+
+-- Adidas Barricade 13 Tennis
+(4, 9), (5, 9), (6, 9),   -- Size 38
+(4, 10), (5, 10), (6, 10), -- Size 39
+(4, 11), (5, 11), (6, 11), -- Size 40
+(4, 12), (5, 12), (6, 12), -- Size 41
+(4, 13), (5, 13), (6, 13), -- Size 42
+(4, 14), (5, 14), (6, 14), -- Size 43
+(4, 15), (5, 15), (6, 15), -- Size 44
+(4, 16), (5, 16), (6, 16), -- Size 45
+
+-- Adidas Gazelle Bold
+(7, 17), (8, 17), (9, 17), -- Size 37 đen
+(7, 18), (8, 18), (9, 18), -- Size 38 đen
+(7, 19), (8, 19), (9, 19), -- Size 39 đen
+(7, 20), (8, 20), (9, 20), -- Size 40 đen
+(7, 21), (8, 21), (9, 21), -- Size 41 đen
+(7, 22), (8, 22), (9, 22), -- Size 42 đen
+(7, 23), (8, 23), (9, 23), -- Size 43 đen
+
+-- Converse Chuck Taylor
+(16, 41), (17, 41), (18, 41), -- Size 36 đen
+(16, 42), (17, 42), (18, 42), -- Size 37 đen
+(16, 43), (17, 43), (18, 43), -- Size 38 đen
+(16, 44), (17, 44), (18, 44), -- Size 39 đen
+(16, 45), (17, 45), (18, 45), -- Size 40 đen
+
+-- MLB Products
+(22, 74), (23, 74), (24, 74), -- MLB BigBall Chunky
+(25, 82), (26, 82), (27, 82); -- MLB Chunky Liner
+GO
+
+-- 16. Hóa đơn mẫu
+INSERT INTO HoaDon (id_tai_khoan, id_khach_hang, id_phieu_giam_gia, ma_hoa_don, tien_mat, tien_chuyen_khoan, tien_giam, phuong_thuc_thanh_toan, trang_thai) VALUES 
+(2, 1, 1, 'HD001', 0, 2250000, 250000, 2, 1), -- User001 mua với voucher WELCOME10
+(3, 2, NULL, 'HD002', 1200000, 0, 0, 1, 1), -- User002 mua bằng tiền mặt
+(4, 3, 2, 'HD003', 0, 2560000, 640000, 2, 1), -- User003 mua với voucher SUMMER20
+(5, NULL, NULL, 'HD004', 0, 2200000, 0, 2, 1), -- User004 mua không voucher
+(6, 4, 4, 'HD005', 1950000, 0, 50000, 1, 1), -- User005 mua với voucher FIXED50K
+(7, 5, 5, 'HD006', 0, 1870000, 330000, 2, 1); -- User006 mua với voucher NEWBIE15
+GO
+
+-- 17. Chi tiết hóa đơn
+INSERT INTO HoaDonChiTiet (id_san_pham_chi_tiet, id_hoa_don, ma_hoa_don_chi_tiet, gia_nhap, gia_ban, so_luong) VALUES 
+-- Hóa đơn HD001: Mua Adidas adiFOM Supernova size 41
+(5, 1, 'HDCT001', 1800000, 2500000, 1),
+
+-- Hóa đơn HD002: Mua Converse Chuck Taylor size 40 
+(45, 2, 'HDCT002', 800000, 1200000, 1),
+
+-- Hóa đơn HD003: Mua Adidas Yeezy size 42
+(37, 3, 'HDCT003', 4500000, 6500000, 1),
+
+-- Hóa đơn HD004: Mua Converse Run Star Hike size 41
+(61, 4, 'HDCT004', 1500000, 2200000, 1),
+
+-- Hóa đơn HD005: Mua MLB BigBall Chunky size 42
+(76, 5, 'HDCT005', 1800000, 2800000, 1),
+
+-- Hóa đơn HD006: Mua Adidas Samba OG size 40
+(28, 6, 'HDCT006', 2000000, 2900000, 1);
+GO
