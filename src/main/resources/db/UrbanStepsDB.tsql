@@ -1,11 +1,11 @@
-CREATE DATABASE UrbanStepsDB;
-GO
-IF EXISTS (SELECT name FROM sys.databases WHERE name = UrbanStepsDB)
+-- Tạo database nếu chưa tồn tại
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'UrbanStepsDB')
 BEGIN
-    ALTER DATABASE UrbanStepsDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE UrbanStepsDB;
+    CREATE DATABASE UrbanStepsDB;
 END
 GO
+
+-- Sử dụng database
 USE UrbanStepsDB;
 GO
 
@@ -124,6 +124,7 @@ CREATE TABLE TaiKhoan (
   dia_chi VARCHAR(500),
   hinh_anh VARCHAR(255),
   otp VARCHAR(50),
+  role VARCHAR(50) NOT NULL DEFAULT 'USER',
   create_at DATETIME DEFAULT GETDATE(),
   update_at DATETIME,
   delete_at DATETIME

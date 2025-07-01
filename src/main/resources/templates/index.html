@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+<head>
+  <title layout:fragment="title">UrbanSteps - Trang Chủ</title>
+  <th:block layout:fragment="extra-css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+  </th:block>
+</head>
+
+<div layout:fragment="content">
+  <!-- Banner Section -->
+  <div class="banner-section" th:if="${bannerImages != null and !bannerImages.empty}">
+    <div class="banner-container">
+      <div th:each="bannerImage : ${bannerImages}" class="banner-slide">
+        <img th:src="@{'/' + ${bannerImage}}" 
+             alt="Banner" 
+             class="banner-image">
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Flash Deal</h2>
+    <div class="product-container">
+      <div th:each="imageUrl : ${flashDealImages}" class="product-card">
+        <a href="#" class="disabled-link">
+          <img th:src="@{'/' + ${imageUrl}}" 
+               alt="Flash Deal Product" 
+               onerror="this.src='/images/placeholder.jpg';"
+               class="product-image">
+        </a>
+        <h3>Sản phẩm Flash Deal</h3>
+        <p>Giá ưu đãi</p>
+      </div>
+    </div>
+    <div class="view-all">
+      <a href="/san-pham" th:href="@{/san-pham}">Xem tất cả</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Top Popular</h2>
+    <div class="product-container">
+      <div th:each="imageUrl : ${topPopularImages}" class="product-card">
+        <a href="#" class="disabled-link">
+          <img th:src="@{'/' + ${imageUrl}}" 
+               alt="Top Popular Product" 
+               onerror="this.src='/images/placeholder.jpg';"
+               class="product-image">
+        </a>
+        <h3>Sản phẩm Hot Trend</h3>
+        <p>Được yêu thích nhất</p>
+      </div>
+    </div>
+    <div class="view-all">
+      <a href="/san-pham" th:href="@{/san-pham}">Xem tất cả</a>
+    </div>
+  </div>
+</div>
+
+</html>

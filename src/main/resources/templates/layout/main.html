@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title layout:title-pattern="$CONTENT_TITLE - UrbanSteps">UrbanSteps</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
+  <link rel="stylesheet" type="text/css" href="/css/layout-main.css">
+  
+</head>
+<body>
+
+<!-- Header -->
+<div class="header-top">
+  Mua giày, đến UrbanSteps.vn! - Giày chính hãng số 1 thế giới
+</div>
+
+<div class="header-main">
+  <div class="header-content">
+    <div class="logo">
+      <a th:href="@{/}" class="logo-link">UrbanSteps</a>
+    </div>
+    <div class="nav-menu">
+      <a href="/san-pham?thuongHieu=MLB" th:href="@{/san-pham(thuongHieu='MLB')}">MLB</a>
+    <a href="/san-pham?thuongHieu=Adidas" th:href="@{/san-pham(thuongHieu='Adidas')}">Adidas</a>
+    <a href="/san-pham?thuongHieu=Converse" th:href="@{/san-pham(thuongHieu='Converse')}">Converse</a>
+    <a href="/san-pham?sale=true" th:href="@{/san-pham(sale=true)}" class="sale">SALE</a>
+    <a href="/san-pham?hot=true" th:href="@{/san-pham(hot=true)}" class="hot">HOT</a>
+    </div>
+    <div class="icons">
+      <a href="/tim-kiem" th:href="@{/tim-kiem}"><i class="bi bi-search"></i></a>
+      <a href="/gio-hang" th:href="@{/gio-hang}"><i class="bi bi-cart"></i></a>
+      
+      <!-- User authentication section -->
+      <div class="user-section" sec:authorize="isAuthenticated()">
+        <span class="welcome-text">Xin chào, <strong sec:authentication="name">User</strong>!</span>
+        <div class="user-dropdown">
+          <a href="#" class="user-icon"><i class="bi bi-person-fill"></i></a>
+          <div class="dropdown-menu">
+            <a href="/tai-khoan/thong-tin">Thông tin tài khoản</a>
+            <a href="/don-hang">Đơn hàng của tôi</a>
+            <hr>
+            <a href="/dang-xuat" th:href="@{/dang-xuat}">Đăng xuất</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Login section for non-authenticated users -->
+      <div class="login-section" sec:authorize="!isAuthenticated()">
+        <a href="/dang-nhap" th:href="@{/dang-nhap}"><i class="bi bi-person"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="main-content" layout:fragment="content">
+  <!-- Page content will be inserted here -->
+</main>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Thương hiệu nổi bật</h3>
+      <ul>
+        <li><a href="#" th:href="@{/san-pham(thuongHieu='UrbanSteps')}">UrbanSteps</a></li>
+        <li><a href="#" th:href="@{/san-pham(thuongHieu='Nike')}">Giày Nike</a></li>
+        <li><a href="#" th:href="@{/san-pham(thuongHieu='Adidas')}">Giày Adidas</a></li>
+        <li><a href="#" th:href="@{/san-pham(thuongHieu='Converse')}">Giày Converse</a></li>
+        <li><a href="#" th:href="@{/san-pham(thuongHieu='Peak')}">Giày Peak</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Hỗ trợ khách hàng</h3>
+      <ul>
+        <li><a href="#" th:href="@{/ho-tro}">FAQs & Help</a></li>
+        <li><a href="#" th:href="@{/van-don}">Vận đơn</a></li>
+        <li><a href="#" th:href="@{/huong-dan-tra-gop}">Hướng dẫn thanh toán trả góp</a></li>
+        <li><a href="#" th:href="@{/huong-dan-doi-tra}">Hướng dẫn đổi trả</a></li>
+        <li><a href="#" th:href="@{/chinh-sach-doi-tra}">Chính sách đổi trả</a></li>
+        <li><a href="#" th:href="@{/chinh-sach-bao-hanh}">Chính sách bảo hành</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Về UrbanSteps</h3>
+      <ul>
+        <li><a href="#" th:href="@{/gioi-thieu}">Giới thiệu UrbanSteps</a></li>
+        <li><a href="#" th:href="@{/cau-hoi-thuong-gap}">Câu hỏi thường gặp</a></li>
+        <li><a href="#" th:href="@{/tuyen-dung}">Tuyển dụng</a></li>
+        <li><a href="#" th:href="@{/dang-ky-ban-hang}">Đăng ký bán hàng</a></li>
+        <li><a href="#" th:href="@{/lien-he}">Liên hệ</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Liên hệ</h3>
+      <ul>
+        <li><a href="tel:+84287306552">CS1: 028 7306 5552</a></li>
+        <li><a href="tel:+84947104105">Giày: Hải (0947) 104-105</a></li>
+        <li><a href="mailto:cskh@urbanshoes.vn">cskh@urbanshoes.vn</a></li>
+        <li>Hà Nội, Việt Nam</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 UrbanSteps - Được bảo vệ bởi DMCA. Không sao chép nội dung mà không có sự cho phép!</p>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Page specific JS -->
+<th:block layout:fragment="extra-js"></th:block>
+
+</body>
+</html>

@@ -33,5 +33,5 @@ build/
 .vscode/
 hs_err_pid*.log
 
-### UrbanSteps - Static Files ###
-src/main/resources/static/
+### UrbanSteps - Images only ###
+src/main/resources/static/images/

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Tìm kiếm sản phẩm</title>
+    <th:block layout:fragment="extra-css">
+        <link rel="stylesheet" type="text/css" href="/css/tim-kiem.css">
+    </th:block>
+    <th:block layout:fragment="extra-js">
+        <script src="/js/tim-kiem.js"></script>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-4">
+            <!-- Search Header -->
+            <div class="search-header">
+                <h1 class="search-title">Tìm kiếm sản phẩm</h1>
+                <p class="search-subtitle" th:if="${keyword}">
+                    Kết quả cho từ khóa: "<strong th:text="${keyword}">keyword</strong>"
+                </p>
+                <p class="search-subtitle" th:unless="${keyword}">
+                    Khám phá hàng nghìn sản phẩm giày dép chất lượng
+                </p>
+            </div>
+            
+            <!-- Search Form -->
+            <div class="search-form">
+                <form action="/tim-kiem" method="get">
+                    <div class="search-box">
+                        <input type="text" 
+                               name="keyword" 
+                               class="search-input" 
+                               placeholder="Tìm kiếm sản phẩm, thương hiệu..." 
+                               th:value="${keyword}"
+                               list="search-suggestions">
+                        <button type="submit" class="search-btn">
+                            <i class="bi bi-search"></i>
+                            Tìm kiếm
+                        </button>
+                        
+                        <!-- Search Suggestions -->
+                        <datalist id="search-suggestions">
+                            <option value="Giày Adidas">
+                            <option value="Giày Nike">
+                            <option value="Giày Converse">
+                            <option value="Giày MLB">
+                            <option value="Sneaker">
+                            <option value="Giày thể thao">
+                            <option value="Giày cao cổ">
+                            <option value="Giày thấp cổ">
+                        </datalist>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Filter Section -->
+            <div class="filter-section" th:if="${danhSachThuongHieu != null and !#lists.isEmpty(danhSachThuongHieu)}">
+                <h5 class="filter-title">Lọc sản phẩm</h5>
+                <form action="/tim-kiem" method="get" class="filter-form">
+                    <input type="hidden" name="keyword" th:value="${keyword}">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="thuongHieu">Thương hiệu:</label>
+                            <select name="thuongHieu" id="thuongHieu">
+                                <option value="">Tất cả thương hiệu</option>
+                                <option th:each="brand : ${danhSachThuongHieu}" 
+                                        th:value="${brand}" 
+                                        th:text="${brand}"
+                                        th:selected="${brand == thuongHieu}"></option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="sapXep">Sắp xếp:</label>
+                            <select name="sapXep" id="sapXep">
+                                <option value="">Mặc định</option>
+                                <option value="name-asc" th:selected="${sapXep == 'name-asc'}">Tên A-Z</option>
+                                <option value="name-desc" th:selected="${sapXep == 'name-desc'}">Tên Z-A</option>
+                                <option value="price-asc" th:selected="${sapXep == 'price-asc'}">Giá thấp đến cao</option>
+                                <option value="price-desc" th:selected="${sapXep == 'price-desc'}">Giá cao đến thấp</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Results Info -->
+            <div class="results-info" th:if="${products != null}">
+                <div class="results-count">
+                    Tìm thấy <strong th:text="${#lists.size(products)}">0</strong> sản phẩm
+                    <span th:if="${keyword}" th:text="'cho từ khóa &quot;' + ${keyword} + '&quot;'"></span>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="search-results">
+                <!-- No Results -->
+                <div th:if="${products == null or #lists.isEmpty(products)}" class="no-results">
+                    <i class="bi bi-search display-1"></i>
+                    <h3>Không tìm thấy sản phẩm nào</h3>
+                    <p th:if="${keyword}">Không có sản phẩm nào phù hợp với từ khóa "<strong th:text="${keyword}"></strong>"</p>
+                    <p th:unless="${keyword}">Hãy nhập từ khóa để tìm kiếm sản phẩm</p>
+                    <p><strong>Gợi ý tìm kiếm:</strong></p>
+                    <p>• Thử tìm kiếm với từ khóa khác</p>
+                    <p>• Kiểm tra chính tả</p>
+                    <p>• Sử dụng từ khóa chung như "giày", "sneaker"</p>
+                    <a href="/" th:href="@{/}" class="btn-view">
+                        <i class="bi bi-house me-2"></i>
+                        Về trang chủ
+                    </a>
+                </div>
+
+                <!-- Products Grid -->
+                <div th:if="${products != null and !#lists.isEmpty(products)}" class="products-grid">
+                    <div th:each="product : ${products}" th:if="${product != null}" class="product-card">
+                        <div class="product-image">
+                            <img th:if="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
+                                 th:with="rawPath=${product.idHinhAnhDaiDien.duongDan},
+                                         cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
+                                 th:src="@{'/images/' + ${cleanPath}}"
+                                 th:alt="${product.tenSanPham}"
+                                 onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/Home/2.png';">
+                            <img th:unless="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
+                                 src="/images/Home/2.png"
+                                 th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-brand" 
+                                 th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'Chưa có thương hiệu'}">
+                                Brand
+                            </div>
+                            <div class="product-name">
+                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}" 
+                                   th:text="${product.tenSanPham ?: 'Tên sản phẩm'}">
+                                    Product Name
+                                </a>
+                            </div>
+                            <div class="product-price" 
+                                 th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ') : 'Liên hệ'}">
+                                Price
+                            </div>
+                            <div class="product-actions">
+                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}" 
+                                   class="btn-view">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Suggestions -->
+            <div class="search-suggestions mt-5" th:if="${keyword}">
+                <h5 class="mb-3">Gợi ý tìm kiếm:</h5>
+                <div class="suggestion-tags">
+                    <a href="/tim-kiem?keyword=adidas" class="badge bg-light text-dark text-decoration-none me-2 mb-2">Adidas</a>
+                    <a href="/tim-kiem?keyword=converse" class="badge bg-light text-dark text-decoration-none me-2 mb-2">Converse</a>
+                    <a href="/tim-kiem?keyword=mlb" class="badge bg-light text-dark text-decoration-none me-2 mb-2">MLB</a>
+                    <a href="/tim-kiem?keyword=giày+thể+thao" class="badge bg-light text-dark text-decoration-none me-2 mb-2">Giày thể thao</a>
+                    <a href="/tim-kiem?keyword=sneaker" class="badge bg-light text-dark text-decoration-none me-2 mb-2">Sneaker</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

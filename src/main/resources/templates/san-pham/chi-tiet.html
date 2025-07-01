@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+<head>
+  <title layout:fragment="title" th:text="${product.tenSanPham}">Chi tiết sản phẩm</title>
+</head>
+
+<div layout:fragment="extra-css">
+  <style>
+    .product-detail {
+      padding-top: 70px;
+    }
+    .product-image {
+      max-width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .product-info {
+      padding: 20px;
+    }
+    .product-price {
+      font-size: 2rem;
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    .btn-add-cart {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .btn-add-cart:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</div>
+
+<div layout:fragment="content">
+  <div class="container product-detail">
+    <div class="row">
+      <div class="col-md-6">
+        <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}" 
+             alt="Hình ảnh sản phẩm" 
+             class="product-image"
+             onerror="this.src='/static/images/default.jpg';">
+      </div>
+      <div class="col-md-6 product-info">
+        <h1 th:text="${product.tenSanPham}">Tên sản phẩm</h1>
+        <p class="product-price" th:text="'${#numbers.formatDecimal(product.giaBan, 0, '###,###')} VNĐ'">Giá sản phẩm</p>
+        
+        <div class="product-description">
+          <h5>Mô tả sản phẩm:</h5>
+          <p th:text="${product.moTa ?: 'Chưa có mô tả'}">Mô tả sản phẩm</p>
+        </div>
+        
+        <div class="product-details mt-4">
+          <h5>Thông tin chi tiết:</h5>
+          <ul>
+            <li><strong>Thương hiệu:</strong> <span th:text="${product.idThuongHieu?.tenThuongHieu ?: 'Chưa xác định'}">Thương hiệu</span></li>
+            <li><strong>Loại sản phẩm:</strong> <span th:text="${product.idLoaiSanPham?.tenLoaiSanPham ?: 'Chưa xác định'}">Loại</span></li>
+            <li><strong>Xuất xứ:</strong> <span th:text="${product.idXuatXu?.tenXuatXu ?: 'Chưa xác định'}">Xuất xứ</span></li>
+          </ul>
+        </div>
+        
+        <div class="mt-4">
+          <button class="btn-add-cart">Thêm vào giỏ hàng</button>
+          <button class="btn btn-outline-primary ms-2">Mua ngay</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sản phẩm liên quan -->
+    <div class="mt-5" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
+      <h2 class="section-title">Sản phẩm liên quan</h2>
+      <div class="product-container">
+        <div th:each="product : ${relatedProducts}" class="product-card">
+          <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}">
+            <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}" 
+                 alt="Hình ảnh sản phẩm" 
+                 onerror="this.src='/static/images/default.jpg';">
+          </a>
+          <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+          <p th:text="'${#numbers.formatDecimal(product.giaBan, 0, '###,###')} VNĐ'">Giá sản phẩm</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>
