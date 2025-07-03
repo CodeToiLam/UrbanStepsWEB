@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" 
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
@@ -11,6 +11,7 @@
     <th:block layout:fragment="extra-js">
         <script src="/js/tim-kiem.js"></script>
     </th:block>
+    <link rel="stylesheet" href="/css/improve-cursor.css">
 </head>
 <body>
     <div layout:fragment="content">
@@ -25,22 +26,22 @@
                     Khám phá hàng nghìn sản phẩm giày dép chất lượng
                 </p>
             </div>
-            
+
             <!-- Search Form -->
             <div class="search-form">
                 <form action="/tim-kiem" method="get">
                     <div class="search-box">
-                        <input type="text" 
-                               name="keyword" 
-                               class="search-input" 
-                               placeholder="Tìm kiếm sản phẩm, thương hiệu..." 
+                        <input type="text"
+                               name="keyword"
+                               class="search-input"
+                               placeholder="Tìm kiếm sản phẩm, thương hiệu..."
                                th:value="${keyword}"
                                list="search-suggestions">
                         <button type="submit" class="search-btn">
                             <i class="bi bi-search"></i>
                             Tìm kiếm
                         </button>
-                        
+
                         <!-- Search Suggestions -->
                         <datalist id="search-suggestions">
                             <option value="Giày Adidas">
@@ -55,7 +56,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <!-- Filter Section -->
             <div class="filter-section" th:if="${danhSachThuongHieu != null and !#lists.isEmpty(danhSachThuongHieu)}">
                 <h5 class="filter-title">Lọc sản phẩm</h5>
@@ -66,8 +67,8 @@
                             <label for="thuongHieu">Thương hiệu:</label>
                             <select name="thuongHieu" id="thuongHieu">
                                 <option value="">Tất cả thương hiệu</option>
-                                <option th:each="brand : ${danhSachThuongHieu}" 
-                                        th:value="${brand}" 
+                                <option th:each="brand : ${danhSachThuongHieu}"
+                                        th:value="${brand}"
                                         th:text="${brand}"
                                         th:selected="${brand == thuongHieu}"></option>
                             </select>
@@ -85,7 +86,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <!-- Results Info -->
             <div class="results-info" th:if="${products != null}">
                 <div class="results-count">
@@ -127,22 +128,22 @@
                                  th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
                         </div>
                         <div class="product-info">
-                            <div class="product-brand" 
+                            <div class="product-brand"
                                  th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'Chưa có thương hiệu'}">
                                 Brand
                             </div>
                             <div class="product-name">
-                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}" 
+                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}"
                                    th:text="${product.tenSanPham ?: 'Tên sản phẩm'}">
                                     Product Name
                                 </a>
                             </div>
-                            <div class="product-price" 
+                            <div class="product-price"
                                  th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ') : 'Liên hệ'}">
                                 Price
                             </div>
                             <div class="product-actions">
-                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}" 
+                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}"
                                    class="btn-view">
                                     <i class="bi bi-eye me-1"></i>
                                     Xem chi tiết
@@ -167,4 +168,5 @@
         </div>
     </div>
 </body>
+<script src="/js/improve-interaction.js"></script>
 </html>

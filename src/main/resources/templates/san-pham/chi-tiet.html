@@ -1,96 +1,359 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 
 <head>
-  <title layout:fragment="title" th:text="${product.tenSanPham}">Chi tiết sản phẩm</title>
+    <title layout:fragment="title"
+           th:text="${product != null ? product.tenSanPham : 'Chi tiết sản phẩm'} + ' - UrbanSteps'">Chi tiết sản phẩm -
+        UrbanSteps</title>
+    <th:block layout:fragment="extra-css">
+        <link rel="stylesheet" href="/css/chi-tiet-san-pham.css">
+        <style>
+            /* Phần ảnh sản phẩm */
+            .product-image-container {
+                position: relative;
+                overflow: hidden;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                text-align: center;
+                background-color: #f8f9fa;
+            }
+
+            .main-product-image {
+                max-height: 450px;
+                width: 100%;
+                object-fit: contain;
+                border-radius: 8px;
+            }
+
+            /* Phần thumbnail */
+            .product-thumbnails {
+                margin-top: 15px;
+            }
+
+            .thumbnail-item {
+                cursor: pointer;
+                border: 2px solid #e0e0e0;
+                border-radius: 5px;
+                overflow: hidden;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #f8f8f8;
+                transition: all 0.2s ease;
+            }
+
+            .thumbnail-item:hover {
+                border-color: #007bff;
+            }
+
+            .thumbnail-item.active {
+                border-color: #007bff;
+                box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            }
+
+            .thumbnail-item img {
+                max-height: 100%;
+                object-fit: contain;
+            }
+        </style>
+    </th:block>
 </head>
 
-<div layout:fragment="extra-css">
-  <style>
-    .product-detail {
-      padding-top: 70px;
-    }
-    .product-image {
-      max-width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-    .product-info {
-      padding: 20px;
-    }
-    .product-price {
-      font-size: 2rem;
-      color: #d32f2f;
-      font-weight: bold;
-    }
-    .btn-add-cart {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 30px;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-    .btn-add-cart:hover {
-      background-color: #0056b3;
-    }
-  </style>
+<div layout:fragment="content">
+    <div class="container mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/san-pham}">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${product.tenSanPham}">Chi tiết sản
+                    phẩm
+                </li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-md-6">
+                <div class="product-image-container">
+                    <img id="main-product-image"
+                         th:if="${product.idHinhAnhDaiDien != null}"
+                         th:with="rawPath=${product.idHinhAnhDaiDien.duongDan},
+                 cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
+                         th:src="@{'/images/' + ${cleanPath}}"
+                         th:alt="${product.tenSanPham}"
+                         onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';"
+                         class="img-fluid main-product-image">
+                    <img th:unless="${product.idHinhAnhDaiDien != null}"
+                         src="/images/no-image.jpg"
+                         alt="No image available"
+                         class="img-fluid main-product-image">
+                </div>
+
+                <!-- Thumbnails section -->
+                <div class="product-thumbnails mt-3">
+                    <div class="row g-2">
+                        <!-- Main image thumbnail -->
+                        <div class="col-3" th:if="${mainImagePath != null}">
+                            <div class="thumbnail-item active"
+                                 th:data-image="${mainImagePath}"
+                                 onclick="changeMainImage(this)">
+                                <img th:src="${mainImagePath}"
+                                     th:alt="${product.tenSanPham + ' - Ảnh chính'}"
+                                     class="img-fluid"
+                                     onerror="this.src='/images/no-image.jpg';">
+                            </div>
+                        </div>
+                        <!-- Other images -->
+                        <div class="col-3" th:each="img, imgStat : ${productImages}"
+                             th:if="${img != null and (product.idHinhAnhDaiDien == null or img.id != product.idHinhAnhDaiDien.id)}">
+                            <div class="thumbnail-item"
+                                 th:data-image="${img.duongDan}"
+                                 onclick="changeMainImage(this)">
+                                <img th:src="${img.duongDan}"
+                                     th:alt="${product.tenSanPham + ' - Ảnh ' + imgStat.count}"
+                                     class="img-fluid"
+                                     onerror="this.src='/images/no-image.jpg';">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Thông tin sản phẩm -->
+        <div class="col-md-6">
+            <h1 class="product-title" th:text="${product.tenSanPham}">Tên sản phẩm</h1>
+
+            <div class="product-code mb-3">
+                <span>Mã sản phẩm: </span>
+                <span th:text="${product.maSanPham}" class="code">SP001</span>
+            </div>
+
+            <div class="product-price mb-4">
+                    <span class="current-price"
+                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">1,200,000 ₫</span>
+            </div>
+
+            <!-- Chọn kích cỡ -->
+            <div class="product-size mb-3" th:if="${!kichCos.empty}">
+                <h5>Kích cỡ:</h5>
+                <div class="size-options">
+                    <div th:each="size : ${kichCos}" class="size-option">
+                        <input type="radio" th:id="${'size-' + size}" name="size" th:value="${size}">
+                        <label th:for="${'size-' + size}" th:text="${size}">40</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chọn màu sắc -->
+            <div class="product-color mb-3" th:if="${!mauSacs.empty}">
+                <h5>Màu sắc:</h5>
+                <div class="color-options">
+                    <div th:each="color : ${mauSacs}" class="color-option">
+                        <input type="radio" th:id="${'color-' + color}" name="color" th:value="${color}">
+                        <label th:for="${'color-' + color}" th:text="${color}">Đen</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Số lượng tồn kho -->
+            <div class="product-stock mb-3" th:if="${!kichCos.empty && !mauSacs.empty}">
+                <span>Còn lại: </span>
+                <span id="stock-quantity">Vui lòng chọn kích cỡ và màu sắc</span>
+            </div>
+
+            <!-- Số lượng mua -->
+            <div class="product-quantity mb-3">
+                <h5>Số lượng:</h5>
+                <div class="quantity-control">
+                    <button id="decrease-quantity" class="btn btn-outline-secondary">-</button>
+                    <input type="number" id="quantity" value="1" min="1" class="form-control">
+                    <button id="increase-quantity" class="btn btn-outline-secondary">+</button>
+                </div>
+            </div>
+
+            <!-- Nút thêm vào giỏ hàng -->
+            <div class="product-actions mb-4">
+                <button id="add-to-cart" class="btn btn-primary add-to-cart-btn">
+                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+                <button id="buy-now" class="btn btn-success buy-now-btn">
+                    <i class="bi bi-lightning-fill"></i> Mua ngay
+                </button>
+            </div>
+
+            <!-- Mô tả sản phẩm -->
+            <div class="product-description mb-4" th:if="${product.moTa != null && !product.moTa.empty}">
+                <h5>Mô tả:</h5>
+                <p th:text="${product.moTa}">Mô tả sản phẩm sẽ hiển thị ở đây...</p>
+            </div>
+
+            <!-- Thông tin thương hiệu và xuất xứ -->
+            <div class="product-info">
+                <div class="info-item" th:if="${product.thuongHieu != null}">
+                    <span class="info-label">Thương hiệu:</span>
+                    <span class="info-value" th:text="${product.thuongHieu.tenThuongHieu}">Nike</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sản phẩm liên quan -->
+    <div class="related-products mt-5" th:if="${!relatedProducts.empty}">
+        <h3 class="section-title">Sản phẩm liên quan</h3>
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="relatedProduct : ${relatedProducts}">
+                <div class="card product-card h-100">
+                    <a th:href="@{/san-pham/chi-tiet/{id}(id=${relatedProduct.id ?: 0})}" class="text-decoration-none">
+                        <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
+                             th:with="rawPath=${relatedProduct.idHinhAnhDaiDien.duongDan},
+             cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
+                             th:src="@{'/images/' + ${cleanPath}}"
+                             class="card-img-top"
+                             onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';"
+                             th:alt="${relatedProduct.tenSanPham}">
+                        <img th:unless="${relatedProduct.idHinhAnhDaiDien != null}"
+                             src="/images/no-image.jpg"
+                             class="card-img-top"
+                             alt="No image available">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
+                            <p class="card-text product-price"
+                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                750,000 ₫</p>
+                            <div class="btn-view text-primary">
+                                <p class="bi bi-eye me-1">Xem chi tiết</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div layout:fragment="content">
-  <div class="container product-detail">
-    <div class="row">
-      <div class="col-md-6">
-        <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}" 
-             alt="Hình ảnh sản phẩm" 
-             class="product-image"
-             onerror="this.src='/static/images/default.jpg';">
-      </div>
-      <div class="col-md-6 product-info">
-        <h1 th:text="${product.tenSanPham}">Tên sản phẩm</h1>
-        <p class="product-price" th:text="'${#numbers.formatDecimal(product.giaBan, 0, '###,###')} VNĐ'">Giá sản phẩm</p>
-        
-        <div class="product-description">
-          <h5>Mô tả sản phẩm:</h5>
-          <p th:text="${product.moTa ?: 'Chưa có mô tả'}">Mô tả sản phẩm</p>
-        </div>
-        
-        <div class="product-details mt-4">
-          <h5>Thông tin chi tiết:</h5>
-          <ul>
-            <li><strong>Thương hiệu:</strong> <span th:text="${product.idThuongHieu?.tenThuongHieu ?: 'Chưa xác định'}">Thương hiệu</span></li>
-            <li><strong>Loại sản phẩm:</strong> <span th:text="${product.idLoaiSanPham?.tenLoaiSanPham ?: 'Chưa xác định'}">Loại</span></li>
-            <li><strong>Xuất xứ:</strong> <span th:text="${product.idXuatXu?.tenXuatXu ?: 'Chưa xác định'}">Xuất xứ</span></li>
-          </ul>
-        </div>
-        
-        <div class="mt-4">
-          <button class="btn-add-cart">Thêm vào giỏ hàng</button>
-          <button class="btn btn-outline-primary ms-2">Mua ngay</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Sản phẩm liên quan -->
-    <div class="mt-5" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
-      <h2 class="section-title">Sản phẩm liên quan</h2>
-      <div class="product-container">
-        <div th:each="product : ${relatedProducts}" class="product-card">
-          <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}">
-            <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}" 
-                 alt="Hình ảnh sản phẩm" 
-                 onerror="this.src='/static/images/default.jpg';">
-          </a>
-          <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-          <p th:text="'${#numbers.formatDecimal(product.giaBan, 0, '###,###')} VNĐ'">Giá sản phẩm</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- JavaScript cho trang chi tiết -->
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dữ liệu tồn kho từ server
+        const stockData = /*[[${tonKhoMap}]]*/ {};
+        let selectedSize = null;
+        let selectedColor = null;
+
+        // Chức năng đổi ảnh chính khi nhấp vào thumbnail
+        window.changeMainImage = function (thumbnailElement) {
+            // Lấy đường dẫn ảnh từ thuộc tính data-image
+            const imagePath = thumbnailElement.getAttribute('data-image');
+
+            // Cập nhật ảnh chính
+            const mainImage = document.getElementById('main-product-image');
+            if (mainImage) {
+                mainImage.src = imagePath;
+            }
+
+            // Đánh dấu thumbnail đang được chọn
+            const allThumbnails = document.querySelectorAll('.thumbnail-item');
+            allThumbnails.forEach(item => {
+                item.classList.remove('active');
+            });
+            thumbnailElement.classList.add('active');
+        };
+
+        // Xử lý khi chọn kích cỡ
+        const sizeInputs = document.querySelectorAll('input[name="size"]');
+        sizeInputs.forEach(input => {
+            input.addEventListener('change', updateStockInfo);
+        });
+
+        // Xử lý khi chọn màu sắc
+        const colorInputs = document.querySelectorAll('input[name="color"]');
+        colorInputs.forEach(input => {
+            input.addEventListener('change', updateStockInfo);
+        });
+
+        // Cập nhật thông tin tồn kho
+        function updateStockInfo() {
+            const sizeChecked = document.querySelector('input[name="size"]:checked');
+            const colorChecked = document.querySelector('input[name="color"]:checked');
+
+            if (sizeChecked && colorChecked) {
+                selectedSize = sizeChecked.value;
+                selectedColor = colorChecked.value;
+
+                // Kiểm tra tồn kho từ dữ liệu server
+                const stockQuantity = stockData[selectedSize]?.[selectedColor] || 0;
+                document.getElementById('stock-quantity').textContent = stockQuantity > 0 ? stockQuantity : 'Hết hàng';
+
+                // Cập nhật trạng thái nút mua hàng
+                const addToCartBtn = document.getElementById('add-to-cart');
+                const buyNowBtn = document.getElementById('buy-now');
+
+                if (stockQuantity > 0) {
+                    addToCartBtn.disabled = false;
+                    buyNowBtn.disabled = false;
+                } else {
+                    addToCartBtn.disabled = true;
+                    buyNowBtn.disabled = true;
+                }
+
+                // Cập nhật giới hạn số lượng
+                const quantityInput = document.getElementById('quantity');
+                quantityInput.max = stockQuantity;
+                if (parseInt(quantityInput.value) > stockQuantity) {
+                    quantityInput.value = stockQuantity;
+                }
+            }
+        }
+
+        // Xử lý nút tăng/giảm số lượng
+        document.getElementById('decrease-quantity').addEventListener('click', function () {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        document.getElementById('increase-quantity').addEventListener('click', function () {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            const maxValue = parseInt(quantityInput.max) || 99;
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+
+        // Xử lý nút thêm vào giỏ hàng và mua ngay
+        document.getElementById('add-to-cart').addEventListener('click', function () {
+            if (!selectedSize || !selectedColor) {
+                alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng!');
+                return;
+            }
+
+            // Xử lý thêm vào giỏ hàng ở đây
+            const quantity = parseInt(document.getElementById('quantity').value);
+            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng:\n- Kích cỡ: ${selectedSize}\n- Màu sắc: ${selectedColor}`);
+        });
+
+        document.getElementById('buy-now').addEventListener('click', function () {
+            if (!selectedSize || !selectedColor) {
+                alert('Vui lòng chọn kích cỡ và màu sắc trước khi mua ngay!');
+                return;
+            }
+
+            // Xử lý mua ngay ở đây
+            const quantity = parseInt(document.getElementById('quantity').value);
+            alert(`Đang chuyển đến trang thanh toán cho ${quantity} sản phẩm:\n- Kích cỡ: ${selectedSize}\n- Màu sắc: ${selectedColor}`);
+
+            // Thêm logic chuyển đến trang thanh toán ở đây
+            // window.location.href = "/thanh-toan?...";
+        });
+    });
+</script>
 </div>
 
 </html>

@@ -1,0 +1,17 @@
+/* Cải thiện hiển thị con trỏ chuột cho các phần tử tương tác */
+.product-card,
+.card,
+.product-item,
+a[href*="/san-pham/chi-tiet/"],
+a[href*="/chi-tiet/"],
+.btn,
+button {
+    cursor: pointer !important;
+}
+
+/* Đảm bảo không có hiệu ứng tự động bị tắt cursor */
+.product-card *:not(button):not(a),
+.card *:not(button):not(a),
+.product-item *:not(button):not(a) {
+    cursor: inherit;
+}
