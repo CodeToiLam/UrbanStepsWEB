@@ -12,8 +12,9 @@ public interface HinhAnhRepository extends JpaRepository<HinhAnh, Integer> {
 
     /**
      * Tìm tất cả hình ảnh của sản phẩm theo ID sản phẩm, sắp xếp theo thứ tự
+     * Sửa lại query để lấy đúng ảnh từ bảng HinhAnh_SanPhamChiTiet
      */
-    @Query(value = "SELECT h.* FROM HinhAnh h " +
+    @Query(value = "SELECT DISTINCT h.* FROM HinhAnh h " +
             "JOIN HinhAnh_SanPhamChiTiet hspct ON h.id = hspct.id_hinh_anh " +
             "JOIN SanPhamChiTiet spct ON hspct.id_san_pham_chi_tiet = spct.id " +
             "WHERE spct.id_san_pham = :sanPhamId " +

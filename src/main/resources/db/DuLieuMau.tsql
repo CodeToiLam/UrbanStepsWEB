@@ -3,7 +3,9 @@
 USE UrbanStepsDB;
 GO
 
--- Xóa d? li?u cu
+-- Xï¿½a d? li?u cu
+DELETE FROM GioHangItem;
+DELETE FROM GioHang;
 DELETE FROM HinhAnh_SanPhamChiTiet;
 DELETE FROM SanPhamChiTiet;
 DELETE FROM SanPham;
@@ -22,6 +24,8 @@ DELETE FROM ThuongHieu;
 GO
 
 -- Reset IDENTITY
+DBCC CHECKIDENT ('GioHangItem', RESEED, 0);
+DBCC CHECKIDENT ('GioHang', RESEED, 0);
 DBCC CHECKIDENT ('HinhAnh_SanPhamChiTiet', RESEED, 0);
 DBCC CHECKIDENT ('SanPhamChiTiet', RESEED, 0);
 DBCC CHECKIDENT ('SanPham', RESEED, 0);
@@ -50,16 +54,16 @@ GO
 
 -- 2. Lo?i s?n ph?m
 INSERT INTO LoaiSanPham (ten_loai_san_pham) VALUES 
-(N'Giày th? thao'),
-(N'Giày ch?y b?'),
-(N'Giày tennis'),
-(N'Giày lifestyle'),
-(N'Giày cao c?'),
-(N'Giày th?p c?'),
-(N'Giày chunky'),
-(N'Giày platform'),
-(N'Giày slip-on'),
-(N'Giày collaboration');
+(N'Giï¿½y th? thao'),
+(N'Giï¿½y ch?y b?'),
+(N'Giï¿½y tennis'),
+(N'Giï¿½y lifestyle'),
+(N'Giï¿½y cao c?'),
+(N'Giï¿½y th?p c?'),
+(N'Giï¿½y chunky'),
+(N'Giï¿½y platform'),
+(N'Giï¿½y slip-on'),
+(N'Giï¿½y collaboration');
 GO
 
 -- 3. Danh m?c
@@ -72,15 +76,15 @@ GO
 -- 4. Xu?t x?
 INSERT INTO XuatXu (ten_xuat_xu) VALUES 
 (N'Vi?t Nam'),
-(N'Ð?c'),
+(N'ï¿½?c'),
 (N'M?'),
-(N'Hàn Qu?c'),
+(N'Hï¿½n Qu?c'),
 (N'Trung Qu?c'),
 (N'Indonesia'),
-(N'Thái Lan');
+(N'Thï¿½i Lan');
 GO
 
--- 5. Ki?u dáng
+-- 5. Ki?u dï¿½ng
 INSERT INTO KieuDang (ten_kieu_dang) VALUES 
 (N'Th? thao'),
 (N'Cao c?'),
@@ -108,18 +112,18 @@ INSERT INTO ChatLieu (ten_chat_lieu) VALUES
 (N'Saffiano');
 GO
 
--- 7. Kích c?
+-- 7. Kï¿½ch c?
 INSERT INTO KichCo (ten_kich_co) VALUES 
 (N'35'), (N'36'), (N'37'), (N'38'), (N'39'), (N'40'), (N'41'), (N'42'), (N'43'), (N'44'), (N'45'), (N'46');
 GO
 
--- 8. Màu s?c
+-- 8. Mï¿½u s?c
 INSERT INTO MauSac (ten_mau_sac) VALUES 
-(N'Ðen'), (N'Tr?ng'), (N'Xám'), (N'Xanh Navy'), (N'Ð?'), (N'Vàng'), (N'Nâu'), (N'H?ng'),
-(N'Xanh Duong'), (N'Xanh Lá'), (N'Tím'), (N'Cam'), (N'Bé'), (N'Xám Nh?t'), (N'Ðen Tr?ng');
+(N'ï¿½en'), (N'Tr?ng'), (N'Xï¿½m'), (N'Xanh Navy'), (N'ï¿½?'), (N'Vï¿½ng'), (N'Nï¿½u'), (N'H?ng'),
+(N'Xanh Duong'), (N'Xanh Lï¿½'), (N'Tï¿½m'), (N'Cam'), (N'Bï¿½'), (N'Xï¿½m Nh?t'), (N'ï¿½en Tr?ng');
 GO
 
--- 9. Hình ?nh
+-- 9. Hï¿½nh ?nh
 INSERT INTO HinhAnh (duong_dan, mo_ta, thu_tu, la_anh_chinh) VALUES 
 -- ?nh placeholder
 (N'images/Home/placeholder.jpg', N'?nh placeholder', 1, 1),
@@ -291,51 +295,51 @@ GO
 -- 10. S?n ph?m (40 s?n ph?m)
 -- ADIDAS (13 s?n ph?m)
 INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, trang_thai) VALUES 
-(4, 3, 1, 2, 6, 5, 2, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giày Adidas Samba OG phiên b?n classic v?i ph?i màu tr?ng den gum iconic.', 1800000, 2590000, 1),
-(4, 3, 1, 2, 6, 5, 6, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giày Adidas Samba OG v?i ph?i màu tr?ng và d? maroon sang tr?ng.', 1800000, 2590000, 1),
-(4, 2, 1, 2, 6, 5, 10, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiên b?n dành cho n? v?i tone màu nh? nhàng và feminine.', 1800000, 2590000, 1),
-(4, 3, 1, 2, 4, 5, 14, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giày Adidas Gazelle Bold phiên b?n d?c bi?t Year of the Snake.', 2200000, 3190000, 1),
-(1, 3, 1, 2, 1, 7, 18, N'ADI-YEEZY-001', N'Adidas Yeezy Boost 350 V2 Steel Grey', N'Giày Adidas Yeezy Boost 350 V2 v?i colorway Steel Grey huy?n tho?i.', 4500000, 6490000, 1),
-(1, 3, 1, 2, 1, 10, 22, N'ADI-ADIFOAM-001', N'Adidas adiFOM Superstar Core Black', N'Giày Adidas adiFOM Superstar v?i công ngh? foam m?i.', 2000000, 2890000, 1),
-(1, 3, 1, 2, 1, 10, 26, N'ADI-ADIFOAM-002', N'Adidas adiFOM Superstar Core White', N'Phiên b?n màu tr?ng c?a dòng adiFOM Superstar.', 2000000, 2890000, 1),
-(1, 3, 1, 2, 1, 9, 30, N'ADI-ADIFOAM-003', N'Adidas adiFOM Supernova Triple Black', N'Giày Adidas adiFOM Supernova v?i colorway Triple Black.', 2200000, 3290000, 1),
-(2, 1, 1, 2, 1, 7, 34, N'ADI-ULTRA-001', N'Adidas UltraBoost 21 Cloud White', N'Giày ch?y b? Adidas UltraBoost 21 v?i công ngh? Boost.', 3500000, 4990000, 1),
-(2, 1, 1, 2, 1, 4, 38, N'ADI-RUN-001', N'Adidas Run EQ21 Black', N'Giày ch?y b? Adidas Run EQ21 màu den.', 1200000, 1790000, 1),
-(3, 1, 1, 2, 1, 3, 42, N'ADI-TENNIS-001', N'Adidas Barricade 13 Tennis Black', N'Giày tennis Adidas Barricade 13 chuyên nghi?p.', 2500000, 3590000, 1),
-(3, 3, 1, 2, 1, 3, 46, N'ADI-TENNIS-002', N'Adidas Adizero Ubersonic 4 Crystal White', N'Giày tennis Adidas Adizero Ubersonic 4 lightweight.', 2800000, 3990000, 1),
-(3, 3, 1, 2, 1, 3, 50, N'ADI-TENNIS-003', N'Adidas Solematch Control 2 Semi Flash Aqua', N'Giày tennis Adidas Solematch Control 2 control.', 2600000, 3790000, 1),
+(4, 3, 1, 2, 6, 5, 2, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giï¿½y Adidas Samba OG phiï¿½n b?n classic v?i ph?i mï¿½u tr?ng den gum iconic.', 1800000, 2590000, 1),
+(4, 3, 1, 2, 6, 5, 6, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giï¿½y Adidas Samba OG v?i ph?i mï¿½u tr?ng vï¿½ d? maroon sang tr?ng.', 1800000, 2590000, 1),
+(4, 2, 1, 2, 6, 5, 10, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiï¿½n b?n dï¿½nh cho n? v?i tone mï¿½u nh? nhï¿½ng vï¿½ feminine.', 1800000, 2590000, 1),
+(4, 3, 1, 2, 4, 5, 14, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giï¿½y Adidas Gazelle Bold phiï¿½n b?n d?c bi?t Year of the Snake.', 2200000, 3190000, 1),
+(1, 3, 1, 2, 1, 7, 18, N'ADI-YEEZY-001', N'Adidas Yeezy Boost 350 V2 Steel Grey', N'Giï¿½y Adidas Yeezy Boost 350 V2 v?i colorway Steel Grey huy?n tho?i.', 4500000, 6490000, 1),
+(1, 3, 1, 2, 1, 10, 22, N'ADI-ADIFOAM-001', N'Adidas adiFOM Superstar Core Black', N'Giï¿½y Adidas adiFOM Superstar v?i cï¿½ng ngh? foam m?i.', 2000000, 2890000, 1),
+(1, 3, 1, 2, 1, 10, 26, N'ADI-ADIFOAM-002', N'Adidas adiFOM Superstar Core White', N'Phiï¿½n b?n mï¿½u tr?ng c?a dï¿½ng adiFOM Superstar.', 2000000, 2890000, 1),
+(1, 3, 1, 2, 1, 9, 30, N'ADI-ADIFOAM-003', N'Adidas adiFOM Supernova Triple Black', N'Giï¿½y Adidas adiFOM Supernova v?i colorway Triple Black.', 2200000, 3290000, 1),
+(2, 1, 1, 2, 1, 7, 34, N'ADI-ULTRA-001', N'Adidas UltraBoost 21 Cloud White', N'Giï¿½y ch?y b? Adidas UltraBoost 21 v?i cï¿½ng ngh? Boost.', 3500000, 4990000, 1),
+(2, 1, 1, 2, 1, 4, 38, N'ADI-RUN-001', N'Adidas Run EQ21 Black', N'Giï¿½y ch?y b? Adidas Run EQ21 mï¿½u den.', 1200000, 1790000, 1),
+(3, 1, 1, 2, 1, 3, 42, N'ADI-TENNIS-001', N'Adidas Barricade 13 Tennis Black', N'Giï¿½y tennis Adidas Barricade 13 chuyï¿½n nghi?p.', 2500000, 3590000, 1),
+(3, 3, 1, 2, 1, 3, 46, N'ADI-TENNIS-002', N'Adidas Adizero Ubersonic 4 Crystal White', N'Giï¿½y tennis Adidas Adizero Ubersonic 4 lightweight.', 2800000, 3990000, 1),
+(3, 3, 1, 2, 1, 3, 50, N'ADI-TENNIS-003', N'Adidas Solematch Control 2 Semi Flash Aqua', N'Giï¿½y tennis Adidas Solematch Control 2 control.', 2600000, 3790000, 1),
 -- CONVERSE (14 s?n ph?m)
-(5, 3, 2, 3, 3, 2, 54, N'CVS-CHUCK-001', N'Converse Chuck Taylor All Star Low Flame', N'Giày Converse Chuck Taylor All Star Low v?i h?a ti?t flame d?c dáo.', 1000000, 1490000, 1),
-(8, 2, 2, 3, 4, 2, 58, N'CVS-LIFT-001', N'Converse Chuck Taylor All Star Lift Ox White Black', N'Giày Converse Chuck Taylor All Star Lift Ox v?i d? platform tang chi?u cao.', 1200000, 1790000, 1),
-(5, 3, 2, 3, 3, 2, 62, N'CVS-CHUCK-002', N'Converse Chuck Taylor All Star Cruise OX Black White', N'Giày Converse Chuck Taylor All Star Cruise OX v?i thi?t k? th? thao hi?n d?i.', 1100000, 1590000, 1),
-(5, 2, 2, 3, 2, 2, 66, N'CVS-EVA-001', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black', N'Giày Converse Chuck Taylor EVA Lift Platform v?i theme Y2K nostalgic.', 1400000, 2090000, 1),
-(7, 3, 2, 3, 5, 3, 70, N'CVS-RUNSTAR-001', N'Converse Run Star Hike Low Black Gum', N'Giày Converse Run Star Hike Low v?i thi?t k? chunky revolutionary.', 1500000, 2190000, 1),
-(7, 3, 2, 3, 5, 3, 74, N'CVS-RUNSTAR-002', N'Converse Run Star Motion Low White', N'Phiên b?n tr?ng c?a dòng Run Star Motion v?i thi?t k? hi?n d?i.', 1500000, 2190000, 1),
-(4, 3, 2, 3, 1, 3, 78, N'CVS-AEON-001', N'Converse Aeon Active CX OX Egret', N'Giày Converse Aeon Active CX OX v?i công ngh? CX innovative.', 1300000, 1890000, 1),
-(4, 3, 2, 3, 1, 3, 82, N'CVS-AEON-002', N'Converse Aeon Active CX Himalayan Salt', N'Phiên b?n Himalayan Salt c?a dòng Aeon Active CX.', 1300000, 1890000, 1),
-(10, 3, 2, 3, 2, 2, 86, N'CVS-CDG-001', N'CDG x Converse Chuck 70 Hi Black', N'S?n ph?m collaboration iconic gi?a Comme des Garçons và Converse.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 3, 2, 90, N'CVS-CDG-002', N'CDG x Converse Chuck 70 Low Black White', N'Phiên b?n th?p c? c?a collaboration CDG x Converse.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 2, 2, 94, N'CVS-CDG-003', N'CDG x Converse Chuck Taylor All Star Hi Milk', N'CDG x Converse Chuck Taylor All Star Hi v?i colorway Milk d?c dáo.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 2, 2, 98, N'CVS-KIM-001', N'Kim Jones x Converse Chuck 70 All Star Black', N'Collaboration gi?a Kim Jones và Converse mang high fashion aesthetic.', 2800000, 3990000, 1),
+(5, 3, 2, 3, 3, 2, 54, N'CVS-CHUCK-001', N'Converse Chuck Taylor All Star Low Flame', N'Giï¿½y Converse Chuck Taylor All Star Low v?i h?a ti?t flame d?c dï¿½o.', 1000000, 1490000, 1),
+(8, 2, 2, 3, 4, 2, 58, N'CVS-LIFT-001', N'Converse Chuck Taylor All Star Lift Ox White Black', N'Giï¿½y Converse Chuck Taylor All Star Lift Ox v?i d? platform tang chi?u cao.', 1200000, 1790000, 1),
+(5, 3, 2, 3, 3, 2, 62, N'CVS-CHUCK-002', N'Converse Chuck Taylor All Star Cruise OX Black White', N'Giï¿½y Converse Chuck Taylor All Star Cruise OX v?i thi?t k? th? thao hi?n d?i.', 1100000, 1590000, 1),
+(5, 2, 2, 3, 2, 2, 66, N'CVS-EVA-001', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black', N'Giï¿½y Converse Chuck Taylor EVA Lift Platform v?i theme Y2K nostalgic.', 1400000, 2090000, 1),
+(7, 3, 2, 3, 5, 3, 70, N'CVS-RUNSTAR-001', N'Converse Run Star Hike Low Black Gum', N'Giï¿½y Converse Run Star Hike Low v?i thi?t k? chunky revolutionary.', 1500000, 2190000, 1),
+(7, 3, 2, 3, 5, 3, 74, N'CVS-RUNSTAR-002', N'Converse Run Star Motion Low White', N'Phiï¿½n b?n tr?ng c?a dï¿½ng Run Star Motion v?i thi?t k? hi?n d?i.', 1500000, 2190000, 1),
+(4, 3, 2, 3, 1, 3, 78, N'CVS-AEON-001', N'Converse Aeon Active CX OX Egret', N'Giï¿½y Converse Aeon Active CX OX v?i cï¿½ng ngh? CX innovative.', 1300000, 1890000, 1),
+(4, 3, 2, 3, 1, 3, 82, N'CVS-AEON-002', N'Converse Aeon Active CX Himalayan Salt', N'Phiï¿½n b?n Himalayan Salt c?a dï¿½ng Aeon Active CX.', 1300000, 1890000, 1),
+(10, 3, 2, 3, 2, 2, 86, N'CVS-CDG-001', N'CDG x Converse Chuck 70 Hi Black', N'S?n ph?m collaboration iconic gi?a Comme des Garï¿½ons vï¿½ Converse.', 2500000, 3690000, 1),
+(10, 3, 2, 3, 3, 2, 90, N'CVS-CDG-002', N'CDG x Converse Chuck 70 Low Black White', N'Phiï¿½n b?n th?p c? c?a collaboration CDG x Converse.', 2500000, 3690000, 1),
+(10, 3, 2, 3, 2, 2, 94, N'CVS-CDG-003', N'CDG x Converse Chuck Taylor All Star Hi Milk', N'CDG x Converse Chuck Taylor All Star Hi v?i colorway Milk d?c dï¿½o.', 2500000, 3690000, 1),
+(10, 3, 2, 3, 2, 2, 98, N'CVS-KIM-001', N'Kim Jones x Converse Chuck 70 All Star Black', N'Collaboration gi?a Kim Jones vï¿½ Converse mang high fashion aesthetic.', 2800000, 3990000, 1),
 (10, 3, 2, 3, 2, 3, 102, N'CVS-RICK-001', N'Converse x Rick Owens DRKSHDW Weapon Beige Black', N'Converse x Rick Owens DRKSHDW Weapon v?i avant-garde design philosophy.', 3200000, 4590000, 1),
 (10, 3, 2, 3, 2, 2, 106, N'CVS-BTTF-001', N'Back To The Future x Converse All Star US MT Hi Black', N'Collaboration Back To The Future x Converse v?i movie-inspired design.', 2200000, 3290000, 1),
 -- MLB (13 s?n ph?m)
-(7, 3, 3, 4, 5, 3, 110, N'MLB-BIGBALL-001', N'MLB BigBall Chunky Diamond Monogram NY Yankees Black', N'Giày MLB BigBall Chunky v?i h?a ti?t Diamond Monogram luxury.', 1800000, 2690000, 1),
-(7, 3, 3, 4, 5, 3, 114, N'MLB-BIGBALL-002', N'MLB BigBall Chunky Diamond Monogram Boston Red Sox Beige', N'Phiên b?n Boston Red Sox v?i màu beige sophisticated.', 1800000, 2690000, 1),
-(7, 3, 3, 4, 5, 3, 118, N'MLB-BIGBALL-003', N'MLB Bigball Chunky A New York Yankees', N'MLB Bigball Chunky A phiên b?n New York Yankees v?i design classic.', 1700000, 2490000, 1),
+(7, 3, 3, 4, 5, 3, 110, N'MLB-BIGBALL-001', N'MLB BigBall Chunky Diamond Monogram NY Yankees Black', N'Giï¿½y MLB BigBall Chunky v?i h?a ti?t Diamond Monogram luxury.', 1800000, 2690000, 1),
+(7, 3, 3, 4, 5, 3, 114, N'MLB-BIGBALL-002', N'MLB BigBall Chunky Diamond Monogram Boston Red Sox Beige', N'Phiï¿½n b?n Boston Red Sox v?i mï¿½u beige sophisticated.', 1800000, 2690000, 1),
+(7, 3, 3, 4, 5, 3, 118, N'MLB-BIGBALL-003', N'MLB Bigball Chunky A New York Yankees', N'MLB Bigball Chunky A phiï¿½n b?n New York Yankees v?i design classic.', 1700000, 2490000, 1),
 (7, 3, 3, 4, 5, 3, 122, N'MLB-BIGBALL-004', N'MLB BigBall Chunky P Boston Red Sox', N'MLB BigBall Chunky P Boston Red Sox v?i performance-inspired design.', 1700000, 2490000, 1),
-(7, 3, 3, 4, 5, 3, 126, N'MLB-CHUNKY-001', N'MLB Chunky Liner New York Yankees Grey', N'Giày MLB Chunky Liner c?a d?i New York Yankees v?i màu xám neutral.', 1600000, 2390000, 1),
-(7, 3, 3, 4, 5, 3, 130, N'MLB-CHUNKY-002', N'MLB Chunky Liner Low Boston Red Sox Beige', N'Phiên b?n th?p c? c?a dòng Chunky Liner v?i Red Sox branding.', 1600000, 2390000, 1),
+(7, 3, 3, 4, 5, 3, 126, N'MLB-CHUNKY-001', N'MLB Chunky Liner New York Yankees Grey', N'Giï¿½y MLB Chunky Liner c?a d?i New York Yankees v?i mï¿½u xï¿½m neutral.', 1600000, 2390000, 1),
+(7, 3, 3, 4, 5, 3, 130, N'MLB-CHUNKY-002', N'MLB Chunky Liner Low Boston Red Sox Beige', N'Phiï¿½n b?n th?p c? c?a dï¿½ng Chunky Liner v?i Red Sox branding.', 1600000, 2390000, 1),
 (7, 3, 3, 4, 5, 11, 134, N'MLB-CHUNKY-003', N'MLB Chunky Liner Mid Denim Boston Red Sox D.Blue', N'MLB Chunky Liner Mid v?i ch?t li?u denim unique.', 1700000, 2590000, 1),
-(7, 3, 3, 4, 5, 11, 138, N'MLB-CHUNKY-004', N'MLB Chunky Liner Mid Denim New York Yankees D.Navy', N'Phiên b?n denim New York Yankees v?i D.Navy sophisticated.', 1700000, 2590000, 1),
+(7, 3, 3, 4, 5, 11, 138, N'MLB-CHUNKY-004', N'MLB Chunky Liner Mid Denim New York Yankees D.Navy', N'Phiï¿½n b?n denim New York Yankees v?i D.Navy sophisticated.', 1700000, 2590000, 1),
 (7, 3, 3, 4, 5, 12, 142, N'MLB-CHUNKY-005', N'MLB Chunky Liner SL Saffiano Boston Red Sox', N'MLB Chunky Liner SL v?i ch?t li?u Saffiano leather cao c?p.', 1900000, 2890000, 1),
-(4, 1, 3, 4, 3, 2, 146, N'MLB-LINER-001', N'MLB Liner Basic New York Yankees Black', N'Giày MLB Liner Basic c?a d?i New York Yankees.', 1200000, 1790000, 1),
-(4, 1, 3, 4, 3, 2, 150, N'MLB-LINER-002', N'MLB Liner Basic New York Yankees Green', N'Phiên b?n màu xanh unique c?a dòng Liner Basic.', 1200000, 1790000, 1),
-(9, 3, 3, 4, 8, 5, 154, N'MLB-MULE-001', N'MLB Playball Mule Dia Monogram New York Yankees Beige', N'Giày MLB Playball Mule v?i Diamond Monogram luxury pattern.', 1500000, 2290000, 1),
-(9, 3, 3, 4, 8, 3, 158, N'MLB-MULE-002', N'MLB Playball Mule Mono NY New York Yankees', N'MLB Playball Mule v?i Monogram NY design clean và minimal.', 1400000, 2090000, 1);
+(4, 1, 3, 4, 3, 2, 146, N'MLB-LINER-001', N'MLB Liner Basic New York Yankees Black', N'Giï¿½y MLB Liner Basic c?a d?i New York Yankees.', 1200000, 1790000, 1),
+(4, 1, 3, 4, 3, 2, 150, N'MLB-LINER-002', N'MLB Liner Basic New York Yankees Green', N'Phiï¿½n b?n mï¿½u xanh unique c?a dï¿½ng Liner Basic.', 1200000, 1790000, 1),
+(9, 3, 3, 4, 8, 5, 154, N'MLB-MULE-001', N'MLB Playball Mule Dia Monogram New York Yankees Beige', N'Giï¿½y MLB Playball Mule v?i Diamond Monogram luxury pattern.', 1500000, 2290000, 1),
+(9, 3, 3, 4, 8, 3, 158, N'MLB-MULE-002', N'MLB Playball Mule Mono NY New York Yankees', N'MLB Playball Mule v?i Monogram NY design clean vï¿½ minimal.', 1400000, 2090000, 1);
 GO
 
--- 11. Chi ti?t s?n ph?m v?i d?y d? size và màu cho 40 s?n ph?m
+-- 11. Chi ti?t s?n ph?m v?i d?y d? size vï¿½ mï¿½u cho 40 s?n ph?m
 INSERT INTO SanPhamChiTiet (id_san_pham, id_kich_co, id_mau_sac, so_luong, trang_thai) VALUES 
 -- Adidas Samba OG White Black Gum (ID: 1) - 8 bi?n th?
 (1, 2, 2, 15, 1), (1, 3, 2, 20, 1), (1, 4, 2, 25, 1), (1, 5, 2, 30, 1), (1, 6, 2, 28, 1), (1, 7, 2, 22, 1), (1, 8, 2, 18, 1), (1, 9, 2, 12, 1),
@@ -445,7 +449,7 @@ INSERT INTO HinhAnh_SanPhamChiTiet (id_hinh_anh, id_san_pham_chi_tiet) VALUES
 -- Adidas adiFOM Supernova Triple Black (ID: 8) - 6 bi?n th? (ID: 46-51)
 (30, 46), (31, 46), (32, 46), (33, 46), (30, 47), (31, 47), (32, 47), (33, 47), (30, 48), (31, 48), (32, 48), (33, 48), 
 (30, 49), (31, 49), (32, 49), (33, 49), (30, 50), (31, 50), (32, 50), (33, 50), (30, 51), (31, 51), (32, 51), (33, 51),
--- Ti?p t?c t? câu l?nh INSERT INTO HinhAnh_SanPhamChiTiet
+-- Ti?p t?c t? cï¿½u l?nh INSERT INTO HinhAnh_SanPhamChiTiet
 -- Adidas UltraBoost 21 Cloud White (ID: 9) - 6 bi?n th? (ID: 52-57)
 (34, 52), (35, 52), (36, 52), (37, 52), 
 (34, 53), (35, 53), (36, 53), (37, 53), 
@@ -656,4 +660,46 @@ INSERT INTO HinhAnh_SanPhamChiTiet (id_hinh_anh, id_san_pham_chi_tiet) VALUES
 (158, 227), (159, 227), (160, 227), (161, 227), 
 (158, 228), (159, 228), (160, 228), (161, 228), 
 (158, 229), (159, 229), (160, 229), (161, 229);
+GO
+
+-- =============================================
+-- D? LI?U M?U CHO GI? Hï¿½NG 
+-- =============================================
+
+-- Gi? hï¿½ng m?u cho cï¿½c tï¿½i kho?n
+INSERT INTO GioHang (id_tai_khoan, session_id, create_at, update_at) VALUES
+-- Gi? hï¿½ng cho user1@gmail.com (ID: 1)
+(1, NULL, GETDATE(), GETDATE()),
+-- Gi? hï¿½ng cho user2@gmail.com (ID: 2)  
+(2, NULL, GETDATE(), GETDATE()),
+-- Gi? hï¿½ng cho user3@gmail.com (ID: 3)
+(3, NULL, GETDATE(), GETDATE()),
+-- Gi? hï¿½ng cho khï¿½ch (ch?a ??ng nh?p) - s? d?ng session_id
+(NULL, 'GUEST_SESSION_001', GETDATE(), GETDATE()),
+(NULL, 'GUEST_SESSION_002', GETDATE(), GETDATE());
+GO
+
+-- Cï¿½c s?n ph?m trong gi? hï¿½ng
+INSERT INTO GioHangItem (id_gio_hang, id_san_pham_chi_tiet, so_luong, gia_tai_thoi_diem, create_at, update_at) VALUES
+-- Gi? hï¿½ng c?a user1@gmail.com (ID: 1)
+(1, 1, 2, 3500000, GETDATE(), GETDATE()),   -- Adifom Supernova Triple Black - Size 40 - 2 ?ï¿½i
+(1, 15, 1, 3200000, GETDATE(), GETDATE()),  -- Adifom Superstar Core Black - Size 39 - 1 ?ï¿½i
+(1, 35, 1, 4200000, GETDATE(), GETDATE()),  -- Barricade 13 Tennis Black - Size 42 - 1 ?ï¿½i
+
+-- Gi? hï¿½ng c?a user2@gmail.com (ID: 2)
+(2, 50, 2, 3800000, GETDATE(), GETDATE()),  -- Gazelle Bold Year of the Snake - Size 40 - 2 ?ï¿½i
+(2, 75, 1, 3600000, GETDATE(), GETDATE()),  -- Converse All Star - Size 39 - 1 ?ï¿½i
+(2, 100, 3, 4500000, GETDATE(), GETDATE()), -- Converse Chuck Taylor - Size 41 - 3 ?ï¿½i
+
+-- Gi? hï¿½ng c?a user3@gmail.com (ID: 3)
+(3, 125, 1, 3900000, GETDATE(), GETDATE()), -- MLB Chunky Liner - Size 40 - 1 ?ï¿½i
+(3, 150, 2, 4100000, GETDATE(), GETDATE()), -- MLB Liner Basic - Size 41 - 2 ?ï¿½i
+
+-- Gi? hï¿½ng c?a khï¿½ch (ch?a ??ng nh?p) - GUEST_SESSION_001
+(4, 25, 1, 3300000, GETDATE(), GETDATE()),  -- Adifom Superstar Core White - Size 40 - 1 ?ï¿½i
+(4, 85, 2, 3700000, GETDATE(), GETDATE()),  -- Converse High Top - Size 39 - 2 ?ï¿½i
+
+-- Gi? hï¿½ng c?a khï¿½ch (ch?a ??ng nh?p) - GUEST_SESSION_002
+(5, 175, 1, 4000000, GETDATE(), GETDATE()),  -- MLB Playball Mule - Size 42 - 1 ?ï¿½i
+(5, 200, 2, 3500000, GETDATE(), GETDATE());  -- S?n ph?m khï¿½c - Size 40 - 2 ?ï¿½i
 GO

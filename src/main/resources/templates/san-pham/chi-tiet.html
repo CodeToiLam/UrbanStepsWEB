@@ -9,56 +9,6 @@
         UrbanSteps</title>
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" href="/css/chi-tiet-san-pham.css">
-        <style>
-            /* Phần ảnh sản phẩm */
-            .product-image-container {
-                position: relative;
-                overflow: hidden;
-                border-radius: 8px;
-                margin-bottom: 15px;
-                text-align: center;
-                background-color: #f8f9fa;
-            }
-
-            .main-product-image {
-                max-height: 450px;
-                width: 100%;
-                object-fit: contain;
-                border-radius: 8px;
-            }
-
-            /* Phần thumbnail */
-            .product-thumbnails {
-                margin-top: 15px;
-            }
-
-            .thumbnail-item {
-                cursor: pointer;
-                border: 2px solid #e0e0e0;
-                border-radius: 5px;
-                overflow: hidden;
-                height: 80px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: #f8f8f8;
-                transition: all 0.2s ease;
-            }
-
-            .thumbnail-item:hover {
-                border-color: #007bff;
-            }
-
-            .thumbnail-item.active {
-                border-color: #007bff;
-                box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-            }
-
-            .thumbnail-item img {
-                max-height: 100%;
-                object-fit: contain;
-            }
-        </style>
     </th:block>
 </head>
 
@@ -77,56 +27,115 @@
         <div class="row">
             <!-- Hình ảnh sản phẩm -->
             <div class="col-md-6">
-                <div class="product-image-container">
-                    <img id="main-product-image"
-                         th:if="${product.idHinhAnhDaiDien != null}"
-                         th:with="rawPath=${product.idHinhAnhDaiDien.duongDan},
-                 cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
-                         th:src="@{'/images/' + ${cleanPath}}"
-                         th:alt="${product.tenSanPham}"
-                         onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';"
-                         class="img-fluid main-product-image">
-                    <img th:unless="${product.idHinhAnhDaiDien != null}"
-                         src="/images/no-image.jpg"
-                         alt="No image available"
-                         class="img-fluid main-product-image">
-                </div>
-
-                <!-- Thumbnails section -->
-                <div class="product-thumbnails mt-3">
-                    <div class="row g-2">
-                        <!-- Main image thumbnail -->
-                        <div class="col-3" th:if="${mainImagePath != null}">
-                            <div class="thumbnail-item active"
-                                 th:data-image="${mainImagePath}"
-                                 onclick="changeMainImage(this)">
-                                <img th:src="${mainImagePath}"
-                                     th:alt="${product.tenSanPham + ' - Ảnh chính'}"
-                                     class="img-fluid"
-                                     onerror="this.src='/images/no-image.jpg';">
+                <div class="product-gallery-container">
+                    <!-- Gallery layout: vertical thumbnails + main image -->
+                    <div class="gallery-layout" th:if="${productImages != null and !#lists.isEmpty(productImages)}">
+                        
+                        <!-- Thumbnail column (vertical) -->
+                        <div class="thumbnails-column" th:if="${productImages.size() > 1}">
+                            <div class="thumbnails-wrapper">
+                                <div class="thumbnail-scroll-container" id="thumbnailScrollContainer">
+                                    <div th:each="img, imgStat : ${productImages}" 
+                                         th:class="${imgStat.index == 0 ? 'thumbnail-item active' : 'thumbnail-item'}"
+                                         th:data-image="${img.duongDan}"
+                                         th:data-index="${imgStat.index}"
+                                         onclick="changeMainImage(this)">
+                                        <div class="thumbnail-frame">
+                                            <img th:src="${img.duongDan}"
+                                                 th:alt="${product.tenSanPham + ' - Ảnh ' + (imgStat.count)}"
+                                                 class="thumbnail-img"
+                                                 onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none';">
+                                            <div class="thumbnail-overlay">
+                                                <div class="thumbnail-number" th:text="${imgStat.count}">1</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Scroll navigation for thumbnails -->
+                                <div class="thumbnail-nav" th:if="${productImages.size() > 5}">
+                                    <button class="thumb-nav-btn thumb-nav-up" id="thumbNavUp" onclick="scrollThumbnails('up')">
+                                        <i class="bi bi-chevron-up"></i>
+                                    </button>
+                                    <button class="thumb-nav-btn thumb-nav-down" id="thumbNavDown" onclick="scrollThumbnails('down')">
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <!-- Other images -->
-                        <div class="col-3" th:each="img, imgStat : ${productImages}"
-                             th:if="${img != null and (product.idHinhAnhDaiDien == null or img.id != product.idHinhAnhDaiDien.id)}">
-                            <div class="thumbnail-item"
-                                 th:data-image="${img.duongDan}"
-                                 onclick="changeMainImage(this)">
-                                <img th:src="${img.duongDan}"
-                                     th:alt="${product.tenSanPham + ' - Ảnh ' + imgStat.count}"
-                                     class="img-fluid"
-                                     onerror="this.src='/images/no-image.jpg';">
+                        
+                        <!-- Main image area -->
+                        <div class="main-image-area">
+                            <div class="main-image-container">
+                                <!-- Image loading overlay -->
+                                <div class="image-loading-overlay" id="imageLoadingOverlay">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Main product image -->
+                                <img id="main-product-image"
+                                     th:src="${productImages[0].duongDan}"
+                                     th:alt="${product.tenSanPham}"
+                                     class="main-product-image"
+                                     onerror="this.onerror=null; this.src='/images/no-image.jpg';">
+                                
+                                <!-- Zoom indicator -->
+                                <div class="zoom-indicator">
+                                    <i class="bi bi-zoom-in"></i>
+                                    <span>Click để phóng to</span>
+                                </div>
+                                
+                                <!-- Navigation dots for mobile -->
+                                <div class="image-dots d-md-none" th:if="${productImages.size() > 1}">
+                                    <span th:each="img, imgStat : ${productImages}" 
+                                          th:class="${imgStat.index == 0 ? 'dot active' : 'dot'}"
+                                          th:data-index="${imgStat.index}"
+                                          onclick="changeMainImage(document.querySelector('[data-index=\'' + this.dataset.index + '\']'))"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Fallback for single image or no images -->
+                    <div class="single-image-container" th:if="${productImages == null or #lists.isEmpty(productImages) or productImages.size() == 1}">
+                        <img id="main-product-image-single"
+                             th:if="${productImages != null and !#lists.isEmpty(productImages)}"
+                             th:src="${productImages[0].duongDan}"
+                             th:alt="${product.tenSanPham}"
+                             class="main-product-image"
+                             onerror="this.onerror=null; this.src='/images/no-image.jpg';">
+                        <img th:unless="${productImages != null and !#lists.isEmpty(productImages)}"
+                             id="main-product-image-single"
+                             th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.jpg'}"
+                             th:alt="${product.tenSanPham}"
+                             class="main-product-image"
+                             onerror="this.onerror=null; this.src='/images/no-image.jpg';">
+                    </div>
                 </div>
-
+                
+                <!-- Image info -->
+                <div class="image-info mt-3" th:if="${productImages != null and !#lists.isEmpty(productImages)}">
+                    <div class="image-counter">
+                        <span id="currentImageIndex">1</span> / <span th:text="${productImages.size()}">1</span>
+                    </div>
+                    <div class="image-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="openLightbox()" th:if="${productImages.size() > 1}">
+                            <i class="bi bi-arrows-fullscreen"></i> Xem tất cả
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="shareImage()">
+                            <i class="bi bi-share"></i> Chia sẻ
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Thông tin sản phẩm -->
-        <div class="col-md-6">
-            <h1 class="product-title" th:text="${product.tenSanPham}">Tên sản phẩm</h1>
+            <!-- Thông tin sản phẩm -->
+            <div class="col-md-6">
+                <h1 class="product-title" th:text="${product.tenSanPham}">Tên sản phẩm</h1>
 
             <div class="product-code mb-3">
                 <span>Mã sản phẩm: </span>
@@ -210,11 +219,9 @@
                 <div class="card product-card h-100">
                     <a th:href="@{/san-pham/chi-tiet/{id}(id=${relatedProduct.id ?: 0})}" class="text-decoration-none">
                         <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
-                             th:with="rawPath=${relatedProduct.idHinhAnhDaiDien.duongDan},
-             cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
-                             th:src="@{'/images/' + ${cleanPath}}"
+                             th:src="${relatedProduct.idHinhAnhDaiDien.duongDan}"
                              class="card-img-top"
-                             onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';"
+                             onerror="this.onerror=null; this.src='/images/no-image.jpg';"
                              th:alt="${relatedProduct.tenSanPham}">
                         <img th:unless="${relatedProduct.idHinhAnhDaiDien != null}"
                              src="/images/no-image.jpg"
@@ -225,9 +232,6 @@
                             <p class="card-text product-price"
                                th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
                                 750,000 ₫</p>
-                            <div class="btn-view text-primary">
-                                <p class="bi bi-eye me-1">Xem chi tiết</p>
-                            </div>
                         </div>
                     </a>
                 </div>
@@ -236,124 +240,18 @@
     </div>
 </div>
 
-<!-- JavaScript cho trang chi tiết -->
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        // Dữ liệu tồn kho từ server
-        const stockData = /*[[${tonKhoMap}]]*/ {};
-        let selectedSize = null;
-        let selectedColor = null;
+<!-- Include JavaScript file -->
+<th:block layout:fragment="extra-js">
+    <script src="/js/chi-tiet-san-pham.js"></script>
+    <script th:inline="javascript">
+        // Set stock data from server
+        window.setStockData(/*[[${tonKhoMap}]]*/ {});
+        
+        // Set variants data for cart functionality
+        window.variants = /*[[${variants}]]*/ [];
+    </script>
+</th:block>
 
-        // Chức năng đổi ảnh chính khi nhấp vào thumbnail
-        window.changeMainImage = function (thumbnailElement) {
-            // Lấy đường dẫn ảnh từ thuộc tính data-image
-            const imagePath = thumbnailElement.getAttribute('data-image');
-
-            // Cập nhật ảnh chính
-            const mainImage = document.getElementById('main-product-image');
-            if (mainImage) {
-                mainImage.src = imagePath;
-            }
-
-            // Đánh dấu thumbnail đang được chọn
-            const allThumbnails = document.querySelectorAll('.thumbnail-item');
-            allThumbnails.forEach(item => {
-                item.classList.remove('active');
-            });
-            thumbnailElement.classList.add('active');
-        };
-
-        // Xử lý khi chọn kích cỡ
-        const sizeInputs = document.querySelectorAll('input[name="size"]');
-        sizeInputs.forEach(input => {
-            input.addEventListener('change', updateStockInfo);
-        });
-
-        // Xử lý khi chọn màu sắc
-        const colorInputs = document.querySelectorAll('input[name="color"]');
-        colorInputs.forEach(input => {
-            input.addEventListener('change', updateStockInfo);
-        });
-
-        // Cập nhật thông tin tồn kho
-        function updateStockInfo() {
-            const sizeChecked = document.querySelector('input[name="size"]:checked');
-            const colorChecked = document.querySelector('input[name="color"]:checked');
-
-            if (sizeChecked && colorChecked) {
-                selectedSize = sizeChecked.value;
-                selectedColor = colorChecked.value;
-
-                // Kiểm tra tồn kho từ dữ liệu server
-                const stockQuantity = stockData[selectedSize]?.[selectedColor] || 0;
-                document.getElementById('stock-quantity').textContent = stockQuantity > 0 ? stockQuantity : 'Hết hàng';
-
-                // Cập nhật trạng thái nút mua hàng
-                const addToCartBtn = document.getElementById('add-to-cart');
-                const buyNowBtn = document.getElementById('buy-now');
-
-                if (stockQuantity > 0) {
-                    addToCartBtn.disabled = false;
-                    buyNowBtn.disabled = false;
-                } else {
-                    addToCartBtn.disabled = true;
-                    buyNowBtn.disabled = true;
-                }
-
-                // Cập nhật giới hạn số lượng
-                const quantityInput = document.getElementById('quantity');
-                quantityInput.max = stockQuantity;
-                if (parseInt(quantityInput.value) > stockQuantity) {
-                    quantityInput.value = stockQuantity;
-                }
-            }
-        }
-
-        // Xử lý nút tăng/giảm số lượng
-        document.getElementById('decrease-quantity').addEventListener('click', function () {
-            const quantityInput = document.getElementById('quantity');
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-
-        document.getElementById('increase-quantity').addEventListener('click', function () {
-            const quantityInput = document.getElementById('quantity');
-            const currentValue = parseInt(quantityInput.value);
-            const maxValue = parseInt(quantityInput.max) || 99;
-            if (currentValue < maxValue) {
-                quantityInput.value = currentValue + 1;
-            }
-        });
-
-        // Xử lý nút thêm vào giỏ hàng và mua ngay
-        document.getElementById('add-to-cart').addEventListener('click', function () {
-            if (!selectedSize || !selectedColor) {
-                alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng!');
-                return;
-            }
-
-            // Xử lý thêm vào giỏ hàng ở đây
-            const quantity = parseInt(document.getElementById('quantity').value);
-            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng:\n- Kích cỡ: ${selectedSize}\n- Màu sắc: ${selectedColor}`);
-        });
-
-        document.getElementById('buy-now').addEventListener('click', function () {
-            if (!selectedSize || !selectedColor) {
-                alert('Vui lòng chọn kích cỡ và màu sắc trước khi mua ngay!');
-                return;
-            }
-
-            // Xử lý mua ngay ở đây
-            const quantity = parseInt(document.getElementById('quantity').value);
-            alert(`Đang chuyển đến trang thanh toán cho ${quantity} sản phẩm:\n- Kích cỡ: ${selectedSize}\n- Màu sắc: ${selectedColor}`);
-
-            // Thêm logic chuyển đến trang thanh toán ở đây
-            // window.location.href = "/thanh-toan?...";
-        });
-    });
-</script>
 </div>
 
 </html>

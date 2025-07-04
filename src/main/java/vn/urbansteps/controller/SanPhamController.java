@@ -12,6 +12,7 @@ import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.model.SanPhamChiTiet;
 import vn.urbansteps.service.HinhAnhService;
+import vn.urbansteps.service.ImageService;
 import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.service.SanPhamService;
 
@@ -24,8 +25,10 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
-
-    private HinhAnhService hinhAnhService = new HinhAnhService();
+    @Autowired
+    private HinhAnhService hinhAnhService;
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/san-pham")
     public String danhSach(
@@ -61,47 +64,50 @@ public class SanPhamController {
 
             if (product.isPresent()) {
                 SanPham sanPham = product.get();
+                
+                // Xử lý ảnh đại diện
+                imageService.processProductImage(sanPham);
+                
                 model.addAttribute("product", sanPham);
 
                 // Log thông tin sản phẩm để kiểm tra
                 System.out.println("Hiển thị chi tiết sản phẩm ID: " + id + ", Tên: " + sanPham.getTenSanPham());
 
-                // Lấy tất cả hình ảnh của sản phẩm
-                List<HinhAnh> productImages = hinhAnhService.getAllImagesBySanPhamId(id);
+                // Tạo gallery ảnh đơn giản
+                List<HinhAnh> productImages = imageService.createSimpleGallery(sanPham);
                 model.addAttribute("productImages", productImages);
-
-                // Thêm debug cho ảnh sản phẩm
-                if (sanPham.getIdHinhAnhDaiDien() != null) {
-                    String rawPath = sanPham.getIdHinhAnhDaiDien().getDuongDan();
-                    System.out.println("Đường dẫn ảnh gốc: " + rawPath);
-
-                    // Xử lý đường dẫn ảnh để đảm bảo hiển thị đúng
-                    String cleanPath = rawPath;
-                    if (rawPath.startsWith("images/")) {
-                        cleanPath = rawPath.substring(7);
-                    }
-                    System.out.println("Đường dẫn ảnh đã xử lý: /images/" + cleanPath);
-
-                    // Thêm thông tin đường dẫn ảnh vào model để debug trong template
-                    model.addAttribute("imagePath", "/images/" + cleanPath);
-                } else {
-                    System.out.println("CẢNH BÁO: Sản phẩm không có ảnh đại diện!");
-                    model.addAttribute("imagePath", "/images/no-image.jpg");
-                }
+                
+                System.out.println("Đã tạo gallery với " + productImages.size() + " ảnh cho sản phẩm ID: " + id);
 
                 try {
                     // Lấy thông tin chi tiết sản phẩm - đặt trong try-catch riêng
                     List<String> kichCos = sanPhamChiTietService.getKichCosBySanPhamId(id);
                     List<String> mauSacs = sanPhamChiTietService.getMauSacsBySanPhamId(id);
                     Map<String, Map<String, Integer>> tonKhoMap = sanPhamChiTietService.getTonKhoBySanPhamId(id);
+                    
+                    // Lấy danh sách variants để truyền vào JavaScript
+                    List<SanPhamChiTiet> variants = sanPhamChiTietService.getBySanPhamId(id);
+
+                    // Tạo danh sách variants đơn giản cho JavaScript (tránh lỗi Jackson serialization)
+                    List<Map<String, Object>> variantsForJS = new ArrayList<>();
+                    for (SanPhamChiTiet variant : variants) {
+                        Map<String, Object> variantMap = new HashMap<>();
+                        variantMap.put("id", variant.getId());
+                        variantMap.put("kichCo", variant.getKichCo());
+                        variantMap.put("mauSac", variant.getMauSac());
+                        variantMap.put("soLuong", variant.getSoLuong());
+                        variantsForJS.add(variantMap);
+                    }
 
                     System.out.println("Đã lấy thông tin chi tiết sản phẩm: " +
                             kichCos.size() + " kích cỡ, " +
-                            mauSacs.size() + " màu sắc");
+                            mauSacs.size() + " màu sắc, " +
+                            variants.size() + " variants");
 
                     model.addAttribute("kichCos", kichCos);
                     model.addAttribute("mauSacs", mauSacs);
                     model.addAttribute("tonKhoMap", tonKhoMap);
+                    model.addAttribute("variants", variantsForJS);
                 } catch (Exception e) {
                     System.err.println("Lỗi khi lấy chi tiết sản phẩm: " + e.getMessage());
                     e.printStackTrace();
@@ -110,23 +116,18 @@ public class SanPhamController {
                     model.addAttribute("kichCos", new ArrayList<>());
                     model.addAttribute("mauSacs", new ArrayList<>());
                     model.addAttribute("tonKhoMap", new HashMap<>());
+                    model.addAttribute("variants", new ArrayList<>());
                 }
 
                 // Lấy sản phẩm liên quan
                 try {
                     List<SanPham> relatedProducts = sanPhamService.getRelatedProducts(id);
+                    
+                    // Xử lý ảnh cho sản phẩm liên quan
+                    imageService.processProductListImages(relatedProducts);
 
                     // Debug thông tin sản phẩm liên quan
-                    System.out.println("Đã lấy " + relatedProducts.size() + " sản phẩm liên quan");
-                    for (SanPham related : relatedProducts) {
-                        if (related.getIdHinhAnhDaiDien() != null) {
-                            System.out.println("  SP liên quan: " + related.getTenSanPham() +
-                                    ", ảnh: " + related.getIdHinhAnhDaiDien().getDuongDan());
-                        } else {
-                            System.out.println("  SP liên quan: " + related.getTenSanPham() +
-                                    ", không có ảnh");
-                        }
-                    }
+                    System.out.println("Đã lấy và xử lý ảnh cho " + relatedProducts.size() + " sản phẩm liên quan");
 
                     model.addAttribute("relatedProducts", relatedProducts);
                 } catch (Exception e) {
@@ -134,9 +135,6 @@ public class SanPhamController {
                     e.printStackTrace();
                     model.addAttribute("relatedProducts", new ArrayList<>());
                 }
-
-                // Thêm xử lý đường dẫn ảnh
-                model.addAttribute("imageHelper", new ImagePathHelper());
 
                 return "san-pham/chi-tiet";
             } else {
@@ -147,22 +145,6 @@ public class SanPhamController {
             System.err.println("Lỗi tổng thể trong controller chi tiết sản phẩm: " + e.getMessage());
             e.printStackTrace();
             return "redirect:/san-pham";
-        }
-    }
-
-    public static class ImagePathHelper {
-        public String getCleanPath(String originalPath) {
-            if (originalPath == null) return "/images/no-image.jpg";
-
-            if (originalPath.startsWith("/")) {
-                originalPath = originalPath.substring(1);
-            }
-
-            if (originalPath.startsWith("images/")) {
-                return "/images/" + originalPath.substring(7);
-            } else {
-                return "/images/" + originalPath;
-            }
         }
     }
 

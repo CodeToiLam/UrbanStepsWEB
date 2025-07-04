@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import vn.urbansteps.service.SanPhamService;
+import vn.urbansteps.service.ImageService;
 import vn.urbansteps.model.SanPham;
 import java.util.List;
 
@@ -14,6 +15,9 @@ public class TimKiemController {
 
     @Autowired
     private SanPhamService sanPhamService;
+
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/tim-kiem")
     public String timKiem(@RequestParam(required = false) String keyword, 
@@ -84,6 +88,10 @@ public class TimKiemController {
             e.printStackTrace();
             products = new java.util.ArrayList<>();
         }
+        
+        // Xử lý ảnh cho tất cả sản phẩm
+        imageService.processProductListImages(products);
+        System.out.println("=== PROCESSED SEARCH IMAGES ===");
         
         model.addAttribute("products", products);
         model.addAttribute("thuongHieu", thuongHieu);

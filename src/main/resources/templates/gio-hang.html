@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title layout:fragment="title">Giỏ hàng - UrbanSteps</title>
+    <th:block layout:fragment="extra-css">
+        <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <main class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Giỏ hàng</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h1 class="cart-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Giỏ hàng của bạn
+                </h1>
+            </div>
+        </div>
+
+        <!-- Giỏ hàng trống -->
+        <div th:if="${gioHang == null or gioHang.items.empty}" class="empty-cart">
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-cart empty-cart-icon"></i>
+                <h3>Giỏ hàng của bạn đang trống</h3>
+                <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
+                <a th:href="@{/}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                </a>
+            </div>
+        </div>
+
+        <!-- Giỏ hàng có sản phẩm -->
+        <div th:if="${gioHang != null and !gioHang.items.empty}" class="cart-content">
+            <div class="row">
+                <!-- Danh sách sản phẩm -->
+                <div class="col-lg-8">
+                    <div class="cart-items">
+                        <div class="cart-header">
+                            <div class="row">
+                                <div class="col-md-6">Sản phẩm</div>
+                                <div class="col-md-2 text-center">Giá</div>
+                                <div class="col-md-2 text-center">Số lượng</div>
+                                <div class="col-md-2 text-center">Thành tiền</div>
+                            </div>
+                        </div>
+
+                        <div class="cart-item" th:each="item : ${gioHang.items}">
+                            <div class="row align-items-center">
+                                <!-- Thông tin sản phẩm -->
+                                <div class="col-md-6">
+                                    <div class="product-info">
+                                        <div class="product-image">
+                                            <img th:src="@{'/images/' + ${item.sanPhamChiTiet.sanPham.maSanPham} + '/anh-dai-dien.jpg'}" 
+                                                 th:alt="${item.sanPhamChiTiet.sanPham.tenSanPham}"
+                                                 class="img-fluid">
+                                        </div>
+                                        <div class="product-details">
+                                            <h5 class="product-name" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Tên sản phẩm</h5>
+                                            <div class="product-variants">
+                                                <span class="variant-item">
+                                                    <strong>Kích cỡ:</strong> <span th:text="${item.kichCo}">40</span>
+                                                </span>
+                                                <span class="variant-item">
+                                                    <strong>Màu sắc:</strong> <span th:text="${item.mauSac}">Đen</span>
+                                                </span>
+                                            </div>
+                                            <div class="product-sku">
+                                                <small class="text-muted">Mã SP: <span th:text="${item.sanPhamChiTiet.sanPham.maSanPham}">ABC123</span></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Giá -->
+                                <div class="col-md-2 text-center">
+                                    <span class="price" th:text="${#numbers.formatCurrency(item.giaTaiThoidiem)}">3,500,000₫</span>
+                                </div>
+
+                                <!-- Số lượng -->
+                                <div class="col-md-2 text-center">
+                                    <div class="quantity-controls">
+                                        <button class="btn btn-sm btn-outline-secondary quantity-btn" 
+                                                th:onclick="'updateQuantity(' + ${item.id} + ', ' + (${item.soLuong} - 1) + ')'">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="quantity-display" th:text="${item.soLuong}">1</span>
+                                        <button class="btn btn-sm btn-outline-secondary quantity-btn" 
+                                                th:onclick="'updateQuantity(' + ${item.id} + ', ' + (${item.soLuong} + 1) + ')'">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Thành tiền -->
+                                <div class="col-md-2 text-center">
+                                    <span class="total-price" th:text="${#numbers.formatCurrency(item.tongGia)}">3,500,000₫</span>
+                                    <button class="btn btn-sm btn-outline-danger remove-item-btn" 
+                                            th:onclick="'removeItem(' + ${item.id} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tổng kết đơn hàng -->
+                <div class="col-lg-4">
+                    <div class="cart-summary">
+                        <h4>Tổng kết đơn hàng</h4>
+                        
+                        <div class="summary-row">
+                            <span>Tạm tính:</span>
+                            <span th:text="${#numbers.formatCurrency(gioHang.tongTien)}">10,500,000₫</span>
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span>Phí vận chuyển:</span>
+                            <span class="text-success">Miễn phí</span>
+                        </div>
+                        
+                        <div class="summary-row total-row">
+                            <strong>
+                                <span>Tổng cộng:</span>
+                                <span th:text="${#numbers.formatCurrency(gioHang.tongTien)}">10,500,000₫</span>
+                            </strong>
+                        </div>
+
+                        <div class="cart-actions">
+                            <button class="btn btn-primary btn-lg btn-block checkout-btn">
+                                <i class="fas fa-credit-card"></i> Thanh toán
+                            </button>
+                            <a th:href="@{/}" class="btn btn-outline-primary btn-lg btn-block">
+                                <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                            </a>
+                        </div>
+
+                        <!-- Khuyến mãi -->
+                        <div class="promo-section">
+                            <h5>Mã khuyến mãi</h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Nhập mã khuyến mãi">
+                                <button class="btn btn-outline-secondary" type="button">Áp dụng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+        </main>
+    </div>
+    
+    <th:block layout:fragment="extra-js">
+        <script th:src="@{/js/gio-hang.js}"></script>
+    </th:block>
+</body>
+</html>

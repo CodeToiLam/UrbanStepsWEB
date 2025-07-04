@@ -207,3 +207,28 @@ CREATE TABLE HinhAnh_SanPhamChiTiet (
   FOREIGN KEY (id_san_pham_chi_tiet) REFERENCES SanPhamChiTiet(id)
 );
 GO
+
+CREATE TABLE GioHang (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  id_tai_khoan INT,
+  session_id VARCHAR(255),
+  create_at DATETIME DEFAULT GETDATE(),
+  update_at DATETIME,
+  delete_at DATETIME,
+  FOREIGN KEY (id_tai_khoan) REFERENCES TaiKhoan(id)
+);
+GO
+
+CREATE TABLE GioHangItem (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  id_gio_hang INT,
+  id_san_pham_chi_tiet INT,
+  so_luong INT NOT NULL,
+  gia_tai_thoi_diem DECIMAL(10,2) NOT NULL,
+  create_at DATETIME DEFAULT GETDATE(),
+  update_at DATETIME,
+  delete_at DATETIME,
+  FOREIGN KEY (id_gio_hang) REFERENCES GioHang(id),
+  FOREIGN KEY (id_san_pham_chi_tiet) REFERENCES SanPhamChiTiet(id)
+);
+GO

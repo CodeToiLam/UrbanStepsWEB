@@ -25,15 +25,18 @@
   <div class="container">
     <h2 class="section-title">Flash Deal</h2>
     <div class="product-container">
-      <div th:each="imageUrl : ${flashDealImages}" class="product-card">
-        <a href="#" class="disabled-link">
-          <img th:src="@{'/' + ${imageUrl}}" 
-               alt="Flash Deal Product" 
-               onerror="this.src='/images/placeholder.jpg';"
+      <div th:each="product : ${flashDealProducts}" class="product-card">
+        <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="product-link">
+          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.jpg'}" 
+               th:alt="${product.tenSanPham}"
+               onerror="this.src='/images/no-image.jpg';"
                class="product-image">
+          <div class="product-info">
+            <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+            <p class="product-price" th:text="${#numbers.formatCurrency(product.giaBan)}">Giá</p>
+            <p class="product-brand" th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
+          </div>
         </a>
-        <h3>Sản phẩm Flash Deal</h3>
-        <p>Giá ưu đãi</p>
       </div>
     </div>
     <div class="view-all">
@@ -44,15 +47,18 @@
   <div class="container">
     <h2 class="section-title">Top Popular</h2>
     <div class="product-container">
-      <div th:each="imageUrl : ${topPopularImages}" class="product-card">
-        <a href="#" class="disabled-link">
-          <img th:src="@{'/' + ${imageUrl}}" 
-               alt="Top Popular Product" 
-               onerror="this.src='/images/placeholder.jpg';"
+      <div th:each="product : ${topPopularProducts}" class="product-card">
+        <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="product-link">
+          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.jpg'}" 
+               th:alt="${product.tenSanPham}"
+               onerror="this.src='/images/no-image.jpg';"
                class="product-image">
+          <div class="product-info">
+            <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+            <p class="product-price" th:text="${#numbers.formatCurrency(product.giaBan)}">Giá</p>
+            <p class="product-brand" th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
+          </div>
         </a>
-        <h3>Sản phẩm Hot Trend</h3>
-        <p>Được yêu thích nhất</p>
       </div>
     </div>
     <div class="view-all">

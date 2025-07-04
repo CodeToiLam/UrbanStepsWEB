@@ -39,7 +39,10 @@
     </div>
     <div class="icons">
       <a href="/tim-kiem" th:href="@{/tim-kiem}"><i class="bi bi-search"></i></a>
-      <a href="/gio-hang" th:href="@{/gio-hang}"><i class="bi bi-cart"></i></a>
+      <a href="/gio-hang" th:href="@{/gio-hang}" class="cart-icon">
+        <i class="bi bi-cart"></i>
+        <span class="cart-count">0</span>
+      </a>
       
       <!-- User authentication section -->
       <div class="user-section" sec:authorize="isAuthenticated()">
@@ -122,6 +125,41 @@
 
 <!-- Page specific JS -->
 <th:block layout:fragment="extra-js"></th:block>
+
+<script>
+// Tự động load số lượng giỏ hàng khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+  loadCartCount();
+});
+
+function loadCartCount() {
+  fetch('/api/cart/info')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        updateCartCount(data.itemCount);
+      }
+    })
+    .catch(error => {
+      console.error('Error loading cart count:', error);
+    });
+}
+
+function updateCartCount(count) {
+  const cartCountElement = document.querySelector('.cart-count');
+  if (cartCountElement) {
+    cartCountElement.textContent = count || 0;
+    if (count > 0) {
+      cartCountElement.style.display = 'flex';
+    } else {
+      cartCountElement.style.display = 'none';
+    }
+  }
+}
+
+// Expose function globally
+window.updateCartCount = updateCartCount;
+</script>
 
 </body>
 </html>

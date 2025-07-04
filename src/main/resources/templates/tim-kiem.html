@@ -59,13 +59,13 @@
 
             <!-- Filter Section -->
             <div class="filter-section" th:if="${danhSachThuongHieu != null and !#lists.isEmpty(danhSachThuongHieu)}">
-                <h5 class="filter-title">Lọc sản phẩm</h5>
+                <h3>Lọc sản phẩm</h3>
                 <form action="/tim-kiem" method="get" class="filter-form">
                     <input type="hidden" name="keyword" th:value="${keyword}">
-                    <div class="filter-row">
+                    <div class="filter-controls">
                         <div class="filter-group">
                             <label for="thuongHieu">Thương hiệu:</label>
-                            <select name="thuongHieu" id="thuongHieu">
+                            <select name="thuongHieu" id="thuongHieu" class="filter-select" onchange="this.form.submit()">
                                 <option value="">Tất cả thương hiệu</option>
                                 <option th:each="brand : ${danhSachThuongHieu}"
                                         th:value="${brand}"
@@ -75,7 +75,7 @@
                         </div>
                         <div class="filter-group">
                             <label for="sapXep">Sắp xếp:</label>
-                            <select name="sapXep" id="sapXep">
+                            <select name="sapXep" id="sapXep" class="filter-select" onchange="this.form.submit()">
                                 <option value="">Mặc định</option>
                                 <option value="name-asc" th:selected="${sapXep == 'name-asc'}">Tên A-Z</option>
                                 <option value="name-desc" th:selected="${sapXep == 'name-desc'}">Tên Z-A</option>
@@ -90,7 +90,7 @@
             <!-- Results Info -->
             <div class="results-info" th:if="${products != null}">
                 <div class="results-count">
-                    Tìm thấy <strong th:text="${#lists.size(products)}">0</strong> sản phẩm
+                    Tìm thấy <span class="count" th:text="${#lists.size(products)}">0</span> sản phẩm
                     <span th:if="${keyword}" th:text="'cho từ khóa &quot;' + ${keyword} + '&quot;'"></span>
                 </div>
             </div>
@@ -114,17 +114,17 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div th:if="${products != null and !#lists.isEmpty(products)}" class="products-grid">
-                    <div th:each="product : ${products}" th:if="${product != null}" class="product-card">
+                <div th:if="${products != null and !#lists.isEmpty(products)}" class="product-grid">
+                    <div th:each="product : ${products}" th:if="${product != null}" class="product-card" 
+                         th:onclick="'location.href=\'/san-pham/chi-tiet/' + ${product.id ?: 0} + '\''" 
+                         style="cursor: pointer;">
                         <div class="product-image">
                             <img th:if="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
-                                 th:with="rawPath=${product.idHinhAnhDaiDien.duongDan},
-                                         cleanPath=${rawPath.startsWith('images/') ? rawPath.substring(7) : rawPath}"
-                                 th:src="@{'/images/' + ${cleanPath}}"
+                                 th:src="${product.idHinhAnhDaiDien.duongDan}"
                                  th:alt="${product.tenSanPham}"
-                                 onerror="console.log('Failed to load: ' + this.src); this.onerror=null; this.src='/images/Home/2.png';">
+                                 onerror="console.log('Failed to load main image: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';">
                             <img th:unless="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
-                                 src="/images/Home/2.png"
+                                 src="/images/no-image.jpg"
                                  th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
                         </div>
                         <div class="product-info">
@@ -133,21 +133,17 @@
                                 Brand
                             </div>
                             <div class="product-name">
-                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}"
-                                   th:text="${product.tenSanPham ?: 'Tên sản phẩm'}">
+                                <span th:text="${product.tenSanPham ?: 'Tên sản phẩm'}">
                                     Product Name
-                                </a>
+                                </span>
                             </div>
                             <div class="product-price"
                                  th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ') : 'Liên hệ'}">
                                 Price
                             </div>
-                            <div class="product-actions">
-                                <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id ?: 0})}"
-                                   class="btn-view">
-                                    <i class="bi bi-eye me-1"></i>
-                                    Xem chi tiết
-                                </a>
+                            <!-- Thêm thông tin mã sản phẩm -->
+                            <div class="product-code" th:if="${product.maSanPham != null}">
+                                <small class="text-muted">Mã: <span th:text="${product.maSanPham}">SP001</span></small>
                             </div>
                         </div>
                     </div>
