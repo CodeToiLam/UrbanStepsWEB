@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 
@@ -10,19 +10,19 @@
 <div layout:fragment="content">
   <div class="container main-content">
     <h2 class="section-title" th:text="${title}">Danh sách sản phẩm</h2>
-    
+
     <div class="product-container">
       <div th:each="product : ${products}" class="product-card">
         <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}">
-          <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}" 
-               alt="Hình ảnh sản phẩm" 
+          <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}"
+               alt="Hình ảnh sản phẩm"
                onerror="this.src='/static/images/default.jpg';">
         </a>
         <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-        <p th:text="'${#numbers.formatDecimal(product.giaBan, 0, '###,###')} VNĐ'">Giá sản phẩm</p>
+        <p th:text="${#numbers.formatDecimal(product.giaBan, 0, '###,###')} + ' VNĐ'">Giá sản phẩm</p>
       </div>
     </div>
-    
+
     <div th:if="${products.isEmpty()}" class="text-center py-5">
       <h4>Không tìm thấy sản phẩm nào</h4>
       <a th:href="@{/}" class="btn btn-primary">Về trang chủ</a>

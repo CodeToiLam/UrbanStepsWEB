@@ -1,11 +1,7 @@
 package vn.urbansteps.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -14,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "SanPham")  // Chỉ định tên bảng chính xác
+@Table(name = "SanPham")
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +23,26 @@ public class SanPham {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_thuong_hieu")
     private ThuongHieu thuongHieu;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_loai_san_pham")
+    private LoaiSanPham loaiSanPham;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_danh_muc")
+    private DanhMuc danhMuc;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_xuat_xu")
+    private XuatXu xuatXu;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_kieu_dang")
+    private KieuDang kieuDang;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_chat_lieu")
+    private ChatLieu chatLieu;
 
     @Column(name = "ma_san_pham", nullable = false, unique = true)
     private String maSanPham;

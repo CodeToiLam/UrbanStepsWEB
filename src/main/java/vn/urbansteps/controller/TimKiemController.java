@@ -35,7 +35,7 @@ public class TimKiemController {
                 System.out.println("Search results for '" + keyword + "': " + products.size() + " products");
             } else {
                 // Hiển thị tất cả sản phẩm nếu không có từ khóa
-                products = sanPhamService.layTatCaSanPham();
+                products = sanPhamService.getAllProducts();
                 System.out.println("All products: " + products.size() + " products");
             }
             
