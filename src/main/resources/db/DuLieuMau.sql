@@ -709,3 +709,7 @@ GO
 UPDATE TaiKhoan
 SET role = 'ADMIN'
 WHERE tai_khoan = 'admin';
+go
+UPDATE TaiKhoan
+SET role = 'USER'
+WHERE tai_khoan = user;
