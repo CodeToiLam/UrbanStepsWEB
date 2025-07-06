@@ -8,14 +8,24 @@
 </head>
 <body>
 <header>
-    <h2>Admin-UrbanSteps</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <h2>Admin-UrbanSteps</h2>
+        <div>
+            <span>Xin chào Admin!</span>
+            <form th:action="@{/dang-xuat}" method="post" style="display: inline; margin-left: 10px;">
+                <button type="submit" class="logout-btn" style="background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    Đăng xuất
+                </button>
+            </form>
+        </div>
+    </div>
 </header>
 <div class="sidebar">
     <a th:href="@{/admin/products}">Quản lý Sản phẩm</a>
     <a th:href="@{/admin/users}">Quản lý Tài khoản</a>
     <a th:href="@{/admin/categories}">Quản lý Danh mục</a>
     <a th:href="@{/admin/images}">Quản lý Hình ảnh</a>
-    <a th:href="@{/dang-nhap}" class="logout-btn">Đăng xuất</a>
+    <a th:href="@{/}">Về trang chủ</a>
 </div>
 <main>
     <div th:replace="~{::content}"></div> <!-- Thay bằng fragment content -->

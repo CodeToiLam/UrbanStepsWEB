@@ -45,22 +45,29 @@
       </a>
       
       <!-- User authentication section -->
-      <div class="user-section" sec:authorize="isAuthenticated()">
-        <span class="welcome-text">Xin chào, <strong sec:authentication="name">User</strong>!</span>
-        <div class="user-dropdown">
-          <a href="#" class="user-icon"><i class="bi bi-person-fill"></i></a>
-          <div class="dropdown-menu">
-            <a href="/tai-khoan/thong-tin">Thông tin tài khoản</a>
-            <a href="/don-hang">Đơn hàng của tôi</a>
-            <hr>
-            <a href="/dang-xuat" th:href="@{/dang-xuat}">Đăng xuất</a>
-          </div>
+      <div class="user-section" th:if="${#authentication.name != 'anonymousUser'}">
+        <span class="welcome-text">Xin chào, <strong th:text="${#authentication.name}">User</strong>!</span>
+        <div class="user-menu">
+          <a href="/tai-khoan/thong-tin" class="user-menu-item">Tài khoản</a>
+          <span class="menu-divider">|</span>
+          <a href="/don-hang" class="user-menu-item">Đơn hàng</a>
+          <span class="menu-divider">|</span>
+          <!-- Admin Panel link - only show for admin -->
+          <span sec:authorize="hasRole('ADMIN')">
+            <a href="/admin" class="user-menu-item admin-link">Quản trị</a>
+            <span class="menu-divider">|</span>
+          </span>
+          <form th:action="@{/dang-xuat}" method="post" style="display: inline;">
+            <button type="submit" class="logout-link">Đăng xuất</button>
+          </form>
         </div>
       </div>
       
       <!-- Login section for non-authenticated users -->
-      <div class="login-section" sec:authorize="!isAuthenticated()">
-        <a href="/dang-nhap" th:href="@{/dang-nhap}"><i class="bi bi-person"></i></a>
+      <div class="login-section" th:if="${#authentication.name == 'anonymousUser'}">
+        <a href="/dang-nhap" th:href="@{/dang-nhap}" class="login-btn">
+          <i class="bi bi-person"></i> Đăng nhập
+        </a>
       </div>
     </div>
   </div>
@@ -123,12 +130,16 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Common JS -->
+<script src="/js/banner-carousel.js"></script>
+
 <!-- Page specific JS -->
 <th:block layout:fragment="extra-js"></th:block>
 
 <script>
 // Tự động load số lượng giỏ hàng khi trang load
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing...');
   loadCartCount();
 });
 

@@ -1,11 +1,20 @@
-﻿-- Tạo database nếu chưa tồn tại
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'UrbanStepsDB')
+﻿-- XÓA VÀ TẠO LẠI DATABASE HOÀN TOÀN MỚI
+USE master;
+GO
+
+-- Ngắt tất cả kết nối đến database
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'UrbanStepsDB')
 BEGIN
-    CREATE DATABASE UrbanStepsDB;
+    ALTER DATABASE UrbanStepsDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE UrbanStepsDB;
 END
 GO
 
--- Sử dụng database
+-- Tạo database mới
+CREATE DATABASE UrbanStepsDB;
+GO
+
+-- Sử dụng database mới
 USE UrbanStepsDB;
 GO
 

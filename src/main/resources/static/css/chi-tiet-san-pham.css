@@ -571,41 +571,208 @@
     box-shadow: 0 4px 12px rgba(0,123,255,0.3);
 }
 
-/* Quantity control */
-.quantity-control {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    margin-top: 10px !important;
+/* Modern Quantity Selector */
+.product-quantity {
+    margin: 25px 0;
 }
 
-.quantity-control button {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-weight: bold !important;
-    transition: all 0.3s ease !important;
-    border: 2px solid #dee2e6 !important;
-    background-color: #fff !important;
-    color: #495057 !important;
+.quantity-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.quantity-control button:hover {
-    transform: scale(1.1) !important;
-    border-color: #007bff !important;
-    background-color: #e7f3ff !important;
+.quantity-label::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 2px;
 }
 
-.quantity-control input {
-    width: 80px !important;
-    text-align: center !important;
-    border: 2px solid #dee2e6 !important;
-    border-radius: 8px !important;
-    height: 40px !important;
-    font-weight: bold !important;
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 200px;
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.quantity-selector:hover {
+    border-color: #007bff;
+    box-shadow: 0 6px 20px rgba(0,123,255,0.15);
+    transform: translateY(-2px);
+}
+
+.quantity-selector:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0,123,255,0.1);
+}
+
+.quantity-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quantity-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0,123,255,0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+}
+
+.quantity-btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.quantity-btn:hover {
+    color: #007bff;
+    background: rgba(0,123,255,0.08);
+    transform: scale(1.05);
+}
+
+.quantity-btn:active {
+    transform: scale(0.95);
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.quantity-btn:disabled:hover {
+    color: #6c757d;
+    background: transparent;
+}
+
+.decrease-btn:hover {
+    color: #dc3545;
+    background: rgba(220,53,69,0.08);
+}
+
+.increase-btn:hover {
+    color: #28a745;
+    background: rgba(40,167,69,0.08);
+}
+
+.quantity-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.quantity-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    height: 24px;
+    line-height: 24px;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.quantity-label-text {
+    font-size: 10px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Animated number change */
+.quantity-input.changing {
+    animation: quantityPulse 0.3s ease;
+}
+
+@keyframes quantityPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); color: #007bff; }
+    100% { transform: scale(1); }
+}
+
+/* Stock indicator integration */
+.quantity-selector.out-of-stock {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.quantity-selector.low-stock {
+    border-color: #ffc107;
+}
+
+.quantity-selector.low-stock .quantity-label-text {
+    color: #f57c00;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .quantity-selector {
+        max-width: 180px;
+    }
+    
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .quantity-input {
+        font-size: 16px;
+    }
+    
+    .quantity-label-text {
+        font-size: 9px;
+    }
 }
 
 /* Action buttons */

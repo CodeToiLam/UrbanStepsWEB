@@ -177,11 +177,18 @@
 
             <!-- Số lượng mua -->
             <div class="product-quantity mb-3">
-                <h5>Số lượng:</h5>
-                <div class="quantity-control">
-                    <button id="decrease-quantity" class="btn btn-outline-secondary">-</button>
-                    <input type="number" id="quantity" value="1" min="1" class="form-control">
-                    <button id="increase-quantity" class="btn btn-outline-secondary">+</button>
+                <h5 class="quantity-label">Số lượng:</h5>
+                <div class="quantity-selector">
+                    <button id="decrease-quantity" class="quantity-btn decrease-btn" type="button">
+                        <i class="bi bi-dash"></i>
+                    </button>
+                    <div class="quantity-display">
+                        <input type="number" id="quantity" value="1" min="1" class="quantity-input" readonly>
+                        <span class="quantity-label-text">Sản phẩm</span>
+                    </div>
+                    <button id="increase-quantity" class="quantity-btn increase-btn" type="button">
+                        <i class="bi bi-plus"></i>
+                    </button>
                 </div>
             </div>
 

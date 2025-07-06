@@ -1,8 +1,11 @@
 package vn.urbansteps.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import vn.urbansteps.model.HinhAnh;
+import vn.urbansteps.repository.HinhAnhRepository;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +15,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class HomeImageService {
+    
+    @Autowired
+    private HinhAnhRepository hinhAnhRepository;
     
     private static final String HOME_IMAGES_PATH = "static/images/Home";
     
@@ -55,13 +61,22 @@ public class HomeImageService {
     }
     
     /**
-     * Lấy danh sách ảnh banner
+     * Lấy danh sách ảnh banner từ database
      */
     public List<String> getBannerImages() {
-        return List.of(
-            "images/Home/2.png",
-            "images/Home/3.png"
-        );
+        try {
+            List<HinhAnh> bannerImages = hinhAnhRepository.findBannerImages();
+            return bannerImages.stream()
+                    .map(HinhAnh::getDuongDan)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // Fallback: trả về banner images thực tế có trong thư mục
+            return List.of(
+                "images/Home/banner adidas.jpg",
+                "images/Home/banner converse.jpg",
+                "images/Home/banner mlb.jpg"
+            );
+        }
     }
     
     /**

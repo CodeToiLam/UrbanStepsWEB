@@ -18,6 +18,13 @@ public class AdminProductController {
     @Autowired
     private SanPhamService sanPhamService;
 
+    // Main admin dashboard - redirect to product list
+    @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String adminDashboard() {
+        return "redirect:/admin/products";
+    }
+
     @GetMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     public String getProductList(Model model, @RequestParam(required = false) Boolean trangThai) {

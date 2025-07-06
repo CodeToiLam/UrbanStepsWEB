@@ -3,29 +3,160 @@
     margin-bottom: 40px;
 }
 
+.banner-carousel {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .banner-container {
     position: relative;
     width: 100%;
     height: 400px;
     overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.banner-slides {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    height: 100%;
+    width: 100%;
+    will-change: transform;
 }
 
 .banner-slide {
+    flex: 0 0 100%;
     width: 100%;
     height: 100%;
+    position: relative;
+    overflow: hidden;
+    opacity: 1;
 }
 
 .banner-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: all 0.8s ease;
+    filter: brightness(1.05) contrast(1.1);
+    will-change: transform, filter;
 }
 
-.banner-image:hover {
+.banner-slide:hover .banner-image {
     transform: scale(1.05);
+    filter: brightness(1.1) contrast(1.15);
+}
+
+/* Smooth transition for infinite loop */
+.banner-slides.no-transition {
+    transition: none !important;
+}
+
+/* Navigation Arrows */
+.banner-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.banner-nav-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.banner-nav-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+    color: #007bff;
+}
+
+.banner-nav-btn:active {
+    transform: scale(0.95);
+}
+
+.prev-btn {
+    margin-left: 20px;
+}
+
+.next-btn {
+    margin-right: 20px;
+}
+
+/* Dots Indicator */
+.banner-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+
+.banner-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.banner-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.2);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.banner-dot.active {
+    background: #007bff;
+    transform: scale(1.3);
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+/* Auto-play indicator */
+.banner-dot.active::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
 }
 
 /* Product Container */
@@ -85,6 +216,7 @@
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     min-height: 44px;
 }
@@ -179,7 +311,32 @@
     }
     
     .banner-container {
-        height: 250px;
+        height: 280px;
+        border-radius: 12px;
+    }
+    
+    .banner-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .prev-btn {
+        margin-left: 15px;
+    }
+    
+    .next-btn {
+        margin-right: 15px;
+    }
+    
+    .banner-dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .banner-dots {
+        bottom: 15px;
+        gap: 10px;
     }
     
     .section-title {
@@ -203,8 +360,32 @@
     }
     
     .banner-container {
-        height: 200px;
-        border-radius: 8px;
+        height: 220px;
+        border-radius: 10px;
+    }
+    
+    .banner-nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+    }
+    
+    .prev-btn {
+        margin-left: 10px;
+    }
+    
+    .next-btn {
+        margin-right: 10px;
+    }
+    
+    .banner-dot {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .banner-dots {
+        bottom: 12px;
+        gap: 8px;
     }
     
     .section-title {

@@ -427,13 +427,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const decreaseBtn = document.getElementById('decrease-quantity');
         const increaseBtn = document.getElementById('increase-quantity');
         const quantityInput = document.getElementById('quantity');
+        const quantitySelector = document.querySelector('.quantity-selector');
 
         if (decreaseBtn) {
             decreaseBtn.addEventListener('click', function () {
                 if (quantityInput) {
                     const currentValue = parseInt(quantityInput.value);
                     if (currentValue > 1) {
-                        quantityInput.value = currentValue - 1;
+                        updateQuantity(currentValue - 1);
                     }
                 }
             });
@@ -445,9 +446,61 @@ document.addEventListener('DOMContentLoaded', function () {
                     const currentValue = parseInt(quantityInput.value);
                     const maxValue = parseInt(quantityInput.max) || 99;
                     if (currentValue < maxValue) {
-                        quantityInput.value = currentValue + 1;
+                        updateQuantity(currentValue + 1);
                     }
                 }
+            });
+        }
+
+        // Update quantity with animation
+        function updateQuantity(newValue) {
+            quantityInput.value = newValue;
+            quantityInput.classList.add('changing');
+            
+            setTimeout(() => {
+                quantityInput.classList.remove('changing');
+            }, 300);
+            
+            // Update button states
+            updateQuantityButtons();
+        }
+
+        // Update button states based on current quantity
+        function updateQuantityButtons() {
+            const currentValue = parseInt(quantityInput.value);
+            const maxValue = parseInt(quantityInput.max) || 99;
+            
+            if (decreaseBtn) {
+                decreaseBtn.disabled = currentValue <= 1;
+            }
+            
+            if (increaseBtn) {
+                increaseBtn.disabled = currentValue >= maxValue;
+            }
+            
+            // Update selector state based on stock
+            if (quantitySelector) {
+                quantitySelector.classList.toggle('low-stock', maxValue <= 5 && maxValue > 0);
+                quantitySelector.classList.toggle('out-of-stock', maxValue <= 0);
+            }
+        }
+
+        // Initialize button states
+        updateQuantityButtons();
+        
+        // Listen for direct input changes
+        if (quantityInput) {
+            quantityInput.addEventListener('change', function() {
+                const value = parseInt(this.value);
+                const maxValue = parseInt(this.max) || 99;
+                
+                if (value < 1) {
+                    this.value = 1;
+                } else if (value > maxValue) {
+                    this.value = maxValue;
+                }
+                
+                updateQuantityButtons();
             });
         }
     }

@@ -1,47 +1,11 @@
 ﻿
--- D? LI?U M?U CHO URBANSTEPS DATABASE 
+-- DỮ LIỆU MẪU CHO URBANSTEPS DATABASE 
 USE UrbanStepsDB;
 GO
 
--- X�a d? li?u cu
-DELETE FROM GioHangItem;
-DELETE FROM GioHang;
-DELETE FROM HinhAnh_SanPhamChiTiet;
-DELETE FROM SanPhamChiTiet;
-DELETE FROM SanPham;
-DELETE FROM HinhAnh;
-DELETE FROM phieu_giam_gia;
-DELETE FROM KhachHang;
-DELETE FROM TaiKhoan;
-DELETE FROM MauSac;
-DELETE FROM KichCo;
-DELETE FROM ChatLieu;
-DELETE FROM KieuDang;
-DELETE FROM XuatXu;
-DELETE FROM DanhMuc;
-DELETE FROM LoaiSanPham;
-DELETE FROM ThuongHieu;
-GO
-
--- Reset IDENTITY
-DBCC CHECKIDENT ('GioHangItem', RESEED, 0);
-DBCC CHECKIDENT ('GioHang', RESEED, 0);
-DBCC CHECKIDENT ('HinhAnh_SanPhamChiTiet', RESEED, 0);
-DBCC CHECKIDENT ('SanPhamChiTiet', RESEED, 0);
-DBCC CHECKIDENT ('SanPham', RESEED, 0);
-DBCC CHECKIDENT ('HinhAnh', RESEED, 0);
-DBCC CHECKIDENT ('phieu_giam_gia', RESEED, 0);
-DBCC CHECKIDENT ('KhachHang', RESEED, 0);
-DBCC CHECKIDENT ('TaiKhoan', RESEED, 0);
-DBCC CHECKIDENT ('MauSac', RESEED, 0);
-DBCC CHECKIDENT ('KichCo', RESEED, 0);
-DBCC CHECKIDENT ('ChatLieu', RESEED, 0);
-DBCC CHECKIDENT ('KieuDang', RESEED, 0);
-DBCC CHECKIDENT ('XuatXu', RESEED, 0);
-DBCC CHECKIDENT ('DanhMuc', RESEED, 0);
-DBCC CHECKIDENT ('LoaiSanPham', RESEED, 0);
-DBCC CHECKIDENT ('ThuongHieu', RESEED, 0);
-GO
+-- =============================================
+-- THÊM DỮ LIỆU MẪU HOÀN TOÀN MỚI
+-- =============================================
 
 -- 1. Thuong hi?u
 INSERT INTO ThuongHieu (ten_thuong_hieu) VALUES 
@@ -120,10 +84,22 @@ GO
 
 -- 8. M�u s?c
 INSERT INTO MauSac (ten_mau_sac) VALUES 
-(N'�en'), (N'Tr?ng'), (N'X�m'), (N'Xanh Navy'), (N'�?'), (N'V�ng'), (N'N�u'), (N'H?ng'),
-(N'Xanh Duong'), (N'Xanh L�'), (N'T�m'), (N'Cam'), (N'B�'), (N'X�m Nh?t'), (N'�en Tr?ng');
+(N'Đen'),          -- ID: 1
+(N'Trắng'),        -- ID: 2
+(N'Xám'),          -- ID: 3
+(N'Xanh Navy'),    -- ID: 4
+(N'Đỏ'),           -- ID: 5
+(N'Vàng'),         -- ID: 6
+(N'Nâu'),          -- ID: 7
+(N'Hồng'),         -- ID: 8
+(N'Xanh Dương'),   -- ID: 9
+(N'Xanh Lá'),      -- ID: 10
+(N'Tím'),          -- ID: 11
+(N'Cam'),          -- ID: 12
+(N'Bạc'),          -- ID: 13
+(N'Xám Nhạt'),     -- ID: 14
+(N'Đen Trắng');    -- ID: 15
 GO
-
 -- 9. H�nh ?nh
 INSERT INTO HinhAnh (duong_dan, mo_ta, thu_tu, la_anh_chinh) VALUES 
 -- ?nh placeholder
@@ -296,10 +272,10 @@ GO
 -- 10. S?n ph?m (40 s?n ph?m)
 -- ADIDAS (13 s?n ph?m)
 INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, trang_thai) VALUES 
-(4, 3, 1, 2, 6, 5, 2, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giày Adidas Samba OG phiên bản classic với phối màu trắng đen gum iconic.', 1800000, 2590000, 1),
-(4, 3, 1, 2, 6, 5, 6, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giày Adidas Samba OG với phối màu trắng và đỏ maroon sang trọng.', 1800000, 2590000, 1),
-(4, 2, 1, 2, 6, 5, 10, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiên bản dành cho nữ với tone màu nhã nhặn và feminine.', 1800000, 2590000, 1),
-(4, 3, 1, 2, 4, 5, 14, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giày Adidas Gazelle Bold phiên bản đặc biệt Year of the Snake.', 2200000, 3190000, 1),
+(2, 3, 1, 2, 6, 5, 2, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giày Adidas Samba OG phiên bản classic với phối màu trắng đen gum iconic.', 1800000, 2590000, 1),
+(3, 3, 1, 2, 6, 5, 6, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giày Adidas Samba OG với phối màu trắng và đỏ maroon sang trọng.', 1800000, 2590000, 1),
+(3, 2, 1, 2, 6, 5, 10, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiên bản dành cho nữ với tone màu nhã nhặn và feminine.', 1800000, 2590000, 1),
+(3, 3, 1, 2, 4, 5, 14, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giày Adidas Gazelle Bold phiên bản đặc biệt Year of the Snake.', 2200000, 3190000, 1),
 (1, 3, 1, 2, 1, 7, 18, N'ADI-YEEZY-001', N'Adidas Yeezy Boost 350 V2 Steel Grey', N'Giày Adidas Yeezy Boost 350 V2 với colorway Steel Grey huyền thoại.', 4500000, 6490000, 1),
 (1, 3, 1, 2, 1, 10, 22, N'ADI-ADIFOAM-001', N'Adidas adiFOM Superstar Core Black', N'Giày Adidas adiFOM Superstar với công nghệ foam mới.', 2000000, 2890000, 1),
 (1, 3, 1, 2, 1, 10, 26, N'ADI-ADIFOAM-002', N'Adidas adiFOM Superstar Core White', N'Phiên bản màu trắng của dòng adiFOM Superstar.', 2000000, 2890000, 1),
@@ -710,6 +686,4 @@ UPDATE TaiKhoan
 SET role = 'ADMIN'
 WHERE tai_khoan = 'admin';
 go
-UPDATE TaiKhoan
-SET role = 'USER'
-WHERE tai_khoan = user;
+

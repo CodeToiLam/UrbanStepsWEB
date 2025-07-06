@@ -13,11 +13,36 @@
 <div layout:fragment="content">
   <!-- Banner Section -->
   <div class="banner-section" th:if="${bannerImages != null and !bannerImages.empty}">
-    <div class="banner-container">
-      <div th:each="bannerImage : ${bannerImages}" class="banner-slide">
-        <img th:src="@{'/' + ${bannerImage}}" 
-             alt="Banner" 
-             class="banner-image">
+    <div class="banner-carousel">
+      <div class="banner-container">
+        <div class="banner-slides" th:attr="data-slide-count=${#lists.size(bannerImages)}">
+          <div th:each="bannerImage,iterStat : ${bannerImages}" 
+               class="banner-slide" 
+               th:classappend="${iterStat.first} ? 'active' : ''">
+            <img th:src="@{'/' + ${bannerImage}}" 
+                 alt="Banner" 
+                 class="banner-image">
+          </div>
+        </div>
+        
+        <!-- Navigation arrows -->
+        <div class="banner-navigation" th:if="${#lists.size(bannerImages) > 1}">
+          <button class="banner-nav-btn prev-btn" aria-label="Previous slide">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="banner-nav-btn next-btn" aria-label="Next slide">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        
+        <!-- Dots indicator -->
+        <div class="banner-dots" th:if="${#lists.size(bannerImages) > 1}">
+          <span th:each="bannerImage,iterStat : ${bannerImages}" 
+                class="banner-dot" 
+                th:classappend="${iterStat.first} ? 'active' : ''"
+                th:attr="data-slide=${iterStat.index}">
+          </span>
+        </div>
       </div>
     </div>
   </div>

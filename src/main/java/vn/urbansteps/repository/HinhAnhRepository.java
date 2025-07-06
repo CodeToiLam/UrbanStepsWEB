@@ -20,4 +20,10 @@ public interface HinhAnhRepository extends JpaRepository<HinhAnh, Integer> {
             "WHERE spct.id_san_pham = :sanPhamId " +
             "ORDER BY h.thu_tu ASC", nativeQuery = true)
     List<HinhAnh> findBySanPhamIdOrderByThuTuAsc(@Param("sanPhamId") Integer sanPhamId);
+
+    /**
+     * Lấy danh sách banner images từ database
+     */
+    @Query(value = "SELECT * FROM HinhAnh WHERE mo_ta LIKE '%banner%' AND delete_at IS NULL ORDER BY thu_tu ASC", nativeQuery = true)
+    List<HinhAnh> findBannerImages();
 }

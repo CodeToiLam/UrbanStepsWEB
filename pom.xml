@@ -76,7 +76,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <scope>runtime</scope>
+            <version>11.2.3.jre17</version>
         </dependency>
 
         <!-- Spring Security -->
