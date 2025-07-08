@@ -127,50 +127,71 @@ public class GioHangService {
      */
     public boolean addToCart(GioHang gioHang, Integer sanPhamChiTietId, int soLuong) {
         try {
+            System.out.println("=== ADD TO CART SERVICE DEBUG ===");
+            System.out.println("Gio hang ID: " + gioHang.getId());
+            System.out.println("San pham chi tiet ID: " + sanPhamChiTietId);
+            System.out.println("So luong: " + soLuong);
+            
             // Kiểm tra sản phẩm có tồn tại không
             Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(sanPhamChiTietId);
             if (!sanPhamChiTiet.isPresent()) {
+                System.out.println("ERROR: San pham chi tiet not found!");
                 return false;
             }
 
+            SanPhamChiTiet spct = sanPhamChiTiet.get();
+            System.out.println("Found san pham chi tiet: " + spct.getId() + " - " + spct.getSanPham().getTenSanPham());
+            System.out.println("Stock available: " + spct.getSoLuong());
+            System.out.println("Size: " + spct.getKichCo().getTenKichCo() + ", Color: " + spct.getMauSac().getTenMauSac());
+
             // Kiểm tra số lượng tồn kho
-            if (sanPhamChiTiet.get().getSoLuong() < soLuong) {
+            if (spct.getSoLuong() < soLuong) {
+                System.out.println("ERROR: Not enough stock! Available: " + spct.getSoLuong() + ", Requested: " + soLuong);
                 return false;
             }
 
             // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             Optional<GioHangItem> existingItem = gioHangItemRepository
-                .findByGioHangAndSanPhamChiTiet(gioHang, sanPhamChiTiet.get());
+                .findByGioHangAndSanPhamChiTiet(gioHang, spct);
 
             if (existingItem.isPresent()) {
                 // Nếu đã có, cập nhật số lượng
                 GioHangItem item = existingItem.get();
                 int newQuantity = item.getSoLuong() + soLuong;
                 
+                System.out.println("Item already exists with quantity: " + item.getSoLuong());
+                System.out.println("New quantity will be: " + newQuantity);
+                
                 // Kiểm tra số lượng tồn kho
-                if (sanPhamChiTiet.get().getSoLuong() < newQuantity) {
+                if (spct.getSoLuong() < newQuantity) {
+                    System.out.println("ERROR: Not enough stock for update! Available: " + spct.getSoLuong() + ", New quantity: " + newQuantity);
                     return false;
                 }
                 
                 item.setSoLuong(newQuantity);
                 item.setUpdateAt(LocalDateTime.now());
                 gioHangItemRepository.save(item);
+                System.out.println("Updated existing item quantity to: " + newQuantity);
             } else {
                 // Nếu chưa có, tạo mới
+                System.out.println("Creating new cart item...");
                 GioHangItem newItem = new GioHangItem();
                 newItem.setGioHang(gioHang);
-                newItem.setSanPhamChiTiet(sanPhamChiTiet.get());
+                newItem.setSanPhamChiTiet(spct);
                 newItem.setSoLuong(soLuong);
-                newItem.setGiaTaiThoidiem(sanPhamChiTiet.get().getSanPham().getGiaBan());
+                newItem.setGiaTaiThoidiem(spct.getSanPham().getGiaBan());
                 newItem.setCreateAt(LocalDateTime.now());
                 newItem.setUpdateAt(LocalDateTime.now());
-                gioHangItemRepository.save(newItem);
+                GioHangItem savedItem = gioHangItemRepository.save(newItem);
+                System.out.println("Created new cart item with ID: " + savedItem.getId());
             }
 
             // Cập nhật thời gian giỏ hàng
             updateGioHangTime(gioHang);
+            System.out.println("ADD TO CART SUCCESS!");
             return true;
         } catch (Exception e) {
+            System.err.println("ERROR in addToCart service:");
             e.printStackTrace();
             return false;
         }

@@ -4,6 +4,40 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Debug: Log all data received from server
+    console.log('=== PRODUCT DETAIL DEBUG ===');
+    if (typeof window.productId !== 'undefined') {
+        console.log('Product ID:', window.productId);
+    } else {
+        console.log('Product ID: UNDEFINED');
+    }
+    
+    if (typeof window.variants !== 'undefined') {
+        console.log('Variants:', window.variants);
+        console.log('Variants count:', window.variants.length);
+    } else {
+        console.log('Variants: UNDEFINED');
+    }
+    
+    if (typeof window.tonKhoMap !== 'undefined') {
+        console.log('Stock Map:', window.tonKhoMap);
+    } else {
+        console.log('Stock Map: UNDEFINED');
+    }
+    
+    if (typeof window.availableSizes !== 'undefined') {
+        console.log('Available Sizes:', window.availableSizes);
+    } else {
+        console.log('Available Sizes: UNDEFINED');
+    }
+    
+    if (typeof window.availableColors !== 'undefined') {
+        console.log('Available Colors:', window.availableColors);
+    } else {
+        console.log('Available Colors: UNDEFINED');
+    }
+    console.log('=============================');
+
     // Dữ liệu tồn kho từ server
     let stockData = {};
     let selectedSize = null;
@@ -386,39 +420,147 @@ document.addEventListener('DOMContentLoaded', function () {
         colorInputs.forEach(input => {
             input.addEventListener('change', updateStockInfo);
         });
+        
+        // Auto-trigger updateStockInfo to handle single color case
+        setTimeout(() => {
+            updateStockInfo();
+        }, 100);
     }
 
     function updateStockInfo() {
+        console.log('=== UPDATE STOCK INFO ===');
         const sizeChecked = document.querySelector('input[name="size"]:checked');
         const colorChecked = document.querySelector('input[name="color"]:checked');
+        
+        console.log('Size checked:', sizeChecked ? sizeChecked.value : 'none');
+        console.log('Color checked:', colorChecked ? colorChecked.value : 'none');
+        console.log('Current stockData:', stockData);
+        console.log('Window tonKhoMap:', window.tonKhoMap);
 
-        if (sizeChecked && colorChecked) {
-            selectedSize = sizeChecked.value;
-            selectedColor = colorChecked.value;
+        // Auto-select first color if only one color is available and none is selected
+        if (!colorChecked && window.availableColors && window.availableColors.length === 1) {
+            const firstColorInput = document.querySelector('input[name="color"]');
+            if (firstColorInput) {
+                firstColorInput.checked = true;
+                console.log('Auto-selected single color:', window.availableColors[0]);
+            }
+        }
 
-            const stockQuantity = stockData[selectedSize]?.[selectedColor] || 0;
+        // Re-check after auto-selection
+        const updatedSizeChecked = document.querySelector('input[name="size"]:checked');
+        const updatedColorChecked = document.querySelector('input[name="color"]:checked');
+
+        if (updatedSizeChecked && updatedColorChecked) {
+            selectedSize = updatedSizeChecked.value;
+            selectedColor = updatedColorChecked.value;
+
+            // Thử nhiều cách để lấy stock quantity
+            let stockQuantity = 0;
+            
+            // Cách 1: Từ window.tonKhoMap (nested structure: {size: {color: quantity}})
+            if (window.tonKhoMap && window.tonKhoMap[selectedSize] && window.tonKhoMap[selectedSize][selectedColor]) {
+                stockQuantity = window.tonKhoMap[selectedSize][selectedColor];
+                console.log('Stock from window.tonKhoMap (nested):', stockQuantity);
+            }
+            
+            // Cách 2: Từ stockData (flat structure hoặc nested)
+            if (stockQuantity === 0 && stockData) {
+                // Thử cấu trúc nested
+                if (stockData[selectedSize] && stockData[selectedSize][selectedColor]) {
+                    stockQuantity = stockData[selectedSize][selectedColor];
+                    console.log('Stock from stockData (nested):', stockQuantity);
+                }
+                // Thử cấu trúc flat
+                else {
+                    const flatKey = selectedSize + '_' + selectedColor;
+                    stockQuantity = stockData[flatKey] || 0;
+                    console.log('Stock from stockData (flat) with key', flatKey, ':', stockQuantity);
+                }
+            }
+            
+            // Cách 3: Từ window.variants nếu có
+            if (stockQuantity === 0 && window.variants && Array.isArray(window.variants)) {
+                const variant = window.variants.find(v => {
+                    // Handle different data structures
+                    const variantSize = v.kichCo ? (v.kichCo.tenKichCo || v.kichCo) : '';
+                    const variantColor = v.mauSac ? (v.mauSac.tenMauSac || v.mauSac) : '';
+                    return variantSize === selectedSize && variantColor === selectedColor;
+                });
+                if (variant) {
+                    stockQuantity = variant.soLuong || 0;
+                    console.log('Stock from variants:', stockQuantity, 'variant:', variant);
+                }
+            }
+
+            console.log('Final stock quantity:', stockQuantity);
+            console.log('Stock calculation summary:');
+            console.log('- Selected size:', selectedSize);
+            console.log('- Selected color:', selectedColor);
+            console.log('- Final quantity:', stockQuantity);
+            
+            // Update stock display
             const stockQuantityElement = document.getElementById('stock-quantity');
             if (stockQuantityElement) {
                 stockQuantityElement.textContent = stockQuantity > 0 ? stockQuantity : 'Hết hàng';
             }
 
+            // Update buttons
             const addToCartBtn = document.getElementById('add-to-cart');
             const buyNowBtn = document.getElementById('buy-now');
 
             if (stockQuantity > 0) {
-                if (addToCartBtn) addToCartBtn.disabled = false;
-                if (buyNowBtn) buyNowBtn.disabled = false;
+                if (addToCartBtn) {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.textContent = 'Thêm vào giỏ hàng';
+                    addToCartBtn.classList.remove('btn-secondary');
+                    addToCartBtn.classList.add('btn-primary');
+                }
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = false;
+                    buyNowBtn.textContent = 'Mua ngay';
+                    buyNowBtn.classList.remove('btn-secondary');
+                    buyNowBtn.classList.add('btn-warning');
+                }
             } else {
-                if (addToCartBtn) addToCartBtn.disabled = true;
-                if (buyNowBtn) buyNowBtn.disabled = true;
+                if (addToCartBtn) {
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.textContent = 'Hết hàng';
+                    addToCartBtn.classList.remove('btn-primary');
+                    addToCartBtn.classList.add('btn-secondary');
+                }
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = true;
+                    buyNowBtn.textContent = 'Hết hàng';
+                    buyNowBtn.classList.remove('btn-warning');
+                    buyNowBtn.classList.add('btn-secondary');
+                }
             }
 
+            // Update quantity input
             const quantityInput = document.getElementById('quantity');
             if (quantityInput) {
                 quantityInput.max = stockQuantity;
                 if (parseInt(quantityInput.value) > stockQuantity) {
-                    quantityInput.value = stockQuantity;
+                    quantityInput.value = Math.max(1, stockQuantity);
                 }
+            }
+        } else {
+            // Reset to default state when no size/color selected
+            const stockQuantityElement = document.getElementById('stock-quantity');
+            if (stockQuantityElement) {
+                stockQuantityElement.textContent = 'Chọn kích cỡ và màu';
+            }
+
+            const addToCartBtn = document.getElementById('add-to-cart');
+            const buyNowBtn = document.getElementById('buy-now');
+
+            if (addToCartBtn) {
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'Chọn kích cỡ và màu';
+            }
+            if (buyNowBtn) {
+                buyNowBtn.disabled = true;
+                buyNowBtn.textContent = 'Chọn kích cỡ và màu';
             }
         }
     }
@@ -519,19 +661,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleAddToCart() {
-        if (!selectedSize || !selectedColor) {
-            showAlert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng!');
+        console.log('=== HANDLE ADD TO CART DEBUG ===');
+        console.log('Selected size:', selectedSize);
+        console.log('Selected color:', selectedColor);
+        
+        // Check if size and color are selected
+        if (!selectedSize) {
+            showAlert('Vui lòng chọn kích cỡ trước khi thêm vào giỏ hàng!');
+            return;
+        }
+        
+        if (!selectedColor) {
+            showAlert('Vui lòng chọn màu sắc trước khi thêm vào giỏ hàng!');
             return;
         }
 
         const quantityInput = document.getElementById('quantity');
         const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
         
+        console.log('Quantity:', quantity);
+        
+        // Validate quantity
+        if (isNaN(quantity) || quantity <= 0) {
+            showAlert('Số lượng phải lớn hơn 0!');
+            return;
+        }
+        
         // Tìm sản phẩm chi tiết ID dựa vào size và color đã chọn
         const sanPhamChiTietId = getSanPhamChiTietId(selectedSize, selectedColor);
         
+        console.log('San pham chi tiet ID:', sanPhamChiTietId);
+        
         if (!sanPhamChiTietId) {
-            showAlert('Không tìm thấy sản phẩm với kích cỡ và màu sắc đã chọn!');
+            console.log('Available variants for debugging:', window.variants);
+            console.log('Available sizes:', window.availableSizes);
+            console.log('Available colors:', window.availableColors);
+            showAlert('Không tìm thấy sản phẩm với kích cỡ và màu sắc đã chọn! Vui lòng thử lại.');
             return;
         }
 
@@ -541,6 +706,11 @@ document.addEventListener('DOMContentLoaded', function () {
         addToCartBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang thêm...';
         addToCartBtn.disabled = true;
 
+        console.log('Sending request to /api/cart/add with:', {
+            sanPhamChiTietId: sanPhamChiTietId,
+            soLuong: quantity
+        });
+
         // Gửi request thêm vào giỏ hàng
         fetch('/api/cart/add', {
             method: 'POST',
@@ -549,19 +719,49 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${quantity}`
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            
+            // Check if response indicates user needs to login (401 or 403)
+            if (response.status === 401 || response.status === 403) {
+                console.log('User not authenticated, redirecting to login...');
+                // Redirect to login page
+                window.location.href = '/dang-nhap';
+                return null; // Return null to skip further processing
+            }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.json();
+        })
         .then(data => {
+            // If data is null, it means we redirected to login
+            if (data === null) return;
+            
+            console.log('Response data:', data);
             if (data.success) {
                 showAlert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng thành công!`);
                 // Cập nhật số lượng giỏ hàng trên header nếu có
                 updateCartCount(data.cartCount);
             } else {
+                console.error('Add to cart failed:', data.message);
+                
+                // Check if the error message indicates need to login or if requireLogin flag is set
+                if (data.requireLogin || (data.message && (data.message.includes('đăng nhập') || data.message.includes('login')))) {
+                    console.log('Login required, redirecting to login page...');
+                    window.location.href = '/dang-nhap';
+                    return;
+                }
+                
                 showAlert(data.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
+            console.error('Error in add to cart:', error);
+            showAlert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng! Vui lòng thử lại.');
         })
         .finally(() => {
             // Khôi phục nút
@@ -601,12 +801,36 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${quantity}`
         })
-        .then(response => response.json())
+        .then(response => {
+            // Check if response indicates user needs to login (401 or 403)
+            if (response.status === 401 || response.status === 403) {
+                console.log('User not authenticated, redirecting to login...');
+                // Redirect to login page
+                window.location.href = '/dang-nhap';
+                return null;
+            }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.json();
+        })
         .then(data => {
+            // If data is null, it means we redirected to login
+            if (data === null) return;
+            
             if (data.success) {
                 // Chuyển đến trang thanh toán
                 window.location.href = '/checkout';
             } else {
+                // Check if the error message indicates need to login or if requireLogin flag is set
+                if (data.requireLogin || (data.message && (data.message.includes('đăng nhập') || data.message.includes('login')))) {
+                    console.log('Login required, redirecting to login page...');
+                    window.location.href = '/dang-nhap';
+                    return;
+                }
+                
                 showAlert(data.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
             }
         })
@@ -623,13 +847,85 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Hàm tìm ID sản phẩm chi tiết dựa vào size và color
     function getSanPhamChiTietId(size, color) {
-        // Tìm trong stockData hoặc variants data
-        const variants = window.variants || [];
-        const variant = variants.find(v => {
-            const kichCoName = v.kichCo ? v.kichCo.tenKichCo : '';
-            const mauSacName = v.mauSac ? v.mauSac.tenMauSac : '';
-            return kichCoName === size && mauSacName === color;
+        console.log('=== getSanPhamChiTietId() được gọi ===');
+        console.log('Looking for size:', size, 'color:', color);
+        console.log('Available variants:', window.variants);
+        
+        if (!window.variants || !Array.isArray(window.variants)) {
+            console.log('No variants data available');
+            return null;
+        }
+        
+        // Try exact match first
+        let variant = window.variants.find(v => {
+            console.log('Checking variant:', v);
+            
+            // Handle different data structures for kichCo and mauSac
+            let variantSize = '';
+            let variantColor = '';
+            
+            if (v.kichCo) {
+                variantSize = v.kichCo.tenKichCo || v.kichCo;
+            }
+            
+            if (v.mauSac) {
+                variantColor = v.mauSac.tenMauSac || v.mauSac;
+            }
+            
+            console.log('Variant size:', variantSize, 'Variant color:', variantColor);
+            console.log('Size match:', variantSize === size);
+            console.log('Color match:', variantColor === color);
+            
+            return variantSize === size && variantColor === color;
         });
+        
+        // If exact match fails, try case-insensitive match
+        if (!variant) {
+            console.log('Exact match failed, trying case-insensitive match...');
+            variant = window.variants.find(v => {
+                let variantSize = '';
+                let variantColor = '';
+                
+                if (v.kichCo) {
+                    variantSize = (v.kichCo.tenKichCo || v.kichCo).toString().toLowerCase().trim();
+                }
+                
+                if (v.mauSac) {
+                    variantColor = (v.mauSac.tenMauSac || v.mauSac).toString().toLowerCase().trim();
+                }
+                
+                const sizeMatch = variantSize === size.toLowerCase().trim();
+                const colorMatch = variantColor === color.toLowerCase().trim();
+                
+                console.log('Case-insensitive - Variant size:', variantSize, 'Variant color:', variantColor);
+                console.log('Case-insensitive - Size match:', sizeMatch, 'Color match:', colorMatch);
+                
+                return sizeMatch && colorMatch;
+            });
+        }
+        
+        // If still no match, try size-only match (fallback for single color products)
+        if (!variant && window.variants.length > 0) {
+            console.log('No exact match found, trying size-only match...');
+            variant = window.variants.find(v => {
+                let variantSize = '';
+                
+                if (v.kichCo) {
+                    variantSize = (v.kichCo.tenKichCo || v.kichCo).toString().toLowerCase().trim();
+                }
+                
+                const sizeMatch = variantSize === size.toLowerCase().trim();
+                console.log('Size-only match - Variant size:', variantSize, 'Size match:', sizeMatch);
+                
+                return sizeMatch;
+            });
+            
+            if (variant) {
+                console.log('Found variant using size-only match:', variant);
+            }
+        }
+        
+        console.log('Final found variant:', variant);
         return variant ? variant.id : null;
     }
 
@@ -642,14 +938,49 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showAlert(message) {
-        alert(message);
+        // Enhanced alert with better user experience
+        if (typeof toastr !== 'undefined') {
+            toastr.info(message);
+        } else {
+            alert(message);
+        }
+        console.log('Alert shown:', message);
     }
-
-    // ====== STOCK DATA SETTER ======
-    window.setStockData = function(data) {
-        stockData = data || {};
+    
+    // Debug helper function
+    window.debugCartData = function() {
+        console.log('=== CART DEBUG INFO ===');
+        console.log('Product ID:', window.productId);
+        console.log('Available sizes:', window.availableSizes);
+        console.log('Available colors:', window.availableColors);
+        console.log('Variants:', window.variants);
+        console.log('Stock map:', window.tonKhoMap);
+        console.log('Selected size:', selectedSize);
+        console.log('Selected color:', selectedColor);
+        console.log('========================');
     };
 
-    // ====== INITIALIZE ======
+    // STOCK DATA SETTER
+    window.setStockData = function(data) {
+        stockData = data || {};
+        console.log('Stock data set to:', stockData);
+        console.log('Stock data type:', typeof stockData);
+        console.log('Stock data keys:', Object.keys(stockData));
+        
+        // Log first level structure
+        for (const key in stockData) {
+            console.log(`stockData[${key}]:`, stockData[key], 'type:', typeof stockData[key]);
+        }
+    };
+
+    // INITIALIZE 
     initProductDetailPage();
+
+    // Debug: Check if data is loaded correctly after initialization
+    console.log('=== DEBUG CHI TIẾT SẢN PHẨM AFTER INIT ===');
+    console.log('Variants data:', window.variants);
+    console.log('Stock data:', stockData);
+    console.log('Selected size:', selectedSize);
+    console.log('Selected color:', selectedColor);
+    console.log('==============================================');
 });
