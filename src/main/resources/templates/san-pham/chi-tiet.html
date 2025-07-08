@@ -144,7 +144,7 @@
 
             <div class="product-price mb-4">
                     <span class="current-price"
-                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">1,200,000 ₫</span>
+                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 0)} + ' ₫'">1,200,000 ₫</span>
             </div>
 
             <!-- Chọn kích cỡ -->
@@ -237,7 +237,7 @@
                         <div class="card-body">
                             <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
                             <p class="card-text product-price"
-                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 0)} + ' ₫'">
                                 750,000 ₫</p>
                         </div>
                     </a>

@@ -122,9 +122,9 @@
                             <img th:if="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
                                  th:src="${product.idHinhAnhDaiDien.duongDan}"
                                  th:alt="${product.tenSanPham}"
-                                 onerror="console.log('Failed to load main image: ' + this.src); this.onerror=null; this.src='/images/no-image.jpg';">
+                                 onerror="console.log('Failed to load main image: ' + this.src); this.onerror=null; this.src='/images/no-image.svg';">
                             <img th:unless="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
-                                 src="/images/no-image.jpg"
+                                 src="/images/no-image.svg"
                                  th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
                         </div>
                         <div class="product-info">
@@ -138,7 +138,7 @@
                                 </span>
                             </div>
                             <div class="product-price"
-                                 th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ') : 'Liên hệ'}">
+                                 th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ') : 'Liên hệ'}">
                                 Price
                             </div>
                             <!-- Thêm thông tin mã sản phẩm -->

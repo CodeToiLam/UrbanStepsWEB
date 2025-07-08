@@ -1,12 +1,5 @@
-﻿
--- DỮ LIỆU MẪU CHO URBANSTEPS DATABASE 
-USE UrbanStepsDB;
+﻿USE UrbanStepsDB;
 GO
-
--- =============================================
--- THÊM DỮ LIỆU MẪU HOÀN TOÀN MỚI
--- =============================================
-
 -- 1. Thuong hi?u
 INSERT INTO ThuongHieu (ten_thuong_hieu) VALUES 
 (N'Adidas'),
@@ -30,7 +23,6 @@ INSERT INTO LoaiSanPham (ten_loai_san_pham) VALUES
 (N'Giày collaboration');
 GO
 
--- 3. Danh m?c
 -- 3. Danh mục
 INSERT INTO DanhMuc (ten_danh_muc) VALUES 
 (N'Nam'),
@@ -100,221 +92,355 @@ INSERT INTO MauSac (ten_mau_sac) VALUES
 (N'Xám Nhạt'),     -- ID: 14
 (N'Đen Trắng');    -- ID: 15
 GO
--- 9. H�nh ?nh
+-- 9. Hình ảnh (Dựa trên cấu trúc thật trong thư mục) - Sắp xếp lại theo thứ tự sản phẩm
 INSERT INTO HinhAnh (duong_dan, mo_ta, thu_tu, la_anh_chinh) VALUES 
--- ?nh placeholder
-(N'images/Home/placeholder.jpg', N'?nh placeholder', 1, 1),
--- ?nh Adidas (13 s?n ph?m x 4 ?nh = 52 ?nh)
-(N'adidas/samba-og-white-black-gum/main.jpg', N'Adidas Samba OG White Black Gum', 1, 1),
-(N'adidas/samba-og-white-black-gum/side.jpg', N'Adidas Samba OG - Side view', 2, 0),
-(N'adidas/samba-og-white-black-gum/back.jpg', N'Adidas Samba OG - Back view', 3, 0),
-(N'adidas/samba-og-white-black-gum/sole.jpg', N'Adidas Samba OG - Sole view', 4, 0),
-(N'adidas/samba-og-wonder-white-maroon/main.jpg', N'Adidas Samba OG Wonder White Maroon', 1, 1),
-(N'adidas/samba-og-wonder-white-maroon/side.jpg', N'Adidas Samba OG Maroon - Side view', 2, 0),
-(N'adidas/samba-og-wonder-white-maroon/detail.jpg', N'Adidas Samba OG Maroon - Detail view', 3, 0),
-(N'adidas/samba-og-wonder-white-maroon/back.jpg', N'Adidas Samba OG Maroon - Back view', 4, 0),
-(N'adidas/samba-og-cloud-white-wonder-quartz-wmns/main.jpg', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', 1, 1),
-(N'adidas/samba-og-cloud-white-wonder-quartz-wmns/side.jpg', N'Adidas Samba OG Quartz - Side view', 2, 0),
-(N'adidas/samba-og-cloud-white-wonder-quartz-wmns/detail.jpg', N'Adidas Samba OG Quartz - Detail view', 3, 0),
-(N'adidas/samba-og-cloud-white-wonder-quartz-wmns/lifestyle.jpg', N'Adidas Samba OG Quartz - Lifestyle', 4, 0),
-(N'adidas/gazelle-bold-year-of-the-snake/main.jpg', N'Adidas Gazelle Bold Year of the Snake', 1, 1),
-(N'adidas/gazelle-bold-year-of-the-snake/side.jpg', N'Adidas Gazelle Bold Snake - Side view', 2, 0),
-(N'adidas/gazelle-bold-year-of-the-snake/detail.jpg', N'Adidas Gazelle Bold Snake - Detail view', 3, 0),
-(N'adidas/gazelle-bold-year-of-the-snake/platform.jpg', N'Adidas Gazelle Bold Snake - Platform view', 4, 0),
-(N'adidas/yeezy-boost-350-v2-steel-grey/main.jpg', N'Adidas Yeezy Boost 350 V2 Steel Grey', 1, 1),
-(N'adidas/yeezy-boost-350-v2-steel-grey/side.jpg', N'Adidas Yeezy 350 V2 - Side view', 2, 0),
-(N'adidas/yeezy-boost-350-v2-steel-grey/primeknit.jpg', N'Adidas Yeezy 350 V2 - Primeknit detail', 3, 0),
-(N'adidas/yeezy-boost-350-v2-steel-grey/boost.jpg', N'Adidas Yeezy 350 V2 - Boost sole', 4, 0),
-(N'adidas/adifom-superstar-core-black/main.jpg', N'Adidas adiFOM Superstar Core Black', 1, 1),
-(N'adidas/adifom-superstar-core-black/side.jpg', N'Adidas adiFOM Superstar Black - Side view', 2, 0),
-(N'adidas/adifom-superstar-core-black/detail.jpg', N'Adidas adiFOM Superstar Black - Detail view', 3, 0),
-(N'adidas/adifom-superstar-core-black/foam.jpg', N'Adidas adiFOM Superstar Black - Foam tech', 4, 0),
-(N'adidas/adifom-superstar-core-white/main.jpg', N'Adidas adiFOM Superstar Core White', 1, 1),
-(N'adidas/adifom-superstar-core-white/side.jpg', N'Adidas adiFOM Superstar White - Side view', 2, 0),
-(N'adidas/adifom-superstar-core-white/detail.jpg', N'Adidas adiFOM Superstar White - Detail view', 3, 0),
-(N'adidas/adifom-superstar-core-white/clean.jpg', N'Adidas adiFOM Superstar White - Clean look', 4, 0),
-(N'adidas/adifom-supernova-triple-black/main.jpg', N'Adidas adiFOM Supernova Triple Black', 1, 1),
-(N'adidas/adifom-supernova-triple-black/side.jpg', N'Adidas adiFOM Supernova - Side view', 2, 0),
-(N'adidas/adifom-supernova-triple-black/running.jpg', N'Adidas adiFOM Supernova - Running view', 3, 0),
-(N'adidas/adifom-supernova-triple-black/tech.jpg', N'Adidas adiFOM Supernova - Tech detail', 4, 0),
-(N'adidas/ultraboost-21-cloud-white/main.jpg', N'Adidas UltraBoost 21 Cloud White', 1, 1),
-(N'adidas/ultraboost-21-cloud-white/side.jpg', N'Adidas UltraBoost 21 - Side view', 2, 0),
-(N'adidas/ultraboost-21-cloud-white/boost.jpg', N'Adidas UltraBoost 21 - Boost sole', 3, 0),
-(N'adidas/ultraboost-21-cloud-white/primeknit.jpg', N'Adidas UltraBoost 21 - Primeknit upper', 4, 0),
-(N'adidas/run-eq21-black/main.jpg', N'Adidas Run EQ21 Black', 1, 1),
-(N'adidas/run-eq21-black/side.jpg', N'Adidas Run EQ21 - Side view', 2, 0),
-(N'adidas/run-eq21-black/running.jpg', N'Adidas Run EQ21 - Running shot', 3, 0),
-(N'adidas/run-eq21-black/comfort.jpg', N'Adidas Run EQ21 - Comfort detail', 4, 0),
-(N'adidas/barricade-13-tennis-black/main.jpg', N'Adidas Barricade 13 Tennis Black', 1, 1),
-(N'adidas/barricade-13-tennis-black/side.jpg', N'Adidas Barricade 13 - Side view', 2, 0),
-(N'adidas/barricade-13-tennis-black/court.jpg', N'Adidas Barricade 13 - Court ready', 3, 0),
-(N'adidas/barricade-13-tennis-black/durability.jpg', N'Adidas Barricade 13 - Durability view', 4, 0),
-(N'adidas/adizero-ubersonic-4-crystal-white/main.jpg', N'Adidas Adizero Ubersonic 4 Crystal White', 1, 1),
-(N'adidas/adizero-ubersonic-4-crystal-white/side.jpg', N'Adidas Adizero Ubersonic 4 - Side view', 2, 0),
-(N'adidas/adizero-ubersonic-4-crystal-white/performance.jpg', N'Adidas Adizero Ubersonic 4 - Performance view', 3, 0),
-(N'adidas/adizero-ubersonic-4-crystal-white/sole.jpg', N'Adidas Adizero Ubersonic 4 - Sole view', 4, 0),
-(N'adidas/solematch-control-2-semi-flash-aqua/main.jpg', N'Adidas Solematch Control 2 Semi Flash Aqua', 1, 1),
-(N'adidas/solematch-control-2-semi-flash-aqua/side.jpg', N'Adidas Solematch Control 2 - Side view', 2, 0),
-(N'adidas/solematch-control-2-semi-flash-aqua/control.jpg', N'Adidas Solematch Control 2 - Control detail', 3, 0),
-(N'adidas/solematch-control-2-semi-flash-aqua/sole.jpg', N'Adidas Solematch Control 2 - Sole view', 4, 0),
--- ?nh Converse (14 s?n ph?m x 4 ?nh = 56 ?nh)
-(N'converse/chuck-taylor-all-star-low-flame/main.jpg', N'Converse Chuck Taylor All Star Low Flame', 1, 1),
-(N'converse/chuck-taylor-all-star-low-flame/side.jpg', N'Converse Chuck Taylor Flame - Side view', 2, 0),
-(N'converse/chuck-taylor-all-star-low-flame/pattern.jpg', N'Converse Chuck Taylor Flame - Pattern detail', 3, 0),
-(N'converse/chuck-taylor-all-star-low-flame/style.jpg', N'Converse Chuck Taylor Flame - Style shot', 4, 0),
-(N'converse/chuck-taylor-all-star-lift-ox-white-black/main.jpg', N'Converse Chuck Taylor All Star Lift Ox White Black', 1, 1),
-(N'converse/chuck-taylor-all-star-lift-ox-white-black/side.jpg', N'Converse Chuck Taylor Lift Ox - Side view', 2, 0),
-(N'converse/chuck-taylor-all-star-lift-ox-white-black/platform.jpg', N'Converse Chuck Taylor Lift Ox - Platform detail', 3, 0),
-(N'converse/chuck-taylor-all-star-lift-ox-white-black/lifestyle.jpg', N'Converse Chuck Taylor Lift Ox - Lifestyle', 4, 0),
-(N'converse/chuck-taylor-all-star-cruise-ox-black-white/main.jpg', N'Converse Chuck Taylor All Star Cruise OX Black White', 1, 1),
-(N'converse/chuck-taylor-all-star-cruise-ox-black-white/side.jpg', N'Converse Chuck Taylor Cruise OX - Side view', 2, 0),
-(N'converse/chuck-taylor-all-star-cruise-ox-black-white/sport.jpg', N'Converse Chuck Taylor Cruise OX - Sport detail', 3, 0),
-(N'converse/chuck-taylor-all-star-cruise-ox-black-white/sole.jpg', N'Converse Chuck Taylor Cruise OX - Sole view', 4, 0),
-(N'converse/chuck-taylor-all-star-eva-lift-platform-y2k-heart-high-top-black/main.jpg', N'Converse Chuck Taylor EVA Lift Platform Y2K Heart Black', 1, 1),
-(N'converse/chuck-taylor-all-star-eva-lift-platform-y2k-heart-high-top-black/side.jpg', N'Converse Chuck Taylor EVA Lift - Side view', 2, 0),
-(N'converse/chuck-taylor-all-star-eva-lift-platform-y2k-heart-high-top-black/heart.jpg', N'Converse Chuck Taylor EVA Lift - Heart detail', 3, 0),
-(N'converse/chuck-taylor-all-star-eva-lift-platform-y2k-heart-high-top-black/y2k.jpg', N'Converse Chuck Taylor EVA Lift - Y2K style', 4, 0),
-(N'converse/run-star-hike-low-black-gum/main.jpg', N'Converse Run Star Hike Low Black Gum', 1, 1),
-(N'converse/run-star-hike-low-black-gum/side.jpg', N'Converse Run Star Hike - Side view', 2, 0),
-(N'converse/run-star-hike-low-black-gum/chunky.jpg', N'Converse Run Star Hike - Chunky sole', 3, 0),
-(N'converse/run-star-hike-low-black-gum/street.jpg', N'Converse Run Star Hike - Street style', 4, 0),
-(N'converse/run-star-motion-low-white/main.jpg', N'Converse Run Star Motion Low White', 1, 1),
-(N'converse/run-star-motion-low-white/side.jpg', N'Converse Run Star Motion - Side view', 2, 0),
-(N'converse/run-star-motion-low-white/clean.jpg', N'Converse Run Star Motion - Clean look', 3, 0),
-(N'converse/run-star-motion-low-white/modern.jpg', N'Converse Run Star Motion - Modern design', 4, 0),
-(N'converse/aeon-active-cx-ox-egret/main.jpg', N'Converse Aeon Active CX OX Egret', 1, 1),
-(N'converse/aeon-active-cx-ox-egret/side.jpg', N'Converse Aeon Active CX - Side view', 2, 0),
-(N'converse/aeon-active-cx-ox-egret/cx.jpg', N'Converse Aeon Active CX - CX technology', 3, 0),
-(N'converse/aeon-active-cx-ox-egret/sole.jpg', N'Converse Aeon Active CX - Sole view', 4, 0),
-(N'converse/aeon-active-cx-himalayan-salt/main.jpg', N'Converse Aeon Active CX Himalayan Salt', 1, 1),
-(N'converse/aeon-active-cx-himalayan-salt/side.jpg', N'Converse Aeon Active CX Salt - Side view', 2, 0),
-(N'converse/aeon-active-cx-himalayan-salt/color.jpg', N'Converse Aeon Active CX Salt - Color detail', 3, 0),
-(N'converse/aeon-active-cx-himalayan-salt/sole.jpg', N'Converse Aeon Active CX Salt - Sole view', 4, 0),
-(N'converse/comme-des-garcons-play-x-converse-chuck-taylor-all-star-70-hi-black/main.jpg', N'CDG x Converse Chuck 70 Hi Black', 1, 1),
-(N'converse/comme-des-garcons-play-x-converse-chuck-taylor-all-star-70-hi-black/side.jpg', N'CDG x Converse Chuck 70 Hi - Side view', 2, 0),
-(N'converse/comme-des-garcons-play-x-converse-chuck-taylor-all-star-70-hi-black/heart.jpg', N'CDG x Converse Chuck 70 Hi - Heart logo', 3, 0),
-(N'converse/comme-des-garcons-play-x-converse-chuck-taylor-all-star-70-hi-black/collaboration.jpg', N'CDG x Converse Chuck 70 Hi - Collaboration detail', 4, 0),
-(N'converse/comme-des-garcons-play-x-chuck-70-low-black-white/main.jpg', N'CDG x Converse Chuck 70 Low Black White', 1, 1),
-(N'converse/comme-des-garcons-play-x-chuck-70-low-black-white/side.jpg', N'CDG x Converse Chuck 70 Low - Side view', 2, 0),
-(N'converse/comme-des-garcons-play-x-chuck-70-low-black-white/heart.jpg', N'CDG x Converse Chuck 70 Low - Heart detail', 3, 0),
-(N'converse/comme-des-garcons-play-x-chuck-70-low-black-white/sole.jpg', N'CDG x Converse Chuck 70 Low - Sole view', 4, 0),
-(N'converse/comme-des-garcons-x-chuck-taylor-all-star-hi-milk/main.jpg', N'CDG x Converse Chuck Taylor All Star Hi Milk', 1, 1),
-(N'converse/comme-des-garcons-x-chuck-taylor-all-star-hi-milk/side.jpg', N'CDG x Converse Chuck Taylor Hi Milk - Side view', 2, 0),
-(N'converse/comme-des-garcons-x-chuck-taylor-all-star-hi-milk/clean.jpg', N'CDG x Converse Chuck Taylor Hi Milk - Clean aesthetic', 3, 0),
-(N'converse/comme-des-garcons-x-chuck-taylor-all-star-hi-milk/sole.jpg', N'CDG x Converse Chuck Taylor Hi Milk - Sole view', 4, 0),
-(N'converse/kim-jones-x-converse-chuck-70-all-star-black/main.jpg', N'Kim Jones x Converse Chuck 70 All Star Black', 1, 1),
-(N'converse/kim-jones-x-converse-chuck-70-all-star-black/side.jpg', N'Kim Jones x Converse Chuck 70 - Side view', 2, 0),
-(N'converse/kim-jones-x-converse-chuck-70-all-star-black/designer.jpg', N'Kim Jones x Converse Chuck 70 - Designer detail', 3, 0),
-(N'converse/kim-jones-x-converse-chuck-70-all-star-black/sole.jpg', N'Kim Jones x Converse Chuck 70 - Sole view', 4, 0),
-(N'converse/x-rick-owens-drkshdw-weapon-beige-black/main.jpg', N'Converse x Rick Owens DRKSHDW Weapon Beige Black', 1, 1),
-(N'converse/x-rick-owens-drkshdw-weapon-beige-black/side.jpg', N'Converse x Rick Owens DRKSHDW - Side view', 2, 0),
-(N'converse/x-rick-owens-drkshdw-weapon-beige-black/avant-garde.jpg', N'Converse x Rick Owens DRKSHDW - Avant-garde design', 3, 0),
-(N'converse/x-rick-owens-drkshdw-weapon-beige-black/fashion.jpg', N'Converse x Rick Owens DRKSHDW - Fashion forward', 4, 0),
-(N'converse/back-to-the-future-converse-all-star-us-mt-hi-black/main.jpg', N'Back To The Future x Converse All Star US MT Hi Black', 1, 1),
-(N'converse/back-to-the-future-converse-all-star-us-mt-hi-black/side.jpg', N'BTTF x Converse All Star - Side view', 2, 0),
-(N'converse/back-to-the-future-converse-all-star-us-mt-hi-black/movie.jpg', N'BTTF x Converse All Star - Movie reference', 3, 0),
-(N'converse/back-to-the-future-converse-all-star-us-mt-hi-black/scifi.jpg', N'BTTF x Converse All Star - Sci-fi style', 4, 0),
--- ?nh MLB (13 s?n ph?m x 4 ?nh = 52 ?nh)
-(N'mlb/bigball-chunky-diamond-monogram-new-york-yankees-black/main.jpg', N'MLB BigBall Chunky Diamond Monogram NY Yankees Black', 1, 1),
-(N'mlb/bigball-chunky-diamond-monogram-new-york-yankees-black/side.jpg', N'MLB BigBall Chunky NY Yankees - Side view', 2, 0),
-(N'mlb/bigball-chunky-diamond-monogram-new-york-yankees-black/monogram.jpg', N'MLB BigBall Chunky NY Yankees - Monogram detail', 3, 0),
-(N'mlb/bigball-chunky-diamond-monogram-new-york-yankees-black/team.jpg', N'MLB BigBall Chunky NY Yankees - Team spirit', 4, 0),
-(N'mlb/bigball-chunky-diamond-monogram-boston-red-sox-beige/main.jpg', N'MLB BigBall Chunky Diamond Monogram Boston Red Sox Beige', 1, 1),
-(N'mlb/bigball-chunky-diamond-monogram-boston-red-sox-beige/side.jpg', N'MLB BigBall Chunky Red Sox - Side view', 2, 0),
-(N'mlb/bigball-chunky-diamond-monogram-boston-red-sox-beige/beige.jpg', N'MLB BigBall Chunky Red Sox - Beige colorway', 3, 0),
-(N'mlb/bigball-chunky-diamond-monogram-boston-red-sox-beige/sole.jpg', N'MLB BigBall Chunky Red Sox - Sole view', 4, 0),
-(N'mlb/bigball-chunky-a-new-york-yankees/main.jpg', N'MLB Bigball Chunky A New York Yankees', 1, 1),
-(N'mlb/bigball-chunky-a-new-york-yankees/side.jpg', N'MLB Bigball Chunky A Yankees - Side view', 2, 0),
-(N'mlb/bigball-chunky-a-new-york-yankees/classic.jpg', N'MLB Bigball Chunky A Yankees - Classic design', 3, 0),
-(N'mlb/bigball-chunky-a-new-york-yankees/sole.jpg', N'MLB Bigball Chunky A Yankees - Sole view', 4, 0),
-(N'mlb/bigball-chunky-p-boston-red-sox/main.jpg', N'MLB BigBall Chunky P Boston Red Sox', 1, 1),
-(N'mlb/bigball-chunky-p-boston-red-sox/side.jpg', N'MLB BigBall Chunky P Red Sox - Side view', 2, 0),
-(N'mlb/bigball-chunky-p-boston-red-sox/performance.jpg', N'MLB BigBall Chunky P Red Sox - Performance style', 3, 0),
-(N'mlb/bigball-chunky-p-boston-red-sox/sole.jpg', N'MLB BigBall Chunky P Red Sox - Sole view', 4, 0),
-(N'mlb/chunky-liner-new-york-yankees-grey/main.jpg', N'MLB Chunky Liner New York Yankees Grey', 1, 1),
-(N'mlb/chunky-liner-new-york-yankees-grey/side.jpg', N'MLB Chunky Liner Yankees Grey - Side view', 2, 0),
-(N'mlb/chunky-liner-new-york-yankees-grey/minimal.jpg', N'MLB Chunky Liner Yankees Grey - Minimal design', 3, 0),
-(N'mlb/chunky-liner-new-york-yankees-grey/sole.jpg', N'MLB Chunky Liner Yankees Grey - Sole view', 4, 0),
-(N'mlb/chunky-liner-low-boston-red-sox-beige/main.jpg', N'MLB Chunky Liner Low Boston Red Sox Beige', 1, 1),
-(N'mlb/chunky-liner-low-boston-red-sox-beige/side.jpg', N'MLB Chunky Liner Low Red Sox - Side view', 2, 0),
-(N'mlb/chunky-liner-low-boston-red-sox-beige/low.jpg', N'MLB Chunky Liner Low Red Sox - Low profile', 3, 0),
-(N'mlb/chunky-liner-low-boston-red-sox-beige/sole.jpg', N'MLB Chunky Liner Low Red Sox - Sole view', 4, 0),
-(N'mlb/chunky-liner-mid-denim-boston-red-sox-d-blue/main.jpg', N'MLB Chunky Liner Mid Denim Boston Red Sox D.Blue', 1, 1),
-(N'mlb/chunky-liner-mid-denim-boston-red-sox-d-blue/side.jpg', N'MLB Chunky Liner Mid Denim Red Sox - Side view', 2, 0),
-(N'mlb/chunky-liner-mid-denim-boston-red-sox-d-blue/denim.jpg', N'MLB Chunky Liner Mid Denim Red Sox - Denim texture', 3, 0),
-(N'mlb/chunky-liner-mid-denim-boston-red-sox-d-blue/sole.jpg', N'MLB Chunky Liner Mid Denim Red Sox - Sole view', 4, 0),
-(N'mlb/chunky-liner-mid-denim-new-york-yankees-d-navy/main.jpg', N'MLB Chunky Liner Mid Denim New York Yankees D.Navy', 1, 1),
-(N'mlb/chunky-liner-mid-denim-new-york-yankees-d-navy/side.jpg', N'MLB Chunky Liner Mid Denim Yankees - Side view', 2, 0),
-(N'mlb/chunky-liner-mid-denim-new-york-yankees-d-navy/navy.jpg', N'MLB Chunky Liner Mid Denim Yankees - Navy denim', 3, 0),
-(N'mlb/chunky-liner-mid-denim-new-york-yankees-d-navy/sole.jpg', N'MLB Chunky Liner Mid Denim Yankees - Sole view', 4, 0),
-(N'mlb/chunky-liner-sl-saffiano-boston-red-sox/main.jpg', N'MLB Chunky Liner SL Saffiano Boston Red Sox', 1, 1),
-(N'mlb/chunky-liner-sl-saffiano-boston-red-sox/side.jpg', N'MLB Chunky Liner SL Saffiano - Side view', 2, 0),
-(N'mlb/chunky-liner-sl-saffiano-boston-red-sox/leather.jpg', N'MLB Chunky Liner SL Saffiano - Leather texture', 3, 0),
-(N'mlb/chunky-liner-sl-saffiano-boston-red-sox/sole.jpg', N'MLB Chunky Liner SL Saffiano - Sole view', 4, 0),
-(N'mlb/liner-basic-new-york-yankees-black/main.jpg', N'MLB Liner Basic New York Yankees Black', 1, 1),
-(N'mlb/liner-basic-new-york-yankees-black/side.jpg', N'MLB Liner Basic Yankees Black - Side view', 2, 0),
-(N'mlb/liner-basic-new-york-yankees-black/simple.jpg', N'MLB Liner Basic Yankees Black - Simple design', 3, 0),
-(N'mlb/liner-basic-new-york-yankees-black/sole.jpg', N'MLB Liner Basic Yankees Black - Sole view', 4, 0),
-(N'mlb/liner-basic-new-york-yankees-green/main.jpg', N'MLB Liner Basic New York Yankees Green', 1, 1),
-(N'mlb/liner-basic-new-york-yankees-green/side.jpg', N'MLB Liner Basic Yankees Green - Side view', 2, 0),
-(N'mlb/liner-basic-new-york-yankees-green/unique.jpg', N'MLB Liner Basic Yankees Green - Unique colorway', 3, 0),
-(N'mlb/liner-basic-new-york-yankees-green/sole.jpg', N'MLB Liner Basic Yankees Green - Sole view', 4, 0),
-(N'mlb/playball-mule-dia-monogram-new-york-yankees-beige/main.jpg', N'MLB Playball Mule Dia Monogram New York Yankees Beige', 1, 1),
-(N'mlb/playball-mule-dia-monogram-new-york-yankees-beige/side.jpg', N'MLB Playball Mule Yankees - Side view', 2, 0),
-(N'mlb/playball-mule-dia-monogram-new-york-yankees-beige/slip-on.jpg', N'MLB Playball Mule Yankees - Slip-on style', 3, 0),
-(N'mlb/playball-mule-dia-monogram-new-york-yankees-beige/sole.jpg', N'MLB Playball Mule Yankees - Sole view', 4, 0),
-(N'mlb/playball-mule-mono-ny-new-york-yankees/main.jpg', N'MLB Playball Mule Mono NY New York Yankees', 1, 1),
-(N'mlb/playball-mule-mono-ny-new-york-yankees/side.jpg', N'MLB Playball Mule Mono NY - Side view', 2, 0),
-(N'mlb/playball-mule-mono-ny-new-york-yankees/monogram.jpg', N'MLB Playball Mule Mono NY - Monogram design', 3, 0),
-(N'mlb/playball-mule-mono-ny-new-york-yankees/sole.jpg', N'MLB Playball Mule Mono NY - Sole view', 4, 0);
+
+-- Banner images cho trang chủ (ID: 1-3)
+('/images/Home/banner adidas.jpg', N'Banner Adidas', 1, 1),
+('/images/Home/banner converse.jpg', N'Banner Converse', 1, 1),
+('/images/Home/banner mlb.jpg', N'Banner MLB', 1, 1),
+
+-- ========================================
+-- ADIDAS PRODUCTS (13 sản phẩm) - ID: 4-55
+-- ========================================
+
+-- 1. Samba OG White Black Gum (ID: 4-7)
+('/images/adidas/samba-og-white-black-gum/main.jpg', N'Adidas Samba OG White Black Gum - Main', 1, 1),
+('/images/adidas/samba-og-white-black-gum/2.jpg', N'Adidas Samba OG White Black Gum - Side', 2, 0),
+('/images/adidas/samba-og-white-black-gum/3.jpg', N'Adidas Samba OG White Black Gum - Detail', 3, 0),
+('/images/adidas/samba-og-white-black-gum/4.jpg', N'Adidas Samba OG White Black Gum - Back', 4, 0),
+
+-- 2. Samba OG Wonder White Maroon (ID: 8-11)
+('/images/adidas/samba-og-wonder-white-maroon/main.jpg', N'Adidas Samba OG Wonder White Maroon - Main', 1, 1),
+('/images/adidas/samba-og-wonder-white-maroon/2.jpg', N'Adidas Samba OG Wonder White Maroon - Side', 2, 0),
+('/images/adidas/samba-og-wonder-white-maroon/3.jpg', N'Adidas Samba OG Wonder White Maroon - Detail', 3, 0),
+('/images/adidas/samba-og-wonder-white-maroon/4.jpg', N'Adidas Samba OG Wonder White Maroon - Back', 4, 0),
+
+-- 3. Samba OG Cloud White Wonder Quartz Wmns (ID: 12-15)
+('/images/adidas/samba-og-cloud-white-wonder-quartz-wmns/main.jpg', N'Adidas Samba OG Cloud White Wonder Quartz Wmns - Main', 1, 1),
+('/images/adidas/samba-og-cloud-white-wonder-quartz-wmns/2.jpg', N'Adidas Samba OG Cloud White Wonder Quartz Wmns - Side', 2, 0),
+('/images/adidas/samba-og-cloud-white-wonder-quartz-wmns/3.jpg', N'Adidas Samba OG Cloud White Wonder Quartz Wmns - Detail', 3, 0),
+('/images/adidas/samba-og-cloud-white-wonder-quartz-wmns/4.jpg', N'Adidas Samba OG Cloud White Wonder Quartz Wmns - Back', 4, 0),
+
+-- 4. Gazelle Bold Year of the Snake (ID: 16-19)
+('/images/adidas/gazelle-bold-year-of-the-snake/main.jpg', N'Adidas Gazelle Bold Year of the Snake - Main', 1, 1),
+('/images/adidas/gazelle-bold-year-of-the-snake/2.jpg', N'Adidas Gazelle Bold Year of the Snake - Side', 2, 0),
+('/images/adidas/gazelle-bold-year-of-the-snake/3.jpg', N'Adidas Gazelle Bold Year of the Snake - Detail', 3, 0),
+('/images/adidas/gazelle-bold-year-of-the-snake/4.jpg', N'Adidas Gazelle Bold Year of the Snake - Back', 4, 0),
+
+-- 5. Yeezy Boost 350 V2 Steel Grey (ID: 20-23)
+('/images/adidas/yeezy-boost-350-v2-steel-grey/main.jpg', N'Adidas Yeezy Boost 350 V2 Steel Grey - Main', 1, 1),
+('/images/adidas/yeezy-boost-350-v2-steel-grey/2.jpg', N'Adidas Yeezy Boost 350 V2 Steel Grey - Side', 2, 0),
+('/images/adidas/yeezy-boost-350-v2-steel-grey/3.jpg', N'Adidas Yeezy Boost 350 V2 Steel Grey - Detail', 3, 0),
+('/images/adidas/yeezy-boost-350-v2-steel-grey/4.jpg', N'Adidas Yeezy Boost 350 V2 Steel Grey - Back', 4, 0),
+
+-- 6. Adifom Superstar Core Black (ID: 24-27)
+('/images/adidas/adifom-superstar-core-black/main.jpg', N'Adidas Adifom Superstar Core Black - Main', 1, 1),
+('/images/adidas/adifom-superstar-core-black/2.jpg', N'Adidas Adifom Superstar Core Black - Side', 2, 0),
+('/images/adidas/adifom-superstar-core-black/3.jpg', N'Adidas Adifom Superstar Core Black - Detail', 3, 0),
+('/images/adidas/adifom-superstar-core-black/4.jpg', N'Adidas Adifom Superstar Core Black - Back', 4, 0),
+
+-- 7. Adifom Superstar Core White (ID: 28-31)
+('/images/adidas/adifom-superstar-core-white/main.jpg', N'Adidas Adifom Superstar Core White - Main', 1, 1),
+('/images/adidas/adifom-superstar-core-white/2.jpg', N'Adidas Adifom Superstar Core White - Side', 2, 0),
+('/images/adidas/adifom-superstar-core-white/3.jpg', N'Adidas Adifom Superstar Core White - Detail', 3, 0),
+('/images/adidas/adifom-superstar-core-white/4.jpg', N'Adidas Adifom Superstar Core White - Back', 4, 0),
+
+-- 8. Adifom Supernova Triple Black (ID: 32-35)
+('/images/adidas/adifom-supernova-triple-black/main.jpg', N'Adidas Adifom Supernova Triple Black - Main', 1, 1),
+('/images/adidas/adifom-supernova-triple-black/2.jpg', N'Adidas Adifom Supernova Triple Black - Side', 2, 0),
+('/images/adidas/adifom-supernova-triple-black/3.jpg', N'Adidas Adifom Supernova Triple Black - Detail', 3, 0),
+('/images/adidas/adifom-supernova-triple-black/4.jpg', N'Adidas Adifom Supernova Triple Black - Back', 4, 0),
+
+-- 9. UltraBoost 21 Cloud White (ID: 36-39)
+('/images/adidas/th-thao-adidas-ultraboost-21-cloud-white/main.jpg', N'Adidas UltraBoost 21 Cloud White - Main', 1, 1),
+('/images/adidas/th-thao-adidas-ultraboost-21-cloud-white/2.jpg', N'Adidas UltraBoost 21 Cloud White - Side', 2, 0),
+('/images/adidas/th-thao-adidas-ultraboost-21-cloud-white/3.jpg', N'Adidas UltraBoost 21 Cloud White - Detail', 3, 0),
+('/images/adidas/th-thao-adidas-ultraboost-21-cloud-white/4.jpg', N'Adidas UltraBoost 21 Cloud White - Back', 4, 0),
+
+-- 10. Run EQ21 Black (ID: 40-45)
+('/images/adidas/run-eq21-black/main.jpg', N'Adidas Run EQ21 Black - Main', 1, 1),
+('/images/adidas/run-eq21-black/2.jpg', N'Adidas Run EQ21 Black - Side', 2, 0),
+('/images/adidas/run-eq21-black/3.jpg', N'Adidas Run EQ21 Black - Detail', 3, 0),
+('/images/adidas/run-eq21-black/4.jpg', N'Adidas Run EQ21 Black - Back', 4, 0),
+('/images/adidas/run-eq21-black/5.jpg', N'Adidas Run EQ21 Black - Sole', 5, 0),
+('/images/adidas/run-eq21-black/6.jpg', N'Adidas Run EQ21 Black - Lifestyle', 6, 0),
+
+-- 11. Barricade 13 Tennis Black (ID: 46-49)
+('/images/adidas/barricade-13-tennis-black/main.jpg', N'Adidas Barricade 13 Tennis Black - Main', 1, 1),
+('/images/adidas/barricade-13-tennis-black/2.jpg', N'Adidas Barricade 13 Tennis Black - Side', 2, 0),
+('/images/adidas/barricade-13-tennis-black/3.jpg', N'Adidas Barricade 13 Tennis Black - Detail', 3, 0),
+('/images/adidas/barricade-13-tennis-black/4.jpg', N'Adidas Barricade 13 Tennis Black - Back', 4, 0),
+
+-- 12. Adizero Ubersonic 4 Crystal White (ID: 50-53)
+('/images/adidas/tennispickleball-adidas-adizero-ubersonic-4-crystal-white-semi-flash-aqua/main.jpg', N'Adidas Adizero Ubersonic 4 Crystal White - Main', 1, 1),
+('/images/adidas/tennispickleball-adidas-adizero-ubersonic-4-crystal-white-semi-flash-aqua/2.jpg', N'Adidas Adizero Ubersonic 4 Crystal White - Side', 2, 0),
+('/images/adidas/tennispickleball-adidas-adizero-ubersonic-4-crystal-white-semi-flash-aqua/3.jpg', N'Adidas Adizero Ubersonic 4 Crystal White - Detail', 3, 0),
+('/images/adidas/tennispickleball-adidas-adizero-ubersonic-4-crystal-white-semi-flash-aqua/4.jpg', N'Adidas Adizero Ubersonic 4 Crystal White - Back', 4, 0),
+
+-- 13. Solematch Control 2 Semi Flash Aqua (ID: 54-57)
+('/images/adidas/tennispickleball-adidas-solematch-control-2-semi-flash-aqua/main.jpg', N'Adidas Solematch Control 2 Semi Flash Aqua - Main', 1, 1),
+('/images/adidas/tennispickleball-adidas-solematch-control-2-semi-flash-aqua/2.jpg', N'Adidas Solematch Control 2 Semi Flash Aqua - Side', 2, 0),
+('/images/adidas/tennispickleball-adidas-solematch-control-2-semi-flash-aqua/3.jpg', N'Adidas Solematch Control 2 Semi Flash Aqua - Detail', 3, 0),
+('/images/adidas/tennispickleball-adidas-solematch-control-2-semi-flash-aqua/4.jpg', N'Adidas Solematch Control 2 Semi Flash Aqua - Back', 4, 0),
+
+-- ========================================
+-- CONVERSE PRODUCTS (14 sản phẩm)
+-- ========================================
+
+-- 1. Aeon Active CX Himalayan Salt
+('/images/converse/aeon-active-cx-himalayan-salt/main.jpg', N'Converse Aeon Active CX Himalayan Salt - Main', 1, 1),
+('/images/converse/aeon-active-cx-himalayan-salt/2.jpg', N'Converse Aeon Active CX Himalayan Salt - Side', 2, 0),
+('/images/converse/aeon-active-cx-himalayan-salt/3.jpg', N'Converse Aeon Active CX Himalayan Salt - Detail', 3, 0),
+('/images/converse/aeon-active-cx-himalayan-salt/4.jpg', N'Converse Aeon Active CX Himalayan Salt - Back', 4, 0),
+
+-- 2. Aeon Active CX OX Egret
+('/images/converse/aeon-active-cx-ox-egret/main.jpg', N'Converse Aeon Active CX OX Egret - Main', 1, 1),
+('/images/converse/aeon-active-cx-ox-egret/2.jpg', N'Converse Aeon Active CX OX Egret - Side', 2, 0),
+('/images/converse/aeon-active-cx-ox-egret/3.jpg', N'Converse Aeon Active CX OX Egret - Detail', 3, 0),
+('/images/converse/aeon-active-cx-ox-egret/4.jpg', N'Converse Aeon Active CX OX Egret - Back', 4, 0),
+
+-- 3. Back to the Future All Star US MT Hi Black
+('/images/converse/back-to-the-future-converse-all-star-us-mt-hi-black/main.jpg', N'Back To The Future x Converse All Star US MT Hi Black - Main', 1, 1),
+('/images/converse/back-to-the-future-converse-all-star-us-mt-hi-black/2.jpg', N'Back To The Future x Converse All Star US MT Hi Black - Side', 2, 0),
+('/images/converse/back-to-the-future-converse-all-star-us-mt-hi-black/3.jpg', N'Back To The Future x Converse All Star US MT Hi Black - Detail', 3, 0),
+('/images/converse/back-to-the-future-converse-all-star-us-mt-hi-black/4.jpg', N'Back To The Future x Converse All Star US MT Hi Black - Back', 4, 0),
+
+-- 4. Chuck Taylor All Star Cruise OX Black White
+('/images/converse/chuck-taylor-all-star-cruise-ox-black-white/main.jpg', N'Converse Chuck Taylor All Star Cruise OX Black White - Main', 1, 1),
+('/images/converse/chuck-taylor-all-star-cruise-ox-black-white/2.jpg', N'Converse Chuck Taylor All Star Cruise OX Black White - Side', 2, 0),
+('/images/converse/chuck-taylor-all-star-cruise-ox-black-white/3.jpg', N'Converse Chuck Taylor All Star Cruise OX Black White - Detail', 3, 0),
+('/images/converse/chuck-taylor-all-star-cruise-ox-black-white/4.jpg', N'Converse Chuck Taylor All Star Cruise OX Black White - Back', 4, 0),
+
+-- 5. Chuck Taylor All Star Lift OX White Black
+('/images/converse/chuck-taylor-all-star-lift-ox-white-black/main.jpg', N'Converse Chuck Taylor All Star Lift OX White Black - Main', 1, 1),
+('/images/converse/chuck-taylor-all-star-lift-ox-white-black/2.jpg', N'Converse Chuck Taylor All Star Lift OX White Black - Side', 2, 0),
+('/images/converse/chuck-taylor-all-star-lift-ox-white-black/3.jpg', N'Converse Chuck Taylor All Star Lift OX White Black - Detail', 3, 0),
+('/images/converse/chuck-taylor-all-star-lift-ox-white-black/4.jpg', N'Converse Chuck Taylor All Star Lift OX White Black - Back', 4, 0),
+
+-- 6. Chuck Taylor All Star Low Flame
+('/images/converse/chuck-taylor-all-star-low-flame/main.webp', N'Converse Chuck Taylor All Star Low Flame - Main', 1, 1),
+('/images/converse/chuck-taylor-all-star-low-flame/2.webp', N'Converse Chuck Taylor All Star Low Flame - Side', 2, 0),
+('/images/converse/chuck-taylor-all-star-low-flame/3.webp', N'Converse Chuck Taylor All Star Low Flame - Detail', 3, 0),
+('/images/converse/chuck-taylor-all-star-low-flame/4.webp', N'Converse Chuck Taylor All Star Low Flame - Back', 4, 0),
+
+-- 7. CDG Play x Chuck 70 Low Black White
+('/images/converse/comme-des-gar-ons-play-x-chuck-70-low-black-white/main.webp', N'CDG Play x Converse Chuck 70 Low Black White - Main', 1, 1),
+('/images/converse/comme-des-gar-ons-play-x-chuck-70-low-black-white/2.webp', N'CDG Play x Converse Chuck 70 Low Black White - Side', 2, 0),
+('/images/converse/comme-des-gar-ons-play-x-chuck-70-low-black-white/3.webp', N'CDG Play x Converse Chuck 70 Low Black White - Detail', 3, 0),
+('/images/converse/comme-des-gar-ons-play-x-chuck-70-low-black-white/4.webp', N'CDG Play x Converse Chuck 70 Low Black White - Back', 4, 0),
+
+-- 8. CDG x Chuck Taylor All Star Hi Milk  
+('/images/converse/comme-des-gar-ons-x-chuck-taylor-all-star-hi-milk/main.webp', N'CDG x Converse Chuck Taylor All Star Hi Milk - Main', 1, 1),
+('/images/converse/comme-des-gar-ons-x-chuck-taylor-all-star-hi-milk/2.webp', N'CDG x Converse Chuck Taylor All Star Hi Milk - Side', 2, 0),
+('/images/converse/comme-des-gar-ons-x-chuck-taylor-all-star-hi-milk/3.webp', N'CDG x Converse Chuck Taylor All Star Hi Milk - Detail', 3, 0),
+('/images/converse/comme-des-gar-ons-x-chuck-taylor-all-star-hi-milk/4.webp', N'CDG x Converse Chuck Taylor All Star Hi Milk - Back', 4, 0),
+
+-- 9. Kim Jones x Chuck 70 All Star Black
+('/images/converse/kim-jones-x-converse-chuck-70-all-star-black/main.jpg', N'Kim Jones x Converse Chuck 70 All Star Black - Main', 1, 1),
+('/images/converse/kim-jones-x-converse-chuck-70-all-star-black/2.jpg', N'Kim Jones x Converse Chuck 70 All Star Black - Side', 2, 0),
+('/images/converse/kim-jones-x-converse-chuck-70-all-star-black/3.jpg', N'Kim Jones x Converse Chuck 70 All Star Black - Detail', 3, 0),
+('/images/converse/kim-jones-x-converse-chuck-70-all-star-black/4.jpg', N'Kim Jones x Converse Chuck 70 All Star Black - Back', 4, 0),
+
+-- 10. Run Star Hike Low Black Gum
+('/images/converse/run-star-hike-low-black-gum/main.jpg', N'Converse Run Star Hike Low Black Gum - Main', 1, 1),
+('/images/converse/run-star-hike-low-black-gum/2.jpg', N'Converse Run Star Hike Low Black Gum - Side', 2, 0),
+('/images/converse/run-star-hike-low-black-gum/3.jpg', N'Converse Run Star Hike Low Black Gum - Detail', 3, 0),
+('/images/converse/run-star-hike-low-black-gum/4.jpg', N'Converse Run Star Hike Low Black Gum - Back', 4, 0),
+
+-- 11. Run Star Motion Low White
+('/images/converse/run-star-motion-low-white/main.jpg', N'Converse Run Star Motion Low White - Main', 1, 1),
+('/images/converse/run-star-motion-low-white/2.jpg', N'Converse Run Star Motion Low White - Side', 2, 0),
+('/images/converse/run-star-motion-low-white/3.jpg', N'Converse Run Star Motion Low White - Detail', 3, 0),
+('/images/converse/run-star-motion-low-white/4.jpg', N'Converse Run Star Motion Low White - Back', 4, 0),
+
+-- 12. CDG Play x Chuck Taylor All Star 70 Hi Black (Thư mục đặc biệt)
+('/images/converse/Shoes-Comme-des-Garcons-Play-x-Converse-Chuck-Taylor-All-Star-70-Hi-Black-150204C/main.jpg', N'CDG Play x Converse Chuck Taylor All Star 70 Hi Black - Main', 1, 1),
+('/images/converse/Shoes-Comme-des-Garcons-Play-x-Converse-Chuck-Taylor-All-Star-70-Hi-Black-150204C/2.jpg', N'CDG Play x Converse Chuck Taylor All Star 70 Hi Black - Side', 2, 0),
+('/images/converse/Shoes-Comme-des-Garcons-Play-x-Converse-Chuck-Taylor-All-Star-70-Hi-Black-150204C/3.jpg', N'CDG Play x Converse Chuck Taylor All Star 70 Hi Black - Detail', 3, 0),
+('/images/converse/Shoes-Comme-des-Garcons-Play-x-Converse-Chuck-Taylor-All-Star-70-Hi-Black-150204C/4.jpg', N'CDG Play x Converse Chuck Taylor All Star 70 Hi Black - Back', 4, 0),
+
+-- 13. Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black (Thư mục đặc biệt)
+('/images/converse/Shoes-Converse-Chuck-Taylor-All-Star-EVA-Lift-Platform-Y2K-Heart-High-Top-Black-A09121C/main.jpg', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black - Main', 1, 1),
+('/images/converse/Shoes-Converse-Chuck-Taylor-All-Star-EVA-Lift-Platform-Y2K-Heart-High-Top-Black-A09121C/2.jpg', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black - Side', 2, 0),
+('/images/converse/Shoes-Converse-Chuck-Taylor-All-Star-EVA-Lift-Platform-Y2K-Heart-High-Top-Black-A09121C/3.jpg', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black - Detail', 3, 0),
+('/images/converse/Shoes-Converse-Chuck-Taylor-All-Star-EVA-Lift-Platform-Y2K-Heart-High-Top-Black-A09121C/4.jpg', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black - Back', 4, 0),
+
+-- 14. x Rick Owens DRKSHDW Weapon Beige Black
+('/images/converse/x-rick-owens-drkshdw-weapon-beige-black/main.jpg', N'Converse x Rick Owens DRKSHDW Weapon Beige Black - Main', 1, 1),
+('/images/converse/x-rick-owens-drkshdw-weapon-beige-black/2.jpg', N'Converse x Rick Owens DRKSHDW Weapon Beige Black - Side', 2, 0),
+('/images/converse/x-rick-owens-drkshdw-weapon-beige-black/3.jpg', N'Converse x Rick Owens DRKSHDW Weapon Beige Black - Detail', 3, 0),
+('/images/converse/x-rick-owens-drkshdw-weapon-beige-black/4.jpg', N'Converse x Rick Owens DRKSHDW Weapon Beige Black - Back', 4, 0),
+
+-- ========================================
+-- MLB PRODUCTS (13 sản phẩm)
+-- ========================================
+
+-- 1. Bigball Chunky A New York Yankees  
+('/images/mlb/bigball-chunky-a-new-york-yankees-3ashc101n/main.webp', N'MLB Bigball Chunky A New York Yankees - Main', 1, 1),
+('/images/mlb/bigball-chunky-a-new-york-yankees-3ashc101n/2.webp', N'MLB Bigball Chunky A New York Yankees - Side', 2, 0),
+('/images/mlb/bigball-chunky-a-new-york-yankees-3ashc101n/3.webp', N'MLB Bigball Chunky A New York Yankees - Detail', 3, 0),
+('/images/mlb/bigball-chunky-a-new-york-yankees-3ashc101n/4.webp', N'MLB Bigball Chunky A New York Yankees - Back', 4, 0),
+
+-- 2. Bigball Chunky Diamond Monogram Boston Red Sox D Beige
+('/images/mlb/bigball-chunky-diamond-monogram-boston-red-sox-d-beige-3ashcdm2n/main.webp', N'MLB Bigball Chunky Diamond Monogram Boston Red Sox D Beige - Main', 1, 1),
+('/images/mlb/bigball-chunky-diamond-monogram-boston-red-sox-d-beige-3ashcdm2n/2.webp', N'MLB Bigball Chunky Diamond Monogram Boston Red Sox D Beige - Side', 2, 0),
+('/images/mlb/bigball-chunky-diamond-monogram-boston-red-sox-d-beige-3ashcdm2n/3.webp', N'MLB Bigball Chunky Diamond Monogram Boston Red Sox D Beige - Detail', 3, 0),
+('/images/mlb/bigball-chunky-diamond-monogram-boston-red-sox-d-beige-3ashcdm2n/4.webp', N'MLB Bigball Chunky Diamond Monogram Boston Red Sox D Beige - Back', 4, 0),
+
+-- 3. Bigball Chunky Diamond Monogram New York Yankees Black
+('/images/mlb/bigball-chunky-diamond-monogram-new-york-yankees-black-3ashcdm2n/main.webp', N'MLB Bigball Chunky Diamond Monogram New York Yankees Black - Main', 1, 1),
+('/images/mlb/bigball-chunky-diamond-monogram-new-york-yankees-black-3ashcdm2n/2.webp', N'MLB Bigball Chunky Diamond Monogram New York Yankees Black - Side', 2, 0),
+('/images/mlb/bigball-chunky-diamond-monogram-new-york-yankees-black-3ashcdm2n/3.webp', N'MLB Bigball Chunky Diamond Monogram New York Yankees Black - Detail', 3, 0),
+('/images/mlb/bigball-chunky-diamond-monogram-new-york-yankees-black-3ashcdm2n/4.webp', N'MLB Bigball Chunky Diamond Monogram New York Yankees Black - Back', 4, 0),
+
+-- 4. Bigball Chunky P Boston Red Sox
+('/images/mlb/bigball-chunky-p-boston-red-sox-32shc2111-43i/main.webp', N'MLB Bigball Chunky P Boston Red Sox - Main', 1, 1),
+('/images/mlb/bigball-chunky-p-boston-red-sox-32shc2111-43i/2.webp', N'MLB Bigball Chunky P Boston Red Sox - Side', 2, 0),
+('/images/mlb/bigball-chunky-p-boston-red-sox-32shc2111-43i/3.webp', N'MLB Bigball Chunky P Boston Red Sox - Detail', 3, 0),
+('/images/mlb/bigball-chunky-p-boston-red-sox-32shc2111-43i/4.webp', N'MLB Bigball Chunky P Boston Red Sox - Back', 4, 0),
+
+-- 5. Chunky Liner Low Boston Red Sox Beige
+('/images/mlb/chunky-liner-low-boston-red-sox-beige-3asxca12n/main.webp', N'MLB Chunky Liner Low Boston Red Sox Beige - Main', 1, 1),
+('/images/mlb/chunky-liner-low-boston-red-sox-beige-3asxca12n/2.webp', N'MLB Chunky Liner Low Boston Red Sox Beige - Side', 2, 0),
+('/images/mlb/chunky-liner-low-boston-red-sox-beige-3asxca12n/3.webp', N'MLB Chunky Liner Low Boston Red Sox Beige - Detail', 3, 0),
+('/images/mlb/chunky-liner-low-boston-red-sox-beige-3asxca12n/4.webp', N'MLB Chunky Liner Low Boston Red Sox Beige - Back', 4, 0),
+
+-- 6. Chunky Liner Mid Denim Boston Red Sox D Blue
+('/images/mlb/chunky-liner-mid-denim-boston-red-sox-d-blue-3asxcdn3n/main.webp', N'MLB Chunky Liner Mid Denim Boston Red Sox D Blue - Main', 1, 1),
+('/images/mlb/chunky-liner-mid-denim-boston-red-sox-d-blue-3asxcdn3n/2.webp', N'MLB Chunky Liner Mid Denim Boston Red Sox D Blue - Side', 2, 0),
+('/images/mlb/chunky-liner-mid-denim-boston-red-sox-d-blue-3asxcdn3n/3.webp', N'MLB Chunky Liner Mid Denim Boston Red Sox D Blue - Detail', 3, 0),
+('/images/mlb/chunky-liner-mid-denim-boston-red-sox-d-blue-3asxcdn3n/4.webp', N'MLB Chunky Liner Mid Denim Boston Red Sox D Blue - Back', 4, 0),
+
+-- 7. Chunky Liner Mid Denim New York Yankees D Navy
+('/images/mlb/chunky-liner-mid-denim-new-york-yankees-d-navy-3asxcdn3n/main.webp', N'MLB Chunky Liner Mid Denim New York Yankees D Navy - Main', 1, 1),
+('/images/mlb/chunky-liner-mid-denim-new-york-yankees-d-navy-3asxcdn3n/2.webp', N'MLB Chunky Liner Mid Denim New York Yankees D Navy - Side', 2, 0),
+('/images/mlb/chunky-liner-mid-denim-new-york-yankees-d-navy-3asxcdn3n/3.webp', N'MLB Chunky Liner Mid Denim New York Yankees D Navy - Detail', 3, 0),
+('/images/mlb/chunky-liner-mid-denim-new-york-yankees-d-navy-3asxcdn3n/4.webp', N'MLB Chunky Liner Mid Denim New York Yankees D Navy - Back', 4, 0),
+
+-- 8. Chunky Liner New York Yankees Grey  
+('/images/mlb/chunky-liner-new-york-yankees-grey-3asxca12n/main.webp', N'MLB Chunky Liner New York Yankees Grey - Main', 1, 1),
+('/images/mlb/chunky-liner-new-york-yankees-grey-3asxca12n/2.webp', N'MLB Chunky Liner New York Yankees Grey - Side', 2, 0),
+('/images/mlb/chunky-liner-new-york-yankees-grey-3asxca12n/3.webp', N'MLB Chunky Liner New York Yankees Grey - Detail', 3, 0),
+('/images/mlb/chunky-liner-new-york-yankees-grey-3asxca12n/4.webp', N'MLB Chunky Liner New York Yankees Grey - Back', 4, 0),
+
+-- 9. Chunky Liner SL Saffiano Boston Red Sox
+('/images/mlb/chunky-liner-sl-saffiano-boston-red-sox-3asxcls4n/main.webp', N'MLB Chunky Liner SL Saffiano Boston Red Sox - Main', 1, 1),
+('/images/mlb/chunky-liner-sl-saffiano-boston-red-sox-3asxcls4n/2.webp', N'MLB Chunky Liner SL Saffiano Boston Red Sox - Side', 2, 0),
+('/images/mlb/chunky-liner-sl-saffiano-boston-red-sox-3asxcls4n/3.webp', N'MLB Chunky Liner SL Saffiano Boston Red Sox - Detail', 3, 0),
+('/images/mlb/chunky-liner-sl-saffiano-boston-red-sox-3asxcls4n/4.webp', N'MLB Chunky Liner SL Saffiano Boston Red Sox - Back', 4, 0),
+
+-- 10. Liner Basic New York Yankees Black
+('/images/mlb/liner-basic-new-york-yankees-black-3asxclb3n/main.webp', N'MLB Liner Basic New York Yankees Black - Main', 1, 1),
+('/images/mlb/liner-basic-new-york-yankees-black-3asxclb3n/2.webp', N'MLB Liner Basic New York Yankees Black - Side', 2, 0),
+('/images/mlb/liner-basic-new-york-yankees-black-3asxclb3n/3.webp', N'MLB Liner Basic New York Yankees Black - Detail', 3, 0),
+('/images/mlb/liner-basic-new-york-yankees-black-3asxclb3n/4.webp', N'MLB Liner Basic New York Yankees Black - Back', 4, 0),
+
+-- 11. Liner Basic New York Yankees Green
+('/images/mlb/liner-basic-new-york-yankees-green-3asxclb3n/main.webp', N'MLB Liner Basic New York Yankees Green - Main', 1, 1),
+('/images/mlb/liner-basic-new-york-yankees-green-3asxclb3n/2.webp', N'MLB Liner Basic New York Yankees Green - Side', 2, 0),
+('/images/mlb/liner-basic-new-york-yankees-green-3asxclb3n/3.webp', N'MLB Liner Basic New York Yankees Green - Detail', 3, 0),
+('/images/mlb/liner-basic-new-york-yankees-green-3asxclb3n/4.webp', N'MLB Liner Basic New York Yankees Green - Back', 4, 0),
+
+-- 12. Playball Mule Dia Monogram New York Yankees Beige
+('/images/mlb/playball-mule-dia-monogram-new-york-yankees-beige-3amumda2n/main.webp', N'MLB Playball Mule Dia Monogram New York Yankees Beige - Main', 1, 1),
+('/images/mlb/playball-mule-dia-monogram-new-york-yankees-beige-3amumda2n/2.webp', N'MLB Playball Mule Dia Monogram New York Yankees Beige - Side', 2, 0),
+('/images/mlb/playball-mule-dia-monogram-new-york-yankees-beige-3amumda2n/3.webp', N'MLB Playball Mule Dia Monogram New York Yankees Beige - Detail', 3, 0),
+('/images/mlb/playball-mule-dia-monogram-new-york-yankees-beige-3amumda2n/4.webp', N'MLB Playball Mule Dia Monogram New York Yankees Beige - Back', 4, 0),
+
+-- 13. Playball Mule Mono NY New York Yankees  
+('/images/mlb/playball-mule-mono-ny-new-york-yankees-32shsm111-50l/main.webp', N'MLB Playball Mule Mono NY New York Yankees - Main', 1, 1),
+('/images/mlb/playball-mule-mono-ny-new-york-yankees-32shsm111-50l/2.webp', N'MLB Playball Mule Mono NY New York Yankees - Side', 2, 0),
+('/images/mlb/playball-mule-mono-ny-new-york-yankees-32shsm111-50l/3.webp', N'MLB Playball Mule Mono NY New York Yankees - Detail', 3, 0),
+('/images/mlb/playball-mule-mono-ny-new-york-yankees-32shsm111-50l/4.webp', N'MLB Playball Mule Mono NY New York Yankees - Back', 4, 0);
 GO
 
--- 10. S?n ph?m (40 s?n ph?m)
--- ADIDAS (13 s?n ph?m)
-INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, trang_thai) VALUES 
-(2, 3, 1, 2, 6, 5, 2, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giày Adidas Samba OG phiên bản classic với phối màu trắng đen gum iconic.', 1800000, 2590000, 1),
-(3, 3, 1, 2, 6, 5, 6, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giày Adidas Samba OG với phối màu trắng và đỏ maroon sang trọng.', 1800000, 2590000, 1),
-(3, 2, 1, 2, 6, 5, 10, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiên bản dành cho nữ với tone màu nhã nhặn và feminine.', 1800000, 2590000, 1),
-(3, 3, 1, 2, 4, 5, 14, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giày Adidas Gazelle Bold phiên bản đặc biệt Year of the Snake.', 2200000, 3190000, 1),
-(1, 3, 1, 2, 1, 7, 18, N'ADI-YEEZY-001', N'Adidas Yeezy Boost 350 V2 Steel Grey', N'Giày Adidas Yeezy Boost 350 V2 với colorway Steel Grey huyền thoại.', 4500000, 6490000, 1),
-(1, 3, 1, 2, 1, 10, 22, N'ADI-ADIFOAM-001', N'Adidas adiFOM Superstar Core Black', N'Giày Adidas adiFOM Superstar với công nghệ foam mới.', 2000000, 2890000, 1),
-(1, 3, 1, 2, 1, 10, 26, N'ADI-ADIFOAM-002', N'Adidas adiFOM Superstar Core White', N'Phiên bản màu trắng của dòng adiFOM Superstar.', 2000000, 2890000, 1),
-(1, 3, 1, 2, 1, 9, 30, N'ADI-ADIFOAM-003', N'Adidas adiFOM Supernova Triple Black', N'Giày Adidas adiFOM Supernova với colorway Triple Black.', 2200000, 3290000, 1),
-(2, 1, 1, 2, 1, 7, 34, N'ADI-ULTRA-001', N'Adidas UltraBoost 21 Cloud White', N'Giày chạy bộ Adidas UltraBoost 21 với công nghệ Boost.', 3500000, 4990000, 1),
-(2, 1, 1, 2, 1, 4, 38, N'ADI-RUN-001', N'Adidas Run EQ21 Black', N'Giày chạy bộ Adidas Run EQ21 màu đen.', 1200000, 1790000, 1),
-(3, 1, 1, 2, 1, 3, 42, N'ADI-TENNIS-001', N'Adidas Barricade 13 Tennis Black', N'Giày tennis Adidas Barricade 13 chuyên nghiệp.', 2500000, 3590000, 1),
-(3, 3, 1, 2, 1, 3, 46, N'ADI-TENNIS-002', N'Adidas Adizero Ubersonic 4 Crystal White', N'Giày tennis Adidas Adizero Ubersonic 4 lightweight.', 2800000, 3990000, 1),
-(3, 3, 1, 2, 1, 3, 50, N'ADI-TENNIS-003', N'Adidas Solematch Control 2 Semi Flash Aqua', N'Giày tennis Adidas Solematch Control 2 control.', 2600000, 3790000, 1),
--- CONVERSE (14 sản phẩm)
-(5, 3, 2, 3, 3, 2, 54, N'CVS-CHUCK-001', N'Converse Chuck Taylor All Star Low Flame', N'Giày Converse Chuck Taylor All Star Low với họa tiết flame độc đáo.', 1000000, 1490000, 1),
-(8, 2, 2, 3, 4, 2, 58, N'CVS-LIFT-001', N'Converse Chuck Taylor All Star Lift Ox White Black', N'Giày Converse Chuck Taylor All Star Lift Ox với đế platform tăng chiều cao.', 1200000, 1790000, 1),
-(5, 3, 2, 3, 3, 2, 62, N'CVS-CHUCK-002', N'Converse Chuck Taylor All Star Cruise OX Black White', N'Giày Converse Chuck Taylor All Star Cruise OX với thiết kế thể thao hiện đại.', 1100000, 1590000, 1),
-(5, 2, 2, 3, 2, 2, 66, N'CVS-EVA-001', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black', N'Giày Converse Chuck Taylor EVA Lift Platform với theme Y2K nostalgic.', 1400000, 2090000, 1),
-(7, 3, 2, 3, 5, 3, 70, N'CVS-RUNSTAR-001', N'Converse Run Star Hike Low Black Gum', N'Giày Converse Run Star Hike Low với thiết kế chunky revolutionary.', 1500000, 2190000, 1),
-(7, 3, 2, 3, 5, 3, 74, N'CVS-RUNSTAR-002', N'Converse Run Star Motion Low White', N'Phiên bản trắng của dòng Run Star Motion với thiết kế hiện đại.', 1500000, 2190000, 1),
-(4, 3, 2, 3, 1, 3, 78, N'CVS-AEON-001', N'Converse Aeon Active CX OX Egret', N'Giày Converse Aeon Active CX OX với công nghệ CX innovative.', 1300000, 1890000, 1),
-(4, 3, 2, 3, 1, 3, 82, N'CVS-AEON-002', N'Converse Aeon Active CX Himalayan Salt', N'Phiên bản Himalayan Salt của dòng Aeon Active CX.', 1300000, 1890000, 1),
-(10, 3, 2, 3, 2, 2, 86, N'CVS-CDG-001', N'CDG x Converse Chuck 70 Hi Black', N'Sản phẩm collaboration iconic giữa Comme des Garçons và Converse.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 3, 2, 90, N'CVS-CDG-002', N'CDG x Converse Chuck 70 Low Black White', N'Phiên bản thấp cổ của collaboration CDG x Converse.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 2, 2, 94, N'CVS-CDG-003', N'CDG x Converse Chuck Taylor All Star Hi Milk', N'CDG x Converse Chuck Taylor All Star Hi với colorway Milk độc đáo.', 2500000, 3690000, 1),
-(10, 3, 2, 3, 2, 2, 98, N'CVS-KIM-001', N'Kim Jones x Converse Chuck 70 All Star Black', N'Collaboration giữa Kim Jones và Converse mang high fashion aesthetic.', 2800000, 3990000, 1),
-(10, 3, 2, 3, 2, 3, 102, N'CVS-RICK-001', N'Converse x Rick Owens DRKSHDW Weapon Beige Black', N'Converse x Rick Owens DRKSHDW Weapon với avant-garde design philosophy.', 3200000, 4590000, 1),
-(10, 3, 2, 3, 2, 2, 106, N'CVS-BTTF-001', N'Back To The Future x Converse All Star US MT Hi Black', N'Collaboration Back To The Future x Converse với movie-inspired design.', 2200000, 3290000, 1),
--- MLB (13 sản phẩm)
-(7, 3, 3, 4, 5, 3, 110, N'MLB-BIGBALL-001', N'MLB BigBall Chunky Diamond Monogram NY Yankees Black', N'Giày MLB BigBall Chunky với họa tiết Diamond Monogram luxury.', 1800000, 2690000, 1),
-(7, 3, 3, 4, 5, 3, 114, N'MLB-BIGBALL-002', N'MLB BigBall Chunky Diamond Monogram Boston Red Sox Beige', N'Phiên bản Boston Red Sox với màu beige sophisticated.', 1800000, 2690000, 1),
-(7, 3, 3, 4, 5, 3, 118, N'MLB-BIGBALL-003', N'MLB Bigball Chunky A New York Yankees', N'MLB Bigball Chunky A phiên bản New York Yankees với design classic.', 1700000, 2490000, 1),
-(7, 3, 3, 4, 5, 3, 122, N'MLB-BIGBALL-004', N'MLB BigBall Chunky P Boston Red Sox', N'MLB BigBall Chunky P Boston Red Sox với performance-inspired design.', 1700000, 2490000, 1),
-(7, 3, 3, 4, 5, 3, 126, N'MLB-CHUNKY-001', N'MLB Chunky Liner New York Yankees Grey', N'Giày MLB Chunky Liner của đội New York Yankees với màu xám neutral.', 1600000, 2390000, 1),
-(7, 3, 3, 4, 5, 3, 130, N'MLB-CHUNKY-002', N'MLB Chunky Liner Low Boston Red Sox Beige', N'Phiên bản thấp cổ của dòng Chunky Liner với Red Sox branding.', 1600000, 2390000, 1),
-(7, 3, 3, 4, 5, 11, 134, N'MLB-CHUNKY-003', N'MLB Chunky Liner Mid Denim Boston Red Sox D.Blue', N'MLB Chunky Liner Mid với chất liệu denim unique.', 1700000, 2590000, 1),
-(7, 3, 3, 4, 5, 11, 138, N'MLB-CHUNKY-004', N'MLB Chunky Liner Mid Denim New York Yankees D.Navy', N'Phiên bản denim New York Yankees với D.Navy sophisticated.', 1700000, 2590000, 1),
-(7, 3, 3, 4, 5, 12, 142, N'MLB-CHUNKY-005', N'MLB Chunky Liner SL Saffiano Boston Red Sox', N'MLB Chunky Liner SL với chất liệu Saffiano leather cao cấp.', 1900000, 2890000, 1),
-(4, 1, 3, 4, 3, 2, 146, N'MLB-LINER-001', N'MLB Liner Basic New York Yankees Black', N'Giày MLB Liner Basic của đội New York Yankees.', 1200000, 1790000, 1),
-(4, 1, 3, 4, 3, 2, 150, N'MLB-LINER-002', N'MLB Liner Basic New York Yankees Green', N'Phiên bản màu xanh unique của dòng Liner Basic.', 1200000, 1790000, 1),
-(9, 3, 3, 4, 8, 5, 154, N'MLB-MULE-001', N'MLB Playball Mule Dia Monogram New York Yankees Beige', N'Giày MLB Playball Mule với Diamond Monogram luxury pattern.', 1500000, 2290000, 1),
-(9, 3, 3, 4, 8, 3, 158, N'MLB-MULE-002', N'MLB Playball Mule Mono NY New York Yankees', N'MLB Playball Mule với Monogram NY design clean và minimal.', 1400000, 2090000, 1);
-GO-- 11. Chi ti?t s?n ph?m v?i d?y d? size v� m�u cho 40 s?n ph?m
+-- 10. Sản phẩm (40 sản phẩm)
+-- ADIDAS (13 sản phẩm) - Cập nhật ID ảnh đại diện cho đúng theo thứ tự mới
+INSERT INTO SanPham (id_loai_san_pham, id_danh_muc, id_thuong_hieu, id_xuat_xu, id_kieu_dang, id_chat_lieu, id_hinh_anh_dai_dien, ma_san_pham, ten_san_pham, mo_ta, gia_nhap, gia_ban, la_hot, la_sale, phan_tram_giam, trang_thai) VALUES 
+-- 1. Samba OG White Black Gum map với ảnh ID 4 (samba-og-white-black-gum/main.jpg)
+(2, 3, 1, 2, 6, 5, 4, N'ADI-SAMBA-001', N'Adidas Samba OG White Black Gum', N'Giày Adidas Samba OG phiên bản classic với phối màu trắng đen gum iconic.', 1800000, 2590000, 1, 0, 0, 1),
+-- 2. Samba OG Wonder White Maroon map với ảnh ID 8 (samba-og-wonder-white-maroon/main.jpg)  
+(3, 3, 1, 2, 6, 5, 8, N'ADI-SAMBA-002', N'Adidas Samba OG Wonder White Maroon', N'Giày Adidas Samba OG với phối màu trắng và đỏ maroon sang trọng.', 1800000, 2590000, 1, 0, 0, 1),
+-- 3. Samba OG Cloud White Wonder Quartz Wmns map với ảnh ID 12 (samba-og-cloud-white-wonder-quartz-wmns/main.jpg)
+(3, 2, 1, 2, 6, 5, 12, N'ADI-SAMBA-003', N'Adidas Samba OG Cloud White Wonder Quartz Wmns', N'Phiên bản dành cho nữ với tone màu nhã nhặn và feminine.', 1800000, 2590000, 0, 1, 10, 1),
+-- 4. Gazelle Bold Year of the Snake map với ảnh ID 16 (gazelle-bold-year-of-the-snake/main.jpg)
+(3, 3, 1, 2, 4, 5, 16, N'ADI-GAZELLE-001', N'Adidas Gazelle Bold Year of the Snake', N'Giày Adidas Gazelle Bold phiên bản đặc biệt Year of the Snake.', 2200000, 3190000, 1, 0, 0, 1),
+-- 5. Yeezy Boost 350 V2 Steel Grey map với ảnh ID 20 (yeezy-boost-350-v2-steel-grey/main.jpg)
+(1, 3, 1, 2, 1, 7, 20, N'ADI-YEEZY-001', N'Adidas Yeezy Boost 350 V2 Steel Grey', N'Giày Adidas Yeezy Boost 350 V2 với colorway Steel Grey huyền thoại.', 4500000, 6490000, 1, 0, 0, 1),
+-- 6. adiFOM Superstar Core Black map với ảnh ID 24 (adifom-superstar-core-black/main.jpg)
+(1, 3, 1, 2, 1, 10, 24, N'ADI-ADIFOAM-001', N'Adidas adiFOM Superstar Core Black', N'Giày Adidas adiFOM Superstar với công nghệ foam mới.', 2000000, 2890000, 0, 1, 15, 1),
+-- 7. adiFOM Superstar Core White map với ảnh ID 28 (adifom-superstar-core-white/main.jpg)
+(1, 3, 1, 2, 1, 10, 28, N'ADI-ADIFOAM-002', N'Adidas adiFOM Superstar Core White', N'Phiên bản màu trắng của dòng adiFOM Superstar.', 2000000, 2890000, 0, 1, 15, 1),
+-- 8. adiFOM Supernova Triple Black map với ảnh ID 32 (adifom-supernova-triple-black/main.jpg)
+(1, 3, 1, 2, 1, 9, 32, N'ADI-ADIFOAM-003', N'Adidas adiFOM Supernova Triple Black', N'Giày Adidas adiFOM Supernova với colorway Triple Black.', 2200000, 3290000, 1, 0, 0, 1),
+-- 9. UltraBoost 21 Cloud White map với ảnh ID 36 (th-thao-adidas-ultraboost-21-cloud-white/main.jpg)
+(2, 1, 1, 2, 1, 7, 36, N'ADI-ULTRA-001', N'Adidas UltraBoost 21 Cloud White', N'Giày chạy bộ Adidas UltraBoost 21 với công nghệ Boost.', 3500000, 4990000, 1, 0, 0, 1),
+-- 10. Run EQ21 Black map với ảnh ID 40 (run-eq21-black/main.jpg)
+(2, 1, 1, 2, 1, 4, 40, N'ADI-RUN-001', N'Adidas Run EQ21 Black', N'Giày chạy bộ Adidas Run EQ21 màu đen.', 1200000, 1790000, 0, 1, 20, 1),
+-- 11. Barricade 13 Tennis Black map với ảnh ID 46 (barricade-13-tennis-black/main.jpg)
+(3, 1, 1, 2, 1, 3, 46, N'ADI-TENNIS-001', N'Adidas Barricade 13 Tennis Black', N'Giày tennis Adidas Barricade 13 chuyên nghiệp.', 2500000, 3590000, 0, 0, 0, 1),
+-- 12. Adizero Ubersonic 4 Crystal White map với ảnh ID 50 (tennispickleball-adidas-adizero-ubersonic-4-crystal-white-semi-flash-aqua/main.jpg)
+(3, 3, 1, 2, 1, 3, 50, N'ADI-TENNIS-002', N'Adidas Adizero Ubersonic 4 Crystal White', N'Giày tennis Adidas Adizero Ubersonic 4 lightweight.', 2800000, 3990000, 0, 1, 5, 1),
+-- 13. Solematch Control 2 Semi Flash Aqua map với ảnh ID 54 (tennispickleball-adidas-solematch-control-2-semi-flash-aqua/main.jpg)
+(3, 3, 1, 2, 1, 3, 54, N'ADI-TENNIS-003', N'Adidas Solematch Control 2 Semi Flash Aqua', N'Giày tennis Adidas Solematch Control 2 control.', 2600000, 3790000, 0, 0, 0, 1),
+-- CONVERSE (14 sản phẩm) - Sửa lại mapping ảnh đại diện cho đúng thứ tự
+-- 14. Aeon Active CX Himalayan Salt map với ảnh ID 58 (aeon-active-cx-himalayan-salt/main.jpg)
+(4, 3, 2, 3, 1, 3, 58, N'CVS-AEON-001', N'Converse Aeon Active CX Himalayan Salt', N'Giày Converse Aeon Active CX với tone màu Himalayan Salt độc đáo.', 1300000, 1890000, 1, 0, 0, 1),
+-- 15. Aeon Active CX OX Egret map với ảnh ID 62 (aeon-active-cx-ox-egret/main.jpg)
+(4, 3, 2, 3, 1, 3, 62, N'CVS-AEON-002', N'Converse Aeon Active CX OX Egret', N'Giày Converse Aeon Active CX OX với công nghệ CX innovative.', 1300000, 1890000, 1, 0, 0, 1),
+-- 16. Back To The Future x Converse All Star US MT Hi Black map với ảnh ID 66 (back-to-the-future-converse-all-star-us-mt-hi-black/main.jpg)
+(10, 3, 2, 3, 2, 2, 66, N'CVS-BTTF-001', N'Back To The Future x Converse All Star US MT Hi Black', N'Collaboration Back To The Future x Converse với movie-inspired design.', 2200000, 3290000, 1, 0, 0, 1),
+-- 17. Chuck Taylor All Star Cruise OX Black White map với ảnh ID 70 (chuck-taylor-all-star-cruise-ox-black-white/main.jpg)
+(5, 3, 2, 3, 3, 2, 70, N'CVS-CHUCK-001', N'Converse Chuck Taylor All Star Cruise OX Black White', N'Giày Converse Chuck Taylor All Star Cruise OX với thiết kế thể thao hiện đại.', 1100000, 1590000, 1, 0, 0, 1),
+-- 18. Chuck Taylor All Star Lift OX White Black map với ảnh ID 74 (chuck-taylor-all-star-lift-ox-white-black/main.jpg)
+(8, 2, 2, 3, 4, 2, 74, N'CVS-LIFT-001', N'Converse Chuck Taylor All Star Lift OX White Black', N'Giày Converse Chuck Taylor All Star Lift OX với đế platform tăng chiều cao.', 1200000, 1790000, 1, 0, 0, 1),
+-- 19. Chuck Taylor All Star Low Flame map với ảnh ID 78 (chuck-taylor-all-star-low-flame/main.webp)
+(5, 3, 2, 3, 3, 2, 78, N'CVS-CHUCK-002', N'Converse Chuck Taylor All Star Low Flame', N'Giày Converse Chuck Taylor All Star Low với họa tiết flame độc đáo.', 1000000, 1490000, 1, 0, 0, 1),
+-- 20. CDG Play x Chuck 70 Low Black White map với ảnh ID 82 (comme-des-gar-ons-play-x-chuck-70-low-black-white/main.webp)
+(10, 3, 2, 3, 3, 2, 82, N'CVS-CDG-001', N'CDG Play x Converse Chuck 70 Low Black White', N'Phiên bản thấp cổ của collaboration CDG x Converse.', 2500000, 3690000, 1, 0, 0, 1),
+-- 21. CDG x Converse Chuck Taylor All Star Hi Milk map với ảnh ID 86 (comme-des-gar-ons-x-chuck-taylor-all-star-hi-milk/main.webp)
+(10, 3, 2, 3, 2, 2, 86, N'CVS-CDG-002', N'CDG x Converse Chuck Taylor All Star Hi Milk', N'CDG x Converse Chuck Taylor All Star Hi với colorway Milk độc đáo.', 2500000, 3690000, 1, 0, 0, 1),
+-- 22. Kim Jones x Converse Chuck 70 All Star Black map với ảnh ID 90 (kim-jones-x-converse-chuck-70-all-star-black/main.jpg)
+(10, 3, 2, 3, 2, 2, 90, N'CVS-KIM-001', N'Kim Jones x Converse Chuck 70 All Star Black', N'Collaboration giữa Kim Jones và Converse mang high fashion aesthetic.', 2800000, 3990000, 1, 0, 0, 1),
+-- 23. Run Star Hike Low Black Gum map với ảnh ID 94 (run-star-hike-low-black-gum/main.jpg)
+(7, 3, 2, 3, 5, 3, 94, N'CVS-RUNSTAR-001', N'Converse Run Star Hike Low Black Gum', N'Giày Converse Run Star Hike Low với thiết kế chunky revolutionary.', 1500000, 2190000, 1, 0, 0, 1),
+-- 24. Run Star Motion Low White map với ảnh ID 98 (run-star-motion-low-white/main.jpg)
+(7, 3, 2, 3, 5, 3, 98, N'CVS-RUNSTAR-002', N'Converse Run Star Motion Low White', N'Phiên bản trắng của dòng Run Star Motion với thiết kế hiện đại.', 1500000, 2190000, 1, 0, 0, 1),
+-- 25. CDG Play x Chuck Taylor All Star 70 Hi Black map với ảnh ID 102 (Shoes-Comme-des-Garcons-Play-x-Converse-Chuck-Taylor-All-Star-70-Hi-Black-150204C/main.jpg)
+(10, 3, 2, 3, 2, 2, 102, N'CVS-CDG-003', N'CDG Play x Converse Chuck Taylor All Star 70 Hi Black', N'Sản phẩm collaboration iconic giữa Comme des Garçons và Converse.', 2500000, 3690000, 1, 0, 0, 1),
+-- 26. Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black map với ảnh ID 106 (Shoes-Converse-Chuck-Taylor-All-Star-EVA-Lift-Platform-Y2K-Heart-High-Top-Black-A09121C/main.jpg)
+(5, 2, 2, 3, 2, 2, 106, N'CVS-EVA-001', N'Converse Chuck Taylor All Star EVA Lift Platform Y2K Heart High Top Black', N'Giày Converse Chuck Taylor EVA Lift Platform với theme Y2K nostalgic.', 1400000, 2090000, 1, 0, 0, 1),
+-- 27. Converse x Rick Owens DRKSHDW Weapon Beige Black map với ảnh ID 110 (x-rick-owens-drkshdw-weapon-beige-black/main.jpg)
+(10, 3, 2, 3, 2, 3, 110, N'CVS-RICK-001', N'Converse x Rick Owens DRKSHDW Weapon Beige Black', N'Converse x Rick Owens DRKSHDW Weapon với avant-garde design philosophy.', 3200000, 4590000, 1, 0, 0, 1),
+-- MLB (13 sản phẩm) - Sửa lại mapping ảnh đại diện cho đúng thứ tự
+-- 28. MLB Bigball Chunky A New York Yankees map với ảnh ID 114 (bigball-chunky-a-new-york-yankees-3ashc101n/main.webp)
+(7, 3, 3, 4, 5, 3, 114, N'MLB-BIGBALL-001', N'MLB Bigball Chunky A New York Yankees', N'MLB Bigball Chunky A phiên bản New York Yankees với design classic.', 1700000, 2490000, 1, 0, 0, 1),
+-- 29. MLB BigBall Chunky Diamond Monogram Boston Red Sox D Beige map với ảnh ID 118 (bigball-chunky-diamond-monogram-boston-red-sox-d-beige-3ashcdm2n/main.webp)
+(7, 3, 3, 4, 5, 3, 118, N'MLB-BIGBALL-002', N'MLB BigBall Chunky Diamond Monogram Boston Red Sox D Beige', N'Phiên bản Boston Red Sox với màu beige sophisticated.', 1800000, 2690000, 1, 0, 0, 1),
+-- 30. MLB BigBall Chunky Diamond Monogram New York Yankees Black map với ảnh ID 122 (bigball-chunky-diamond-monogram-new-york-yankees-black-3ashcdm2n/main.webp)
+(7, 3, 3, 4, 5, 3, 122, N'MLB-BIGBALL-003', N'MLB BigBall Chunky Diamond Monogram New York Yankees Black', N'Giày MLB BigBall Chunky với họa tiết Diamond Monogram luxury.', 1800000, 2690000, 1, 0, 0, 1),
+-- 31. MLB BigBall Chunky P Boston Red Sox map với ảnh ID 126 (bigball-chunky-p-boston-red-sox-32shc2111-43i/main.webp)
+(7, 3, 3, 4, 5, 3, 126, N'MLB-BIGBALL-004', N'MLB BigBall Chunky P Boston Red Sox', N'MLB BigBall Chunky P Boston Red Sox với performance-inspired design.', 1700000, 2490000, 1, 0, 0, 1),
+-- 32. MLB Chunky Liner Low Boston Red Sox Beige map với ảnh ID 130 (chunky-liner-low-boston-red-sox-beige-3asxca12n/main.webp)
+(7, 3, 3, 4, 5, 3, 130, N'MLB-CHUNKY-001', N'MLB Chunky Liner Low Boston Red Sox Beige', N'Phiên bản thấp cổ của dòng Chunky Liner với Red Sox branding.', 1600000, 2390000, 1, 0, 0, 1),
+-- 33. MLB Chunky Liner Mid Denim Boston Red Sox D Blue map với ảnh ID 134 (chunky-liner-mid-denim-boston-red-sox-d-blue-3asxcdn3n/main.webp)
+(7, 3, 3, 4, 5, 11, 134, N'MLB-CHUNKY-002', N'MLB Chunky Liner Mid Denim Boston Red Sox D Blue', N'MLB Chunky Liner Mid với chất liệu denim unique.', 1700000, 2590000, 1, 0, 0, 1),
+-- 34. MLB Chunky Liner Mid Denim New York Yankees D Navy map với ảnh ID 138 (chunky-liner-mid-denim-new-york-yankees-d-navy-3asxcdn3n/main.webp)
+(7, 3, 3, 4, 5, 11, 138, N'MLB-CHUNKY-003', N'MLB Chunky Liner Mid Denim New York Yankees D Navy', N'Phiên bản denim New York Yankees với D.Navy sophisticated.', 1700000, 2590000, 1, 0, 0, 1),
+-- 35. MLB Chunky Liner New York Yankees Grey map với ảnh ID 142 (chunky-liner-new-york-yankees-grey-3asxca12n/main.webp)
+(7, 3, 3, 4, 5, 3, 142, N'MLB-CHUNKY-004', N'MLB Chunky Liner New York Yankees Grey', N'Giày MLB Chunky Liner của đội New York Yankees với màu xám neutral.', 1600000, 2390000, 1, 0, 0, 1),
+-- 36. MLB Chunky Liner SL Saffiano Boston Red Sox map với ảnh ID 146 (chunky-liner-sl-saffiano-boston-red-sox-3asxcls4n/main.webp)
+(7, 3, 3, 4, 5, 12, 146, N'MLB-CHUNKY-005', N'MLB Chunky Liner SL Saffiano Boston Red Sox', N'MLB Chunky Liner SL với chất liệu Saffiano leather cao cấp.', 1900000, 2890000, 1, 0, 0, 1),
+-- 37. MLB Liner Basic New York Yankees Black map với ảnh ID 150 (liner-basic-new-york-yankees-black-3asxclb3n/main.webp)
+(4, 1, 3, 4, 3, 2, 150, N'MLB-LINER-001', N'MLB Liner Basic New York Yankees Black', N'Giày MLB Liner Basic của đội New York Yankees.', 1200000, 1790000, 1, 0, 0, 1),
+-- 38. MLB Liner Basic New York Yankees Green map với ảnh ID 154 (liner-basic-new-york-yankees-green-3asxclb3n/main.webp)
+(4, 1, 3, 4, 3, 2, 154, N'MLB-LINER-002', N'MLB Liner Basic New York Yankees Green', N'Phiên bản màu xanh unique của dòng Liner Basic.', 1200000, 1790000, 1, 0, 0, 1),
+-- 39. MLB Playball Mule Dia Monogram New York Yankees Beige map với ảnh ID 158 (playball-mule-dia-monogram-new-york-yankees-beige-3amumda2n/main.webp)
+(9, 3, 3, 4, 8, 5, 158, N'MLB-MULE-001', N'MLB Playball Mule Dia Monogram New York Yankees Beige', N'Giày MLB Playball Mule với Diamond Monogram luxury pattern.', 1500000, 2290000, 1, 0, 0, 1),
+-- 40. MLB Playball Mule Mono NY New York Yankees map với ảnh ID 162 (playball-mule-mono-ny-new-york-yankees-32shsm111-50l/main.webp)
+(9, 3, 3, 4, 8, 3, 162, N'MLB-MULE-002', N'MLB Playball Mule Mono NY New York Yankees', N'MLB Playball Mule với Monogram NY design clean và minimal.', 1400000, 2090000, 1, 0, 0, 1);
+GO
 INSERT INTO SanPhamChiTiet (id_san_pham, id_kich_co, id_mau_sac, so_luong, trang_thai) VALUES 
 -- Adidas Samba OG White Black Gum (ID: 1) - 8 bi?n th?
 (1, 2, 2, 15, 1), (1, 3, 2, 20, 1), (1, 4, 2, 25, 1), (1, 5, 2, 30, 1), (1, 6, 2, 28, 1), (1, 7, 2, 22, 1), (1, 8, 2, 18, 1), (1, 9, 2, 12, 1),
@@ -460,7 +586,7 @@ INSERT INTO HinhAnh_SanPhamChiTiet (id_hinh_anh, id_san_pham_chi_tiet) VALUES
 (50, 79), (51, 79), (52, 79), (53, 79), 
 (50, 80), (51, 80), (52, 80), (53, 80), 
 (50, 81), (51, 81), (52, 81), (53, 81),
--- Converse Chuck Taylor All Star Low Flame (ID: 14) - 6 bi?n th? (ID: 82-87)
+-- Converse Aeon Active CX Himalayan Salt (ID: 14) - 6 biến thể (ID: 82-87)
 (54, 82), (55, 82), (56, 82), (57, 82), 
 (54, 83), (55, 83), (56, 83), (57, 83), 
 (54, 84), (55, 84), (56, 84), (57, 84), 
@@ -638,52 +764,50 @@ INSERT INTO HinhAnh_SanPhamChiTiet (id_hinh_anh, id_san_pham_chi_tiet) VALUES
 GO
 
 -- =============================================
--- D? LI?U M?U CHO GI? H�NG 
+-- DỮ LIỆU MẪU CHO GIỎ HÀNG VÀ TÀI KHOẢN
 -- =============================================
 
-INSERT INTO TaiKhoan (tai_khoan, mat_khau, role) VALUES
-( N'admin', 123,N'admin'),
-( N'user1', 123,N'user'),
-( N'user2', 123,N'user'),
-( N'user3', 123,N'user')
+INSERT INTO TaiKhoan (tai_khoan, mat_khau, email, ho_ten_tai_khoan, role) VALUES
+(N'admin', N'123', N'admin@urbansteps.com', N'Administrator', N'ADMIN'),
+(N'user1', N'123', N'user1@gmail.com', N'Nguyễn Văn A', N'USER'),
+(N'user2', N'123', N'user2@gmail.com', N'Trần Thị B', N'USER'),
+(N'user3', N'123', N'user3@gmail.com', N'Lê Văn C', N'USER');
 GO
 INSERT INTO GioHang (id_tai_khoan, session_id, create_at, update_at) VALUES
--- Giỏ hàng cho user1@gmail.com (giả sử id_tai_khoan = 1)
-(1, NULL, GETDATE(), GETDATE()),
--- Giỏ hàng cho user2@gmail.com (giả sử id_tai_khoan = 2)
+-- Giỏ hàng cho user1 (id_tai_khoan = 2)
 (2, NULL, GETDATE(), GETDATE()),
--- Giỏ hàng cho user3@gmail.com (giả sử id_tai_khoan = 3)
+-- Giỏ hàng cho user2 (id_tai_khoan = 3)
 (3, NULL, GETDATE(), GETDATE()),
+-- Giỏ hàng cho user3 (id_tai_khoan = 4)
+(4, NULL, GETDATE(), GETDATE()),
 -- Giỏ hàng cho khách (chưa đăng nhập) - sử dụng session_id
 (NULL, 'GUEST_SESSION_001', GETDATE(), GETDATE()),
 (NULL, 'GUEST_SESSION_002', GETDATE(), GETDATE());
 GO
--- Gi? h�ng m?u cho c�c t�i kho?n
+
+-- Giỏ hàng mẫu cho các tài khoản
 INSERT INTO GioHangItem (id_gio_hang, id_san_pham_chi_tiet, so_luong, gia_tai_thoi_diem, create_at, update_at) VALUES
--- Giỏ hàng của user1@gmail.com (ID: 1)
-(3, 1, 2, 3500000, GETDATE(), GETDATE()),   -- Adidas adiFOM Supernova Triple Black - Size 40 - 2 đôi
-(3, 15, 1, 3200000, GETDATE(), GETDATE()),  -- Adidas adiFOM Superstar Core Black - Size 39 - 1 đôi
-(3, 35, 1, 4200000, GETDATE(), GETDATE()),  -- Adidas Barricade 13 Tennis Black - Size 42 - 1 đôi
+-- Giỏ hàng của user1 (GioHang ID: 1)
+(1, 1, 2, 2590000, GETDATE(), GETDATE()),   -- Adidas Samba OG White Black Gum - Size 36 - 2 đôi
+(1, 10, 1, 2590000, GETDATE(), GETDATE()),  -- Adidas Samba OG Wonder White Maroon - Size 37 - 1 đôi
+(1, 22, 1, 3190000, GETDATE(), GETDATE()),  -- Adidas Gazelle Bold - Size 35 - 1 đôi
 
--- Giỏ hàng của user2@gmail.com (ID: 2)
-(4, 50, 2, 3800000, GETDATE(), GETDATE()),  -- Adidas Gazelle Bold Year of the Snake - Size 40 - 2 đôi
-(4, 75, 1, 3600000, GETDATE(), GETDATE()),  -- Converse All Star - Size 39 - 1 đôi
-(4, 100, 3, 4500000, GETDATE(), GETDATE()), -- Converse Chuck Taylor - Size 41 - 3 đôi
+-- Giỏ hàng của user2 (GioHang ID: 2)
+(2, 28, 2, 6490000, GETDATE(), GETDATE()),  -- Yeezy Boost 350 V2 - Size 35 - 2 đôi
+(2, 82, 1, 1890000, GETDATE(), GETDATE()),  -- Converse Aeon Active - Size 35 - 1 đôi
+(2, 112, 3, 2490000, GETDATE(), GETDATE()), -- MLB Bigball Chunky - Size 35 - 3 đôi
 
--- Giỏ hàng của user3@gmail.com (ID: 3)
-(5, 125, 1, 3900000, GETDATE(), GETDATE()), -- MLB Chunky Liner - Size 40 - 1 đôi
-(5, 150, 2, 4100000, GETDATE(), GETDATE()), -- MLB Liner Basic - Size 41 - 2 đôi
+-- Giỏ hàng của user3 (GioHang ID: 3)
+(3, 40, 1, 2890000, GETDATE(), GETDATE()), -- Adidas adiFOM Superstar Core White - Size 35 - 1 đôi
+(3, 70, 2, 3990000, GETDATE(), GETDATE()), -- Adidas Adizero Ubersonic - Size 35 - 2 đôi
 
--- Giỏ hàng của khách (chưa đăng nhập) - GUEST_SESSION_001 (ID: 4)
-(5, 25, 1, 3300000, GETDATE(), GETDATE()),  -- Adidas adiFOM Superstar Core White - Size 40 - 1 đôi
-(5, 85, 2, 3700000, GETDATE(), GETDATE()),  -- Converse High Top - Size 39 - 2 đôi
+-- Giỏ hàng của khách (chưa đăng nhập) - GUEST_SESSION_001 (GioHang ID: 4)
+(4, 46, 1, 3290000, GETDATE(), GETDATE()),  -- Adidas adiFOM Supernova - Size 35 - 1 đôi
+(4, 95, 2, 1590000, GETDATE(), GETDATE()),  -- Converse Chuck Taylor Cruise - Size 36 - 2 đôi
 
--- Giỏ hàng của khách (chưa đăng nhập) - GUEST_SESSION_002 (ID: 5)
-(5, 175, 1, 4000000, GETDATE(), GETDATE()),  -- MLB Playball Mule - Size 42 - 1 đôi
-(5, 200, 2, 3500000, GETDATE(), GETDATE());  -- Sản phẩm khác - Size 40 - 2 đôi
+-- Giỏ hàng của khách (chưa đăng nhập) - GUEST_SESSION_002 (GioHang ID: 5)
+(5, 148, 1, 2390000, GETDATE(), GETDATE()),  -- MLB Chunky Liner Low - Size 35 - 1 đôi
+(5, 175, 2, 2290000, GETDATE(), GETDATE());  -- MLB Playball Mule - Size 36 - 2 đôi
 GO
-UPDATE TaiKhoan
-SET role = 'ADMIN'
-WHERE tai_khoan = 'admin';
-go
+
 

@@ -15,10 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSlide = 0;
     let isTransitioning = false;
     let autoplayInterval;
+    let isDestroyed = false; // Thêm flag để tránh memory leak
     
     // Configuration
     const config = {
-        autoplayDelay: 5000,
+        autoplayDelay: 6000, // Tăng delay để giảm tần suất load
         transitionDuration: 600,
         pauseOnHover: true
     };
@@ -40,6 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize carousel
     function initCarousel() {
+        if (isDestroyed) return;
+        
         updateDots();
         
         if (config.pauseOnHover) {
@@ -49,6 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         startAutoplay();
     }
+    
+    // Add cleanup function
+    function destroyCarousel() {
+        isDestroyed = true;
+        clearInterval(autoplayInterval);
+        bannerCarousel.removeEventListener('mouseenter', pauseAutoplay);
+        bannerCarousel.removeEventListener('mouseleave', startAutoplay);
+    }
+    
+    // Cleanup when page unloads
+    window.addEventListener('beforeunload', destroyCarousel);
     
     // Update slide position
     function updateSlidePosition(animate = true) {
@@ -147,10 +161,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start autoplay
     function startAutoplay() {
-        if (slides.length <= 1) return;
+        if (slides.length <= 1 || isDestroyed) return;
         
-        stopAutoplay();
-        autoplayInterval = setInterval(nextSlide, config.autoplayDelay);
+        stopAutoplay(); // Đảm bảo clear interval cũ
+        
+        // Thêm kiểm tra visibility và focus
+        if (document.hidden || !document.hasFocus()) {
+            return;
+        }
+        
+        // Chỉ tạo interval mới nếu chưa có
+        if (!autoplayInterval) {
+            autoplayInterval = setInterval(() => {
+                if (!isDestroyed && !isTransitioning && !document.hidden) {
+                    nextSlide();
+                }
+            }, config.autoplayDelay);
+        }
     }
     
     // Stop autoplay
@@ -241,11 +268,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     initCarousel();
     
+    // Pause autoplay when tab is not visible
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            pauseAutoplay();
+        } else {
+            startAutoplay();
+        }
+    });
+    
     // Cleanup on page unload
-    window.addEventListener('beforeunload', stopAutoplay);
+    window.addEventListener('beforeunload', () => {
+        stopAutoplay();
+        destroyCarousel();
+    });
     
     // Handle window resize
     window.addEventListener('resize', () => {
-        updateSlidePosition(false);
+        if (!isDestroyed) {
+            updateSlidePosition(false);
+        }
     });
 });

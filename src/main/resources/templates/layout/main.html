@@ -140,19 +140,55 @@
 // Tự động load số lượng giỏ hàng khi trang load
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM loaded, initializing...');
-  loadCartCount();
+  // Delay loading để tránh load liên tục
+  setTimeout(() => {
+    loadCartCount();
+  }, 500);
 });
 
+let isLoadingCart = false;
+let lastLoadTime = 0;
+const LOAD_THROTTLE_MS = 2000; // Chỉ cho phép load mỗi 2 giây
+
 function loadCartCount() {
+  const now = Date.now();
+  
+  // Kiểm tra throttle time
+  if (now - lastLoadTime < LOAD_THROTTLE_MS) {
+    console.log('Cart loading throttled, too soon since last load');
+    return;
+  }
+  
+  if (isLoadingCart) {
+    console.log('Cart loading already in progress, skipping...');
+    return;
+  }
+  
+  isLoadingCart = true;
+  lastLoadTime = now;
+  
   fetch('/api/cart/info')
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
         updateCartCount(data.itemCount);
+      } else {
+        console.warn('Cart info request failed:', data.message);
+        updateCartCount(0); // Set fallback value
       }
     })
     .catch(error => {
       console.error('Error loading cart count:', error);
+      // Set default value on error to prevent continuous loading
+      updateCartCount(0);
+    })
+    .finally(() => {
+      isLoadingCart = false;
     });
 }
 

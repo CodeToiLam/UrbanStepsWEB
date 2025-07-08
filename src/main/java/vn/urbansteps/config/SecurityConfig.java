@@ -35,6 +35,8 @@ public class SecurityConfig {
 
                         // API endpoints - Tùy theo yêu cầu
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/cart/info").permitAll() // Cho phép guest user kiểm tra giỏ hàng
+                        .requestMatchers("/api/cart/**").authenticated() // Các API cart khác cần đăng nhập
 
                         // User area - Cần đăng nhập
                         .requestMatchers("/gio-hang/**", "/cart/**").authenticated()

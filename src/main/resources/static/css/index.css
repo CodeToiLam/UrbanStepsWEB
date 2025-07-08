@@ -1,3 +1,10 @@
+/* Main Content Wrapper */
+.main-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
 /* Banner Section */
 .banner-section {
     margin-bottom: 40px;
@@ -6,18 +13,21 @@
 .banner-carousel {
     position: relative;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1000px; /* Giảm từ 1200px xuống 1000px */
     margin: 0 auto;
+    padding: 0 20px; /* Thêm padding để banner không sát lề */
 }
 
 .banner-container {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 350px; /* Giảm từ 400px xuống 350px */
     overflow: hidden;
-    border-radius: 16px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px; /* Giảm border-radius */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    margin: 0 auto; /* Đảm bảo container được căn giữa */
 }
 
 .banner-slides {
@@ -42,13 +52,12 @@
     height: 100%;
     object-fit: cover;
     transition: all 0.8s ease;
-    filter: brightness(1.05) contrast(1.1);
     will-change: transform, filter;
+    background: #ffffff;
 }
 
 .banner-slide:hover .banner-image {
-    transform: scale(1.05);
-    filter: brightness(1.1) contrast(1.15);
+    transform: scale(1.02);
 }
 
 /* Smooth transition for infinite loop */
@@ -386,6 +395,22 @@
     .banner-dots {
         bottom: 12px;
         gap: 8px;
+    }
+    
+    /* Banner responsive cho mobile */
+    .banner-carousel {
+        padding: 0 10px; /* Giảm padding trên mobile */
+    }
+    
+    .banner-container {
+        height: 250px; /* Giảm chiều cao banner trên mobile */
+        border-radius: 8px;
+    }
+    
+    .banner-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
     
     .section-title {
