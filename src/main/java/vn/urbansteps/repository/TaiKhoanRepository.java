@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
     Optional<TaiKhoan> findByTaiKhoan(String taiKhoan);
+    Optional<TaiKhoan> findByEmail(String email);
 }

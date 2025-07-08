@@ -1,87 +1,93 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 
 <head>
-  <title layout:fragment="title">Đăng Nhập - UrbanSteps</title>
-  <th:block layout:fragment="extra-css">
-    <link rel="stylesheet" type="text/css" href="/css/dang-nhap.css">
-  </th:block>
+    <title layout:fragment="title">Đăng Nhập - UrbanSteps</title>
+    <th:block layout:fragment="extra-css">
+        <link rel="stylesheet" type="text/css" href="/css/dang-nhap.css">
+    </th:block>
 </head>
 
 <div layout:fragment="content">
-  <div class="login-wrapper">
-    <div class="back-to-home">
-      <a th:href="@{/}">
-        <i class="bi bi-arrow-left"></i>
-        Trang chủ
-      </a>
+    <div class="login-wrapper">
+        <div class="back-to-home">
+            <a th:href="@{/}">
+                <i class="bi bi-arrow-left"></i>
+                Trang chủ
+            </a>
+        </div>
+
+        <div class="login-container">
+            <div class="brand-logo">
+                <i class="bi bi-shop"></i>
+            </div>
+            <h1 class="login-title">Chào mừng trở lại!</h1>
+            <p class="login-subtitle">Đăng nhập để tiếp tục mua sắm</p>
+
+            <!-- Thông báo đăng ký thành công -->
+
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <p th:text="${message}"></p>
+            </div>
+
+            <!-- Demo Accounts Info -->
+            <div class="demo-accounts">
+                <div class="demo-title">🔑 Tài khoản demo:</div>
+                <div class="demo-account admin">
+                    <strong>Admin:</strong> admin / 123
+                </div>
+                <div class="demo-account user">
+                    <strong>User:</strong> user1 / 123
+                </div>
+            </div>
+
+            <form th:action="@{/dang-nhap}" method="post">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="bi bi-person-fill"></i>
+                        Tên đăng nhập
+                    </label>
+                    <input type="text" id="username" name="taiKhoan" class="form-control"
+                           placeholder="Nhập tên đăng nhập (admin hoặc user)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="bi bi-lock-fill"></i>
+                        Mật khẩu
+                    </label>
+                    <input type="password" id="password" name="matKhau" class="form-control"
+                           placeholder="Nhập mật khẩu (123)" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Đăng Nhập
+                </button>
+            </form>
+
+            <div class="features">
+                <div class="feature-item">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Bảo mật cao</span>
+                </div>
+                <div class="feature-item">
+                    <i class="bi bi-lightning-fill"></i>
+                    <span>Truy cập nhanh</span>
+                </div>
+                <div class="feature-item">
+                    <i class="bi bi-heart-fill"></i>
+                    <span>Dễ sử dụng</span>
+                </div>
+            </div>
+
+            <div class="register-link">
+                Chưa có tài khoản? <a href="/tai-khoan/dang-ky" th:href="@{/tai-khoan/dang-ky}">Đăng Ký Ngay</a>
+            </div>
+        </div>
     </div>
-    
-    <div class="login-container">
-      <div class="brand-logo">
-        <i class="bi bi-shop"></i>
-      </div>
-      <h1 class="login-title">Chào mừng trở lại!</h1>
-      <p class="login-subtitle">Đăng nhập để tiếp tục mua sắm</p>
-      
-      <!-- Demo Accounts Info -->
-      <div class="demo-accounts">
-        <div class="demo-title">🔑 Tài khoản demo:</div>
-        <div class="demo-account admin">
-          <strong>Admin:</strong> admin / 123
-        </div>
-        <div class="demo-account user">
-          <strong>User:</strong> user1 / 123
-        </div>
-      </div>
-      
-      <form th:action="@{/dang-nhap}" method="post">
-        <div class="form-group">
-          <label for="username">
-            <i class="bi bi-person-fill"></i>
-            Tên đăng nhập
-          </label>
-          <input type="text" id="username" name="taiKhoan" class="form-control" 
-                 placeholder="Nhập tên đăng nhập (admin hoặc user)" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="password">
-            <i class="bi bi-lock-fill"></i>
-            Mật khẩu
-          </label>
-          <input type="password" id="password" name="matKhau" class="form-control" 
-                 placeholder="Nhập mật khẩu (123)" required>
-        </div>
-        
-        <button type="submit" class="btn-login">
-          <i class="bi bi-box-arrow-in-right me-2"></i>
-          Đăng Nhập
-        </button>
-      </form>
-      
-      <div class="features">
-        <div class="feature-item">
-          <i class="bi bi-shield-check"></i>
-          <span>Bảo mật cao</span>
-        </div>
-        <div class="feature-item">
-          <i class="bi bi-lightning-fill"></i>
-          <span>Truy cập nhanh</span>
-        </div>
-        <div class="feature-item">
-          <i class="bi bi-heart-fill"></i>
-          <span>Dễ sử dụng</span>
-        </div>
-      </div>
-      
-      <div class="register-link">
-        Chưa có tài khoản? <a href="/tai-khoan/dang-ky" th:href="@{/tai-khoan/dang-ky}">Đăng Ký Ngay</a>
-      </div>
-    </div>
-  </div>
 </div>
 
 </html>
