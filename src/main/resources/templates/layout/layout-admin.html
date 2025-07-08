@@ -20,13 +20,25 @@
         </div>
     </div>
 </header>
-<div class="sidebar">
-    <a th:href="@{/admin/products}">Quản lý Sản phẩm</a>
-    <a th:href="@{/admin/users}">Quản lý Tài khoản</a>
-    <a th:href="@{/admin/categories}">Quản lý Danh mục</a>
-    <a th:href="@{/admin/images}">Quản lý Hình ảnh</a>
-    <a th:href="@{/}">Về trang chủ</a>
+
+<div class="d-flex">
+    <nav class="sidebar bg-secondary vh-100 p-3">
+        <h5 class="text-white mb-4">Xin chào Admin!</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/admin/products"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a>
+            </li>
+            <!-- Thêm mới -->
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/admin/product-management"><i class="bi bi-grid-1x2"></i> Quản lý sản phẩm và chi tiết</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/"><i class="bi bi-house"></i> Về trang chủ</a>
+            </li>
+        </ul>
+    </nav>
 </div>
+
 <main>
     <div th:replace="~{::content}"></div> <!-- Thay bằng fragment content -->
 </main>

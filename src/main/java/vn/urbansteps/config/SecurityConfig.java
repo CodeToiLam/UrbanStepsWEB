@@ -58,10 +58,19 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .successHandler((request, response, authentication) -> {
                             // Custom success handler để chuyển hướng admin đến /admin/products
+                            System.out.println("Debug: User authorities = " + authentication.getAuthorities()); // Thêm log
                             if (authentication.getAuthorities().stream()
                                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+                                System.out.println("Debug: Redirecting to /admin/products");
                                 response.sendRedirect("/admin/products");
-                            } else {
+                            }
+                            else if (authentication.getAuthorities().stream()
+                                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+                                System.out.println("Debug: Redirecting to /admin/san-pham-chi-tiet");
+                                response.sendRedirect("/admin/san-pham-chi-tiet");
+                            }
+                            else {
+                                System.out.println("Debug: Redirecting to /");
                                 response.sendRedirect("/");
                             }
                         })
