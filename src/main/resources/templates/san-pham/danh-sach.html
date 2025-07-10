@@ -14,12 +14,12 @@
     <div class="product-container">
       <div th:each="product : ${products}" class="product-card">
         <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}">
-          <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/default.jpg'}}"
+          <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/no-image.svg'}}"
                alt="Hình ảnh sản phẩm"
-               onerror="this.src='/static/images/default.jpg';">
+               onerror="this.src='/static/images/no-image.svg';">
         </a>
         <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-        <p th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA')} + ' VNĐ'">Giá sản phẩm</p>
+        <p th:text="${#numbers.formatDecimal(product.giaBan, 0, 0)} + ' VNĐ'">Giá sản phẩm</p>
       </div>
     </div>
 

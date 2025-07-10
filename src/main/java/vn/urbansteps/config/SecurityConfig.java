@@ -26,8 +26,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/trang-chu").permitAll()
                         .requestMatchers("/san-pham/**", "/product/**").permitAll()
                         .requestMatchers("/tim-kiem/**", "/search/**").permitAll()
-                        .requestMatchers("/dang-ky", "/register").permitAll()
-                        .requestMatchers("/dang-nhap", "/login").permitAll()
+                        .requestMatchers("/dang-ky", "/register", "/tai-khoan/dang-ky").permitAll()
+                        .requestMatchers("/dang-nhap", "/login", "/tai-khoan/dang-nhap").permitAll()
 
                         // Static resources - CSS, JS, Images
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
@@ -35,6 +35,8 @@ public class SecurityConfig {
 
                         // API endpoints - Tùy theo yêu cầu
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/cart/info").permitAll() // Cho phép guest user kiểm tra giỏ hàng
+                        .requestMatchers("/api/cart/**").authenticated() // Các API cart khác cần đăng nhập
 
                         // User area - Cần đăng nhập
                         .requestMatchers("/gio-hang/**", "/cart/**").authenticated()
@@ -95,3 +97,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

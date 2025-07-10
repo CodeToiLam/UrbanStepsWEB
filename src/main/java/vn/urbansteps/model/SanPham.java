@@ -1,8 +1,12 @@
 package vn.urbansteps.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Getter
@@ -59,6 +63,27 @@ public class SanPham {
     @Column(name = "gia_ban", nullable = false)
     private BigDecimal giaBan;
 
+    @Column(name = "la_hot")
+    private Boolean laHot = false;
+
+    @Column(name = "la_sale")
+    private Boolean laSale = false;
+
+    @Column(name = "phan_tram_giam")
+    private BigDecimal phanTramGiam = BigDecimal.ZERO;
+
+    @Column(name = "luot_xem")
+    private Integer luotXem = 0;
+
+    @Column(name = "luot_ban")
+    private Integer luotBan = 0;
+
+    @Column(name = "diem_danh_gia")
+    private BigDecimal diemDanhGia = BigDecimal.ZERO;
+
+    @Column(name = "so_luong_danh_gia")
+    private Integer soLuongDanhGia = 0;
+
     @Column(name = "trang_thai")
     private Boolean trangThai;
 
@@ -70,4 +95,54 @@ public class SanPham {
 
     @Column(name = "delete_at")
     private LocalDateTime deleteAt;
+
+    // Utility methods
+    public BigDecimal getGiaSauGiam() {
+        if (phanTramGiam == null || phanTramGiam.compareTo(BigDecimal.ZERO) == 0) {
+            return giaBan;
+        }
+        BigDecimal phanTramConLai = BigDecimal.valueOf(100).subtract(phanTramGiam);
+        return giaBan.multiply(phanTramConLai).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getTienTietKiem() {
+        if (phanTramGiam == null || phanTramGiam.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return giaBan.multiply(phanTramGiam).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    }
+
+    public Boolean isHot() {
+        return laHot != null && laHot;
+    }
+
+    public Boolean isSale() {
+        return laSale != null && laSale;
+    }
+
+    public String getDiemDanhGiaFormatted() {
+        if (diemDanhGia == null || diemDanhGia.compareTo(BigDecimal.ZERO) == 0) {
+            return "0.0";
+        }
+        return String.format("%.1f", diemDanhGia);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        createAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+        if (laHot == null) laHot = false;
+        if (laSale == null) laSale = false;
+        if (phanTramGiam == null) phanTramGiam = BigDecimal.ZERO;
+        if (luotXem == null) luotXem = 0;
+        if (luotBan == null) luotBan = 0;
+        if (diemDanhGia == null) diemDanhGia = BigDecimal.ZERO;
+        if (soLuongDanhGia == null) soLuongDanhGia = 0;
+        if (trangThai == null) trangThai = true;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updateAt = LocalDateTime.now();
+    }
 }

@@ -67,7 +67,13 @@ public class HomeImageService {
         try {
             List<HinhAnh> bannerImages = hinhAnhRepository.findBannerImages();
             return bannerImages.stream()
-                    .map(HinhAnh::getDuongDan)
+                    .map(hinhAnh -> {
+                        String path = hinhAnh.getDuongDan();
+                        if (path.startsWith("/")) {
+                            return path.substring(1);
+                        }
+                        return path;
+                    })
                     .collect(Collectors.toList());
         } catch (Exception e) {
             // Fallback: trả về banner images thực tế có trong thư mục

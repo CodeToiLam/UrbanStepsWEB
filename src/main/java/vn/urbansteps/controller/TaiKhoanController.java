@@ -23,7 +23,9 @@ public class TaiKhoanController {
 
     @GetMapping("/dang-ky")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("taiKhoan", new TaiKhoan());
+        if (!model.containsAttribute("taiKhoan")) {
+            model.addAttribute("taiKhoan", new TaiKhoan());
+        }
         return "dang-ky";
     }
 
@@ -35,27 +37,58 @@ public class TaiKhoanController {
         }
         return "dang-nhap";
     }
-
     @PostMapping("/dang-ky")
-    public String register(TaiKhoan taiKhoan, Model model) {
-        try {
-            if (taiKhoan.getTaiKhoan() == null || taiKhoan.getTaiKhoan().isEmpty() ||
-                    taiKhoan.getMatKhau() == null || taiKhoan.getMatKhau().isEmpty()) {
-                model.addAttribute("error", "Tài khoản và mật khẩu không được để trống.");
-                return "dang-ky";
-            }
-            TaiKhoan existingAccount = taiKhoanService.findByTaiKhoan(taiKhoan.getTaiKhoan());
-            if (existingAccount != null) {
-                model.addAttribute("error", "Tài khoản đã tồn tại.");
-                return "dang-ky";
-            }
-            taiKhoanService.registerTaiKhoan(taiKhoan);
-            model.addAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
-            return "redirect:/tai-khoan/dang-nhap";
-        } catch (Exception e) {
-            logger.error("Lỗi khi đăng ký tài khoản: {}", e.getMessage());
-            model.addAttribute("error", "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.");
-            return "dang-ky";
+    public String register(@RequestParam String taiKhoan,
+                           @RequestParam String email,
+                           @RequestParam String matKhau,
+                           @RequestParam("confirm-password") String confirmPassword,
+                           Model model) {
+        TaiKhoan tk = new TaiKhoan();
+        tk.setTaiKhoan(taiKhoan);
+        tk.setEmail(email);
+        tk.setMatKhau(matKhau);
+        model.addAttribute("taiKhoan", tk);
+
+        boolean hasError = false;
+
+        if (taiKhoan.length() < 5 || taiKhoan.length() > 12) {
+            model.addAttribute("usernameError", "Tên đăng nhập phải từ 6 đến 12 ký tự.");
+            hasError = true;
         }
+
+        if (!email.matches("^[\\w.-]+@(?:gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$")) {
+            model.addAttribute("emailError", "Email chỉ được sử dụng các đuôi: gmail, yahoo, outlook, hotmail.");
+            hasError = true;
+        }
+
+
+        if (matKhau.length() < 8 || matKhau.length() > 12) {
+            model.addAttribute("passwordError", "Mật khẩu phải từ 8 đến 12 ký tự.");
+            hasError = true;
+        }
+
+        if (!matKhau.equals(confirmPassword)) {
+            model.addAttribute("confirmError", "Mật khẩu xác nhận không khớp.");
+            hasError = true;
+        }
+
+        if (taiKhoanService.findByTaiKhoan(taiKhoan) != null) {
+            model.addAttribute("usernameError", "Tài khoản đã tồn tại.");
+            hasError = true;
+        }
+
+        if (taiKhoanService.findByEmail(email) != null) {
+            model.addAttribute("emailError", "Email đã được sử dụng.");
+            hasError = true;
+        }
+
+        if (hasError) return "dang-ky";
+
+        tk.setRole("USER");
+        taiKhoanService.registerTaiKhoan(tk);
+        model.addAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
+        return "dang-nhap";
     }
+
 }
+

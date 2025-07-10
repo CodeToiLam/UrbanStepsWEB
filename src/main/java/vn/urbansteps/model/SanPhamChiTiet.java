@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -30,10 +31,12 @@ public class SanPhamChiTiet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_mau_sac")
     private MauSac mauSac;
-    
-    @Column(name = "so_luong")
+      @Column(name = "so_luong")
     private Integer soLuong;
     
+    @Column(name = "gia_ban_le")
+    private BigDecimal giaBanLe;
+
     @Column(name = "trang_thai")
     private Boolean trangThai;
     
@@ -45,4 +48,27 @@ public class SanPhamChiTiet {
     
     @Column(name = "delete_at")
     private LocalDateTime deleteAt;
+    
+    // Utility methods
+    public BigDecimal getGiaBanThucTe() {
+        return giaBanLe != null ? giaBanLe : 
+               (sanPham != null ? sanPham.getGiaSauGiam() : BigDecimal.ZERO);
+    }
+    
+    public Boolean isAvailable() {
+        return trangThai != null && trangThai && soLuong != null && soLuong > 0;
+    }
+    
+    @PrePersist
+    public void prePersist() {
+        createAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+        if (trangThai == null) trangThai = true;
+        if (soLuong == null) soLuong = 0;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updateAt = LocalDateTime.now();
+    }
 }

@@ -19,4 +19,7 @@ public class MauSac {
 
     @Column(name = "ten_mau_sac", nullable = false)
     private String tenMauSac;
+    
+    @Column(name = "ma_mau", length = 10)
+    private String maMau; // Mã màu hex (#FF0000)
 }

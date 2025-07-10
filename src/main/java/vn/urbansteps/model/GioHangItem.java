@@ -40,6 +40,9 @@ public class GioHangItem {
     @Column(name = "update_at")
     private LocalDateTime updateAt;
 
+    @Column(name = "delete_at")
+    private LocalDateTime deleteAt;
+
     // Utility methods
     public BigDecimal getTongGia() {
         if (giaTaiThoidiem == null || soLuong == null) {

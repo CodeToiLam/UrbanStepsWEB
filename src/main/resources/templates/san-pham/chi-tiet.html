@@ -144,7 +144,7 @@
 
             <div class="product-price mb-4">
                     <span class="current-price"
-                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">1,200,000 ₫</span>
+                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 0)} + ' ₫'">1,200,000 ₫</span>
             </div>
 
             <!-- Chọn kích cỡ -->
@@ -159,7 +159,7 @@
             </div>
 
             <!-- Chọn màu sắc -->
-            <div class="product-color mb-3" th:if="${!mauSacs.empty}">
+            <div class="product-color mb-3" th:if="${!mauSacs.empty && mauSacs.size() > 1}">
                 <h5>Màu sắc:</h5>
                 <div class="color-options">
                     <div th:each="color : ${mauSacs}" class="color-option">
@@ -169,10 +169,18 @@
                 </div>
             </div>
 
+            <!-- Hidden input for single color -->
+            <div th:if="${!mauSacs.empty && mauSacs.size() == 1}" style="display: none;">
+                <input type="radio" th:id="${'color-' + mauSacs[0]}" name="color" th:value="${mauSacs[0]}" checked>
+            </div>
+
             <!-- Số lượng tồn kho -->
             <div class="product-stock mb-3" th:if="${!kichCos.empty && !mauSacs.empty}">
                 <span>Còn lại: </span>
-                <span id="stock-quantity">Vui lòng chọn kích cỡ và màu sắc</span>
+                <span id="stock-quantity" 
+                      th:text="${mauSacs.size() == 1 ? 'Vui lòng chọn kích cỡ' : 'Vui lòng chọn kích cỡ và màu sắc'}">
+                    Vui lòng chọn kích cỡ và màu sắc
+                </span>
             </div>
 
             <!-- Số lượng mua -->
@@ -194,11 +202,13 @@
 
             <!-- Nút thêm vào giỏ hàng -->
             <div class="product-actions mb-4">
-                <button id="add-to-cart" class="btn btn-primary add-to-cart-btn">
-                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                <button id="add-to-cart" class="btn btn-secondary add-to-cart-btn" disabled 
+                        th:text="${mauSacs.size() == 1 ? 'Chọn kích cỡ' : 'Chọn kích cỡ và màu'}">
+                    <i class="bi bi-cart-plus"></i> Chọn kích cỡ và màu
                 </button>
-                <button id="buy-now" class="btn btn-success buy-now-btn">
-                    <i class="bi bi-lightning-fill"></i> Mua ngay
+                <button id="buy-now" class="btn btn-secondary buy-now-btn" disabled 
+                        th:text="${mauSacs.size() == 1 ? 'Chọn kích cỡ' : 'Chọn kích cỡ và màu'}">
+                    <i class="bi bi-lightning-fill"></i> Chọn kích cỡ và màu
                 </button>
             </div>
 
@@ -237,7 +247,7 @@
                         <div class="card-body">
                             <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
                             <p class="card-text product-price"
-                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 0)} + ' ₫'">
                                 750,000 ₫</p>
                         </div>
                     </a>
@@ -251,11 +261,22 @@
 <th:block layout:fragment="extra-js">
     <script src="/js/chi-tiet-san-pham.js"></script>
     <script th:inline="javascript">
-        // Set stock data from server
+        // Pass all necessary data to JavaScript
+        window.productId = /*[[${product.id}]]*/ null;
+        window.tonKhoMap = /*[[${tonKhoMap}]]*/ {};
+        window.variants = /*[[${variants}]]*/ [];
+        window.availableSizes = /*[[${kichCos}]]*/ [];
+        window.availableColors = /*[[${mauSacs}]]*/ [];
+        
+        // Set stock data from server (legacy function call)
         window.setStockData(/*[[${tonKhoMap}]]*/ {});
         
-        // Set variants data for cart functionality
-        window.variants = /*[[${variants}]]*/ [];
+        // Debug: Log the data structure from backend
+        console.log('Backend data received:');
+        console.log('tonKhoMap:', window.tonKhoMap);
+        console.log('variants:', window.variants);
+        console.log('availableSizes:', window.availableSizes);
+        console.log('availableColors:', window.availableColors);
     </script>
 </th:block>
 

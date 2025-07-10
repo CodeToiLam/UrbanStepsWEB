@@ -61,41 +61,59 @@ public class GioHangController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            GioHang gioHang = null;
+            System.out.println("=== ADD TO CART DEBUG ===");
+            System.out.println("San pham chi tiet ID: " + sanPhamChiTietId);
+            System.out.println("So luong: " + soLuong);
+            System.out.println("Session ID: " + session.getId());
             
             // Kiểm tra user đã đăng nhập chưa
             String username = (String) session.getAttribute("username");
-            if (username != null) {
-                // User đã đăng nhập
-                TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
-                if (taiKhoan != null) {
-                    gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
-                }
-            } else {
-                // Guest user
-                String sessionId = session.getId();
-                gioHang = gioHangService.getGioHangBySessionId(sessionId);
+            System.out.println("Username from session: " + username);
+            
+            if (username == null) {
+                // User chưa đăng nhập - yêu cầu đăng nhập
+                System.out.println("User not logged in - requiring login");
+                response.put("success", false);
+                response.put("message", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+                response.put("requireLogin", true);
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            GioHang gioHang = null;
+            
+            // User đã đăng nhập
+            TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+            if (taiKhoan != null) {
+                gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
+                System.out.println("Found gio hang for user: " + (gioHang != null ? gioHang.getId() : "null"));
             }
 
             if (gioHang == null) {
+                System.out.println("ERROR: Gio hang is null!");
                 response.put("success", false);
                 response.put("message", "Không thể tạo giỏ hàng");
                 return ResponseEntity.badRequest().body(response);
             }
 
+            System.out.println("Calling addToCart service...");
             boolean success = gioHangService.addToCart(gioHang, sanPhamChiTietId, soLuong);
+            System.out.println("AddToCart result: " + success);
             
             if (success) {
+                int cartCount = gioHangService.countItems(gioHang);
+                System.out.println("Cart count: " + cartCount);
                 response.put("success", true);
                 response.put("message", "Thêm sản phẩm vào giỏ hàng thành công");
-                response.put("cartCount", gioHangService.countItems(gioHang));
+                response.put("cartCount", cartCount);
             } else {
+                System.out.println("ERROR: AddToCart service returned false");
                 response.put("success", false);
                 response.put("message", "Không thể thêm sản phẩm vào giỏ hàng");
             }
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in addToCart controller:");
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");

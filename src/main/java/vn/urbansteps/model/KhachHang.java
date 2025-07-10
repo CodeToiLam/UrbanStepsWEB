@@ -6,18 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+@Entity
+@Table(name = "KhachHang")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "GioHang")
-public class GioHang {
+public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -26,42 +23,51 @@ public class GioHang {
     @JoinColumn(name = "id_tai_khoan")
     private TaiKhoan taiKhoan;
 
-    @Column(name = "session_id")
-    private String sessionId; // Dành cho guest users
+    @Column(name = "ho_ten_khach_hang", nullable = false, length = 255)
+    private String hoTenKhachHang;
+
+    @Column(name = "sdt", length = 20)
+    private String sdt;
+
+    @Column(name = "email", length = 100)
+    private String email;
+
+    @Column(name = "gioi_tinh")
+    private Boolean gioiTinh;
+
+    @Column(name = "dia_chi", length = 500)
+    private String diaChi;
+
+    @Column(name = "la_khach_vang_lai")
+    private Boolean laKhachVangLai = false;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;
 
     @Column(name = "update_at")
     private LocalDateTime updateAt;
-    
+
     @Column(name = "delete_at")
     private LocalDateTime deleteAt;
-
-    @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<GioHangItem> items = new ArrayList<>();
-
-    // Utility methods
-    public BigDecimal getTongTien() {
-        return items.stream()
-                .map(GioHangItem::getTongGia)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public int getTongSoLuong() {
-        return items.stream()
-                .mapToInt(GioHangItem::getSoLuong)
-                .sum();
-    }
 
     @PrePersist
     public void prePersist() {
         createAt = LocalDateTime.now();
         updateAt = LocalDateTime.now();
+        if (laKhachVangLai == null) laKhachVangLai = false;
+        if (gioiTinh == null) gioiTinh = false;
     }
 
     @PreUpdate
     public void preUpdate() {
         updateAt = LocalDateTime.now();
+    }
+
+    public Boolean isRegisteredCustomer() {
+        return taiKhoan != null;
+    }
+
+    public Boolean isGuestCustomer() {
+        return laKhachVangLai != null && laKhachVangLai;
     }
 }
