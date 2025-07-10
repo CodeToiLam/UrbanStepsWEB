@@ -46,6 +46,7 @@
           <th>Số lượng</th>
           <th>Trạng thái</th>
           <th>Ngày tạo</th>
+          <th>Ngày sửa</th>
           <th>Hành động</th>
         </tr>
         </thead>
@@ -57,6 +58,7 @@
           <td th:text="${ct.soLuong} ?: '0'"></td>
           <td th:text="${ct.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
           <td th:text="${#temporals.format(ct.createAt, 'dd/MM/yyyy HH:mm')} ?: 'N/A'"></td>
+          <td th:text="${#temporals.format(ct.updateAt, 'dd/MM/yyyy HH:mm')} ?: 'N/A'"></td>
           <td>
             <a th:href="@{/admin/edit/{id}(id=${ct.id})}" class="btn btn-warning btn-sm me-1" title="Sửa"><i class="bi bi-pen-fill"></i></a>
             <a th:href="@{/admin/delete/{id}(id=${ct.id})}" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="bi bi-trash-fill"></i></a>
