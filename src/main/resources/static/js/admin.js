@@ -12,6 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', confirmDelete);
     });
 
+    // Thêm sự kiện cho các nút xóa phiếu giảm giá
+    const deleteDiscountButtons = document.querySelectorAll('.delete-discount');
+    deleteDiscountButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            if (!confirm('Bạn có chắc muốn xóa phiếu giảm giá này?')) {
+                event.preventDefault();
+            }
+        });
+    });
+
     // Xử lý validation form
     const forms = document.querySelectorAll('.needs-validation');
     forms.forEach(form => {
