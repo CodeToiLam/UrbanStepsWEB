@@ -67,9 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const mainImage = document.getElementById('main-product-image');
         if (thumbnails.length === 0) return;
 
+        // Lấy đúng các thumbnail thực sự hiển thị (không bị lỗi ảnh)
         const visibleThumbnails = Array.from(thumbnails).filter(thumb => {
             const img = thumb.querySelector('img');
-            return img && img.style.display !== 'none';
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
         });
 
         totalImages = visibleThumbnails.length;
@@ -77,6 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
             src: thumb.getAttribute('data-image'),
             index: parseInt(thumb.getAttribute('data-index'))
         }));
+
+        // Nếu không có ảnh hợp lệ, ẩn counter và không cho mở lightbox
+        if (totalImages === 0) {
+            const counterBlock = document.getElementById('imageCounterBlock');
+            if (counterBlock) counterBlock.style.display = 'none';
+            window.openLightbox = function() { return; };
+            return;
+        }
 
         // Khởi tạo thumbnail đầu tiên
         if (visibleThumbnails.length > 0) {
@@ -167,10 +176,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Đếm đúng số thumbnail thực sự hiển thị (không bị ẩn do lỗi ảnh)
         const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
             const img = thumb.querySelector('img');
-            return img && img.style.display !== 'none';
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
         });
         if (counterElement) {
-            counterElement.textContent = currentImageIndex + 1;
+            counterElement.textContent = visibleThumbnails.length === 0 ? 0 : (currentImageIndex + 1);
         }
         if (totalElement) {
             totalElement.textContent = visibleThumbnails.length;
@@ -256,18 +265,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Open lightbox
     window.openLightbox = function(startIndex = currentImageIndex) {
+        // Lấy lại galleryImages chỉ gồm ảnh thực sự hiển thị
+        const thumbnails = document.querySelectorAll('.thumbnail-item');
+        const visibleThumbnails = Array.from(thumbnails).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
+        });
+        galleryImages = visibleThumbnails.map(thumb => ({
+            src: thumb.getAttribute('data-image'),
+            index: parseInt(thumb.getAttribute('data-index'))
+        }));
         if (galleryImages.length === 0) return;
-        
         currentImageIndex = startIndex;
         const lightboxOverlay = document.getElementById('lightboxOverlay');
         const lightboxImage = document.getElementById('lightboxImage');
         const lightboxCurrentIndex = document.getElementById('lightboxCurrentIndex');
         const lightboxTotalCount = document.getElementById('lightboxTotalCount');
-        
         lightboxImage.src = galleryImages[currentImageIndex].src;
         lightboxCurrentIndex.textContent = currentImageIndex + 1;
         lightboxTotalCount.textContent = galleryImages.length;
-        
         lightboxOverlay.classList.add('show');
         document.body.style.overflow = 'hidden';
     };

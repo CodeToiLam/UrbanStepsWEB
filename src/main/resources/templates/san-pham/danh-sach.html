@@ -5,29 +5,43 @@
 
 <head>
   <title layout:fragment="title" th:text="${title}">Danh sách sản phẩm</title>
+  <th:block layout:fragment="extra-css">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/tim-kiem.css}">
+    <link rel="stylesheet" th:href="@{/css/san-pham.css}">
+  </th:block>
 </head>
-
+<body>
 <div layout:fragment="content">
   <div class="container main-content">
-    <h2 class="section-title" th:text="${title}">Danh sách sản phẩm</h2>
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+        <li class="breadcrumb-item active">Sản phẩm</li>
+      </ol>
+    </nav>
+    <h2 class="section-title mb-4" th:text="${title}">Danh sách sản phẩm</h2>
 
     <div class="product-container">
-      <div th:each="product : ${products}" class="product-card">
-        <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}">
-          <img th:src="@{${product.idHinhAnhDaiDien != null ? '/static/' + product.idHinhAnhDaiDien.duongDan : '/static/images/no-image.svg'}}"
-               alt="Hình ảnh sản phẩm"
-               onerror="this.src='/static/images/no-image.svg';">
+      <div th:each="product : ${products}" class="product-card shadow-sm rounded-3 mb-4 p-3 text-center h-100">
+        <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="d-block mb-2">
+          <img th:src="@{${product.idHinhAnhDaiDien != null ? (product.idHinhAnhDaiDien.duongDan.startsWith('/images/') ? product.idHinhAnhDaiDien.duongDan : '/images/' + product.idHinhAnhDaiDien.duongDan) : '/images/no-image.svg'}}"
+               th:alt="${product.tenSanPham}"
+               class="img-fluid rounded-3 product-thumb"
+               style="max-height:180px;object-fit:cover;background:#f8f8f8;"
+               onerror="this.onerror=null;this.src='/images/no-image.svg';">
         </a>
-        <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-        <p th:text="${#numbers.formatDecimal(product.giaBan, 0, 0)} + ' VNĐ'">Giá sản phẩm</p>
+        <h3 class="product-title mb-1" th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+        <p class="product-price fw-bold text-danger mb-0" th:text="${#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">Giá sản phẩm</p>
       </div>
     </div>
 
     <div th:if="${products.isEmpty()}" class="text-center py-5">
       <h4>Không tìm thấy sản phẩm nào</h4>
-      <a th:href="@{/}" class="btn btn-primary">Về trang chủ</a>
+      <a th:href="@{/}" class="btn btn-primary mt-2">Về trang chủ</a>
     </div>
   </div>
 </div>
 
+</body>
 </html>

@@ -64,9 +64,10 @@
                                 <div class="col-md-6">
                                     <div class="product-info">
                                         <div class="product-image">
-                                            <img th:src="@{'/images/' + ${item.sanPhamChiTiet.sanPham.maSanPham} + '/anh-dai-dien.jpg'}" 
+                                            <img th:src="@{${item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null ? item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan : '/images/no-image.svg'}}"
                                                  th:alt="${item.sanPhamChiTiet.sanPham.tenSanPham}"
-                                                 class="img-fluid">
+                                                 class="img-fluid"
+                                                 onerror="this.onerror=null;this.src='/images/no-image.svg';">
                                         </div>
                                         <div class="product-details">
                                             <h5 class="product-name" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Tên sản phẩm</h5>
@@ -87,7 +88,7 @@
 
                                 <!-- Giá -->
                                 <div class="col-md-2 text-center">
-                                    <span class="price" th:text="${#numbers.formatCurrency(item.giaTaiThoidiem)}">3,500,000₫</span>
+                                    <span class="price" th:text="${#numbers.formatDecimal(item.giaTaiThoidiem, 0, 0) + 'đ'}">3,500,000đ</span>
                                 </div>
 
                                 <!-- Số lượng -->
@@ -109,7 +110,7 @@
 
                                 <!-- Thành tiền -->
                                 <div class="col-md-2 text-center">
-                                    <span class="total-price" th:text="${#numbers.formatCurrency(item.tongGia)}">3,500,000₫</span>
+                                    <span class="total-price" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">3,500,000đ</span>
                                     <button class="btn btn-sm btn-outline-danger remove-item-btn" 
                                             th:onclick="'removeItem(' + ${item.id} + ')'">
                                         <i class="fas fa-trash"></i>
@@ -127,7 +128,7 @@
                         
                         <div class="summary-row">
                             <span>Tạm tính:</span>
-                            <span th:text="${#numbers.formatCurrency(gioHang.tongTien)}">10,500,000₫</span>
+                            <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
                         </div>
                         
                         <div class="summary-row">
@@ -138,7 +139,7 @@
                         <div class="summary-row total-row">
                             <strong>
                                 <span>Tổng cộng:</span>
-                                <span th:text="${#numbers.formatCurrency(gioHang.tongTien)}">10,500,000₫</span>
+                                <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
                             </strong>
                         </div>
 

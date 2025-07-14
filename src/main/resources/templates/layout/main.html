@@ -41,7 +41,7 @@
       <a href="/tim-kiem" th:href="@{/tim-kiem}"><i class="bi bi-search"></i></a>
       <a href="/gio-hang" th:href="@{/gio-hang}" class="cart-icon">
         <i class="bi bi-cart"></i>
-        <span class="cart-count">0</span>
+        <span class="cart-count" th:text="${gioHang != null ? gioHang.items.size() : 0}">0</span>
       </a>
       
       <!-- User authentication section -->

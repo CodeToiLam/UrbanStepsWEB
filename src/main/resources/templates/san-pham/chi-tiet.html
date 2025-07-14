@@ -15,13 +15,52 @@
 <div layout:fragment="content">
     <div class="container mt-5">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/san-pham}">Sản phẩm</a></li>
-                <li class="breadcrumb-item active" aria-current="page" th:text="${product.tenSanPham}">Chi tiết sản
-                    phẩm
+            <ol class="breadcrumb custom-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/}"><i class="bi bi-house-door"></i> Trang chủ</a>
                 </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.646 1.646a.5.5 0 0 1 .708 0l4.5 4.5a.5.5 0 0 1 0 .708l-4.5 4.5a.5.5 0 0 1-.708-.708L10.293 6 6.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/san-pham}">Sản phẩm</a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.646 1.646a.5.5 0 0 1 .708 0l4.5 4.5a.5.5 0 0 1 0 .708l-4.5 4.5a.5.5 0 0 1-.708-.708L10.293 6 6.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${product.tenSanPham}">Chi tiết sản phẩm</li>
             </ol>
+            <style>
+                .custom-breadcrumb {
+                    background: none;
+                    padding: 0;
+                    margin-bottom: 1rem;
+                    font-size: 1.1rem;
+                }
+                .custom-breadcrumb .breadcrumb-item a {
+                    color: #1976d2;
+                    text-decoration: underline;
+                    font-weight: 500;
+                    transition: color 0.2s;
+                }
+                .custom-breadcrumb .breadcrumb-item a:hover {
+                    color: #ff6600;
+                    text-decoration: underline;
+                }
+                .custom-breadcrumb .breadcrumb-separator {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin: 0 0.3rem;
+                }
+                .custom-breadcrumb .breadcrumb-item.active {
+                    color: #333;
+                    font-weight: 600;
+                }
+            </style>
         </nav>
 
         <div class="row">

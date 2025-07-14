@@ -70,26 +70,21 @@ public class GioHangController {
             String username = (String) session.getAttribute("username");
             System.out.println("Username from session: " + username);
             
-            if (username == null) {
-                // User chưa đăng nhập - yêu cầu đăng nhập
-                System.out.println("User not logged in - requiring login");
-                response.put("success", false);
-                response.put("message", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-                response.put("requireLogin", true);
-                return ResponseEntity.status(401).body(response);
-            }
-            
+
             GioHang gioHang = null;
-            
-            // User đã đăng nhập
-            TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
-            if (taiKhoan != null) {
-                gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
-                System.out.println("Found gio hang for user: " + (gioHang != null ? gioHang.getId() : "null"));
+            if (username != null) {
+                // User đã đăng nhập
+                TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                if (taiKhoan != null) {
+                    gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
+                }
+            } else {
+                // Guest user - giỏ hàng theo session
+                String sessionId = session.getId();
+                gioHang = gioHangService.getGioHangBySessionId(sessionId);
             }
 
             if (gioHang == null) {
-                System.out.println("ERROR: Gio hang is null!");
                 response.put("success", false);
                 response.put("message", "Không thể tạo giỏ hàng");
                 return ResponseEntity.badRequest().body(response);
