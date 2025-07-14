@@ -1,8 +1,3 @@
-/**
- * ====== URBANSTEPS - CHI TIẾT SẢN PHẨM ====== 
- * JavaScript cho trang chi tiết sản phẩm với gallery chuyên nghiệp
- */
-
 document.addEventListener('DOMContentLoaded', function () {
     // Debug: Log all data received from server
     console.log('=== PRODUCT DETAIL DEBUG ===');
