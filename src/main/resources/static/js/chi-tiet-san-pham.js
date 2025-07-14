@@ -65,24 +65,28 @@ document.addEventListener('DOMContentLoaded', function () {
     function initGallery() {
         const thumbnails = document.querySelectorAll('.thumbnail-item');
         const mainImage = document.getElementById('main-product-image');
-        
         if (thumbnails.length === 0) return;
-        
-        totalImages = thumbnails.length;
-        galleryImages = Array.from(thumbnails).map(thumb => ({
+
+        const visibleThumbnails = Array.from(thumbnails).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none';
+        });
+
+        totalImages = visibleThumbnails.length;
+        galleryImages = visibleThumbnails.map(thumb => ({
             src: thumb.getAttribute('data-image'),
             index: parseInt(thumb.getAttribute('data-index'))
         }));
-        
+
         // Khởi tạo thumbnail đầu tiên
-        if (thumbnails.length > 0) {
-            thumbnails[0].classList.add('active');
+        if (visibleThumbnails.length > 0) {
+            visibleThumbnails[0].classList.add('active');
             currentImageIndex = 0;
             updateImageCounter();
         }
-        
+
         // Khởi tạo scroll navigation cho thumbnails
-        if (thumbnails.length > 5) {
+        if (visibleThumbnails.length > 5) {
             initThumbnailScrollNavigation();
         }
     }
@@ -159,8 +163,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cập nhật counter ảnh
     function updateImageCounter() {
         const counterElement = document.getElementById('currentImageIndex');
+        const totalElement = document.getElementById('totalImageCount');
+        // Đếm đúng số thumbnail thực sự hiển thị (không bị ẩn do lỗi ảnh)
+        const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none';
+        });
         if (counterElement) {
             counterElement.textContent = currentImageIndex + 1;
+        }
+        if (totalElement) {
+            totalElement.textContent = visibleThumbnails.length;
         }
     }
 
