@@ -802,22 +802,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const quantityInput = document.getElementById('quantity');
         const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-        
-        // Tìm sản phẩm chi tiết ID dựa vào size và color đã chọn
+
         const sanPhamChiTietId = getSanPhamChiTietId(selectedSize, selectedColor);
-        
+
         if (!sanPhamChiTietId) {
             showAlert('Không tìm thấy sản phẩm với kích cỡ và màu sắc đã chọn!');
             return;
         }
 
-        // Hiển thị loading
-        const buyNowBtn = document.getElementById('buy-now');
-        const originalText = buyNowBtn.innerHTML;
-        buyNowBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
-        buyNowBtn.disabled = true;
-
-        // Thêm vào giỏ hàng trước, sau đó chuyển đến trang thanh toán
+        // Thêm vào giỏ hàng trước
         fetch('/api/cart/add', {
             method: 'POST',
             headers: {
@@ -825,49 +818,29 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${quantity}`
         })
-        .then(response => {
-            // Check if response indicates user needs to login (401 or 403)
-            if (response.status === 401 || response.status === 403) {
-                console.log('User not authenticated, redirecting to login...');
-                // Redirect to login page
-                window.location.href = '/dang-nhap';
-                return null;
-            }
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return response.json();
-        })
-        .then(data => {
-            // If data is null, it means we redirected to login
-            if (data === null) return;
-            
-            if (data.success) {
-                // Chuyển đến trang thanh toán
-                window.location.href = '/checkout';
-            } else {
-                // Check if the error message indicates need to login or if requireLogin flag is set
-                if (data.requireLogin || (data.message && (data.message.includes('đăng nhập') || data.message.includes('login')))) {
-                    console.log('Login required, redirecting to login page...');
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
                     window.location.href = '/dang-nhap';
-                    return;
+                    return null;
                 }
-                
-                showAlert(data.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
-        })
-        .finally(() => {
-            // Khôi phục nút
-            buyNowBtn.innerHTML = originalText;
-            buyNowBtn.disabled = false;
-        });
+                if (!response.ok) throw new Error('Lỗi khi thêm vào giỏ hàng');
+                return response.json();
+            })
+            .then(data => {
+                if (data === null) return;
+                if (data.success) {
+                    // Chuyển sang trang thanh toán với tham số buyNow
+                    window.location.href = `/checkout?buyNow=true&itemId=${sanPhamChiTietId}&quantity=${quantity}`;
+                } else {
+                    showAlert(data.message || 'Có lỗi khi thêm sản phẩm vào giỏ hàng!');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                showAlert('Có lỗi xảy ra, vui lòng thử lại!');
+            });
     }
+
 
     // Hàm tìm ID sản phẩm chi tiết dựa vào size và color
     function getSanPhamChiTietId(size, color) {

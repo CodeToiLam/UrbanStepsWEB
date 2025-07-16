@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title layout:fragment="title">Thanh toán - UrbanSteps</title>
+    <th:block layout:fragment="extra-css">
+        <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-4">
+        <h2 class="mb-4 fw-bold">Xác nhận đơn hàng</h2>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="@{/checkout/place-order}" method="post" class="needs-validation">
+            <!-- 1. Giỏ hàng -->
+            <div class="card mb-4">
+                <div class="card-header bg-light fw-bold">1. Thông tin sản phẩm</div>
+                <div class="card-body p-0">
+                    <div th:if="${gioHang != null and !gioHang.items.empty}">
+                        <table class="table table-bordered m-0">
+                            <thead class="table-light text-center">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Kích cỡ</th>
+                                <th>Màu sắc</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${gioHang.items}">
+                                <td th:text="${item.tenSanPham}">Tên sản phẩm</td>
+                                <td class="text-center" th:text="${item.kichCo}">40</td>
+                                <td class="text-center" th:text="${item.mauSac}">Đen</td>
+                                <td class="text-center" th:text="${item.soLuong}">1</td>
+                                <td class="text-end" th:text="${#numbers.formatDecimal(item.giaTaiThoidiem, 0, 0) + 'đ'}">1,000,000đ</td>
+                                <td class="text-end" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">1,000,000đ</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 text-end">
+                        <strong>Tổng tiền: </strong>
+                        <span class="text-danger fs-5 fw-bold" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">0đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Thông tin giao hàng -->
+            <div class="card mb-4">
+                <div class="card-header bg-light fw-bold">2. Thông tin giao hàng</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="hoTen" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" id="hoTen" name="hoTen" class="form-control" required>
+                            <div class="invalid-feedback">Vui lòng nhập họ tên</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" id="sdt" name="sdt" class="form-control" required pattern="[0-9+ ]{10,15}">
+                            <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ (10-15 số)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email (không bắt buộc)</label>
+                        <input type="email" id="email" name="email" class="form-control">
+                        <div class="invalid-feedback">Email không hợp lệ</div>
+                    </div>
+
+                    <!-- Dropdown địa chỉ -->
+                    <div class="address-selector">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="province" class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                <select id="province" name="tinhThanh" class="form-select" required>
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn tỉnh/thành phố</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="district" class="form-label">Quận/Huyện <span class="text-danger">*</span></label>
+                                <select id="district" name="quanHuyen" class="form-select" required disabled>
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="ward" class="form-label">Phường/Xã <span class="text-danger">*</span></label>
+                                <select id="ward" name="phuongXa" class="form-select" required disabled>
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn phường/xã</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="diaChiGiaoHang" class="form-label">Địa chỉ cụ thể (số nhà, tên đường) <span class="text-danger">*</span></label>
+                        <textarea id="diaChiGiaoHang" name="diaChiGiaoHang" class="form-control" rows="2" required></textarea>
+                        <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ghiChu" class="form-label">Ghi chú (không bắt buộc)</label>
+                        <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Thanh toán -->
+            <div class="card mb-4">
+                <div class="card-header bg-light fw-bold">3. Phương thức thanh toán</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Chọn phương thức</label>
+                        <select name="phuongThucThanhToan" class="form-select" required>
+                            <option value="1">Thanh toán tiền mặt khi nhận hàng</option>
+                            <option value="2">Chuyển khoản ngân hàng</option>
+                            <option value="3">Kết hợp: tiền mặt + chuyển khoản</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ghiChu" class="form-label">Ghi chú (nếu có)</label>
+                        <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" name="maGiamGia" class="form-control" placeholder="Nhập mã giảm giá nếu có">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a th:href="@{/gio-hang}" class="btn btn-outline-secondary">← Quay lại giỏ hàng</a>
+                <div>
+                    <input type="hidden" name="buyNow" th:value="${buyNow} ?: false" />
+                    <input type="hidden" name="buyNowItemId" th:value="${buyNowItemId}" />
+                    <input type="hidden" name="buyNowQuantity" th:value="${buyNowQuantity}" />
+                    <button type="submit" class="btn btn-danger btn-lg">Đặt hàng ngay</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="extra-js">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Xử lý validation form
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+
+            // Load dữ liệu địa chỉ
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+            let addressData = [];
+
+            // Thêm option mặc định
+            provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+            // Load dữ liệu từ JSON
+            fetch('/data/vietnamAddress.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Không tải được dữ liệu địa chỉ');
+                    return response.json();
+                })
+                .then(data => {
+                    addressData = data;
+
+                    // Thêm các tỉnh thành vào dropdown
+                    data.forEach(province => {
+                        const option = document.createElement('option');
+                        option.value = province.Id;
+                        option.textContent = province.Name;
+                        provinceSelect.appendChild(option);
+                    });
+
+                    // Khôi phục giá trị đã chọn nếu có (trong trường hợp edit)
+                    if (window.preSelectedAddress) {
+                        restoreSelectedAddress();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi tải dữ liệu địa chỉ:', error);
+                    showAddressError();
+                });
+
+            // Xử lý khi chọn tỉnh/thành phố
+            provinceSelect.addEventListener('change', function() {
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                districtSelect.disabled = !this.value;
+                wardSelect.disabled = true;
+
+                if (!this.value) return;
+
+                const selectedProvince = addressData.find(p => p.Id === this.value);
+                if (selectedProvince && selectedProvince.Districts) {
+                    selectedProvince.Districts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.Id;
+                        option.textContent = district.Name;
+                        districtSelect.appendChild(option);
+                    });
+                }
+            });
+
+            // Xử lý khi chọn quận/huyện
+            districtSelect.addEventListener('change', function() {
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = !this.value;
+
+                if (!this.value || !provinceSelect.value) return;
+
+                const selectedProvince = addressData.find(p => p.Id === provinceSelect.value);
+                if (!selectedProvince) return;
+
+                const selectedDistrict = selectedProvince.Districts.find(d => d.Id === this.value);
+                if (selectedDistrict && selectedDistrict.Wards) {
+                    selectedDistrict.Wards.forEach(ward => {
+                        const option = document.createElement('option');
+                        option.value = ward.Id;
+                        option.textContent = ward.Name;
+                        wardSelect.appendChild(option);
+                    });
+                }
+            });
+
+            function showAddressError() {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-warning mb-3';
+                alertDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Không thể tải danh sách địa chỉ. Vui lòng tải lại trang hoặc nhập địa chỉ thủ công.';
+                document.querySelector('.address-selector').prepend(alertDiv);
+            }
+
+            function restoreSelectedAddress() {
+                // Code để khôi phục giá trị đã chọn (nếu cần)
+                // Ví dụ: từ URL params hoặc từ dữ liệu đơn hàng cũ
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

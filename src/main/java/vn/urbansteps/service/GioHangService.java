@@ -1,6 +1,7 @@
 package vn.urbansteps.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import vn.urbansteps.model.GioHang;
 import vn.urbansteps.model.GioHangItem;
@@ -30,6 +31,8 @@ public class GioHangService {
 
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Lấy giỏ hàng của user (đã đăng nhập)
@@ -345,4 +348,12 @@ public class GioHangService {
             return false;
         }
     }
+    public void clearGioHangByUserId(Integer userId) {
+        Optional<TaiKhoan> taiKhoan = taiKhoanRepository.findById(userId);
+        taiKhoan.ifPresent(tk -> {
+            Optional<GioHang> gioHang = gioHangRepository.findByTaiKhoan(tk);
+            gioHang.ifPresent(gioHangItemRepository::deleteByGioHang);
+        });
+    }
+
 }

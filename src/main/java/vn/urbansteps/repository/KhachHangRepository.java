@@ -5,13 +5,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.urbansteps.model.KhachHang;
+import vn.urbansteps.model.TaiKhoan;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
-    
+
+
+    Optional<KhachHang> findByTaiKhoan(TaiKhoan taiKhoan);
+
     // Tìm khách hàng theo tài khoản
     Optional<KhachHang> findByTaiKhoan_Id(Integer taiKhoanId);
     

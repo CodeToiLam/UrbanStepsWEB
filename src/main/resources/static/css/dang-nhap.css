@@ -283,13 +283,49 @@
     margin: 2rem 1rem;
     padding: 2rem;
   }
-  
+
   .login-title {
     font-size: 2rem;
   }
-  
+
   .back-to-home {
     top: 1rem;
     left: 1rem;
   }
+
 }
+.input-icon {
+  position: relative;
+}
+
+.input-icon i {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: #667eea;
+  pointer-events: none;
+}
+
+.input-icon input.form-control {
+  padding-left: 3rem;
+}
+.login-wrapper::after {
+  content: '';
+  position: absolute;
+  right: -100px;
+  bottom: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 70%);
+  animation: blobMove 15s infinite ease-in-out;
+  z-index: 0;
+}
+
+@keyframes blobMove {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-50px, -30px) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
