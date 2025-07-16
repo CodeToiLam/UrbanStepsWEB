@@ -9,25 +9,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin-product-list.css}" />
 </head>
 <body>
 <th:block th:fragment="content">
 <div class="container mt-4">
-    <h2 class="text-primary"><i class="bi bi-list-ul"></i> Danh sách sản phẩm</h2>
-    <div class="mb-3">
-        <a href="/admin/products/add" class="btn btn-success" title="Thêm sản phẩm mới"><i class="bi bi-plus-circle-fill"></i></a>
-        <a href="/admin/product-management" class="btn btn-primary ms-2" title="Xem quản lý tổng hợp"><i class="bi bi-grid-1x2-fill"></i></a>
-    </div>
-
-    <form th:action="@{/admin/products}" method="get" class="mb-4">
-        <div class="input-group w-50">
-            <label class="input-group-text"><i class="bi bi-filter"></i> Lọc theo trạng thái:</label>
-            <select name="trangThai" class="form-select" onchange="this.form.submit()">
-                <option value="">Tất cả</option>
-                <option th:value="true" th:selected="${activeFilter == true}">Hoạt động</option>
-                <option th:value="false" th:selected="${activeFilter == false}">Ngừng hoạt động</option>
-            </select>
+    <div class="product-list-header">
+        <div class="header-title">
+            <i class="bi bi-list-ul"></i>
+            <span>Danh sách sản phẩm</span>
         </div>
+        <div class="header-actions">
+            <a href="/admin/products/add" class="btn btn-primary" title="Thêm sản phẩm mới"><i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm</a>
+            <a href="/admin/product-management" class="btn btn-outline-primary" title="Quản lý chi tiết"><i class="bi bi-grid-1x2-fill"></i> Quản lý chi tiết</a>
+        </div>
+    </div>
+    <form th:action="@{/admin/products}" method="get" class="filter-bar">
+        <span class="filter-label"><i class="bi bi-filter"></i> Lọc trạng thái</span>
+        <select name="trangThai" class="status-filter form-select" onchange="this.form.submit()">
+            <option value="">Tất cả</option>
+            <option th:value="true" th:selected="${activeFilter == true}">Hoạt động</option>
+            <option th:value="false" th:selected="${activeFilter == false}">Ngừng hoạt động</option>
+        </select>
     </form>
 
     <table class="table table-striped table-hover">

@@ -1,0 +1,46 @@
+.product-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.product-list-header .header-title {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1756a9;
+  gap: 12px;
+}
+.product-list-header .header-actions {
+  display: flex;
+  gap: 12px;
+}
+.product-list-header .btn {
+  font-size: 1rem;
+  padding: 8px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(23,86,169,0.07);
+}
+.product-list-header .btn-primary {
+  background: #1756a9;
+  color: #fff;
+  border: none;
+}
+.product-list-header .btn-outline-primary {
+  background: #fff;
+  color: #1756a9;
+  border: 2px solid #1756a9;
+}
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.status-filter {
+  min-width: 120px;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
