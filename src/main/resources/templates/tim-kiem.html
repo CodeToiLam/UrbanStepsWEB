@@ -138,7 +138,7 @@
                                 </span>
                             </div>
                             <div class="product-price"
-                                 th:text="${product.giaBan != null ? (#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ') : 'Liên hệ'}">
+                                 th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
                                 Price
                             </div>
                             <!-- Thêm thông tin mã sản phẩm -->

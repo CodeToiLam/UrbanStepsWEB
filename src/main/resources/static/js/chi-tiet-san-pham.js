@@ -1,8 +1,3 @@
-/**
- * ====== URBANSTEPS - CHI TIẾT SẢN PHẨM ====== 
- * JavaScript cho trang chi tiết sản phẩm với gallery chuyên nghiệp
- */
-
 document.addEventListener('DOMContentLoaded', function () {
     // Debug: Log all data received from server
     console.log('=== PRODUCT DETAIL DEBUG ===');
@@ -65,24 +60,37 @@ document.addEventListener('DOMContentLoaded', function () {
     function initGallery() {
         const thumbnails = document.querySelectorAll('.thumbnail-item');
         const mainImage = document.getElementById('main-product-image');
-        
         if (thumbnails.length === 0) return;
-        
-        totalImages = thumbnails.length;
-        galleryImages = Array.from(thumbnails).map(thumb => ({
+
+        // Lấy đúng các thumbnail thực sự hiển thị (không bị lỗi ảnh)
+        const visibleThumbnails = Array.from(thumbnails).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
+        });
+
+        totalImages = visibleThumbnails.length;
+        galleryImages = visibleThumbnails.map(thumb => ({
             src: thumb.getAttribute('data-image'),
             index: parseInt(thumb.getAttribute('data-index'))
         }));
-        
+
+        // Nếu không có ảnh hợp lệ, ẩn counter và không cho mở lightbox
+        if (totalImages === 0) {
+            const counterBlock = document.getElementById('imageCounterBlock');
+            if (counterBlock) counterBlock.style.display = 'none';
+            window.openLightbox = function() { return; };
+            return;
+        }
+
         // Khởi tạo thumbnail đầu tiên
-        if (thumbnails.length > 0) {
-            thumbnails[0].classList.add('active');
+        if (visibleThumbnails.length > 0) {
+            visibleThumbnails[0].classList.add('active');
             currentImageIndex = 0;
             updateImageCounter();
         }
-        
+
         // Khởi tạo scroll navigation cho thumbnails
-        if (thumbnails.length > 5) {
+        if (visibleThumbnails.length > 5) {
             initThumbnailScrollNavigation();
         }
     }
@@ -159,8 +167,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cập nhật counter ảnh
     function updateImageCounter() {
         const counterElement = document.getElementById('currentImageIndex');
+        const totalElement = document.getElementById('totalImageCount');
+        // Đếm đúng số thumbnail thực sự hiển thị (không bị ẩn do lỗi ảnh)
+        const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
+        });
         if (counterElement) {
-            counterElement.textContent = currentImageIndex + 1;
+            counterElement.textContent = visibleThumbnails.length === 0 ? 0 : (currentImageIndex + 1);
+        }
+        if (totalElement) {
+            totalElement.textContent = visibleThumbnails.length;
         }
     }
 
@@ -243,18 +260,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Open lightbox
     window.openLightbox = function(startIndex = currentImageIndex) {
+        // Lấy lại galleryImages chỉ gồm ảnh thực sự hiển thị
+        const thumbnails = document.querySelectorAll('.thumbnail-item');
+        const visibleThumbnails = Array.from(thumbnails).filter(thumb => {
+            const img = thumb.querySelector('img');
+            return img && img.style.display !== 'none' && img.src && img.src.indexOf('no-image') === -1;
+        });
+        galleryImages = visibleThumbnails.map(thumb => ({
+            src: thumb.getAttribute('data-image'),
+            index: parseInt(thumb.getAttribute('data-index'))
+        }));
         if (galleryImages.length === 0) return;
-        
         currentImageIndex = startIndex;
         const lightboxOverlay = document.getElementById('lightboxOverlay');
         const lightboxImage = document.getElementById('lightboxImage');
         const lightboxCurrentIndex = document.getElementById('lightboxCurrentIndex');
         const lightboxTotalCount = document.getElementById('lightboxTotalCount');
-        
         lightboxImage.src = galleryImages[currentImageIndex].src;
         lightboxCurrentIndex.textContent = currentImageIndex + 1;
         lightboxTotalCount.textContent = galleryImages.length;
-        
         lightboxOverlay.classList.add('show');
         document.body.style.overflow = 'hidden';
     };
@@ -778,22 +802,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const quantityInput = document.getElementById('quantity');
         const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-        
-        // Tìm sản phẩm chi tiết ID dựa vào size và color đã chọn
+
         const sanPhamChiTietId = getSanPhamChiTietId(selectedSize, selectedColor);
-        
+
         if (!sanPhamChiTietId) {
             showAlert('Không tìm thấy sản phẩm với kích cỡ và màu sắc đã chọn!');
             return;
         }
 
-        // Hiển thị loading
-        const buyNowBtn = document.getElementById('buy-now');
-        const originalText = buyNowBtn.innerHTML;
-        buyNowBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
-        buyNowBtn.disabled = true;
-
-        // Thêm vào giỏ hàng trước, sau đó chuyển đến trang thanh toán
+        // Thêm vào giỏ hàng trước
         fetch('/api/cart/add', {
             method: 'POST',
             headers: {
@@ -801,49 +818,29 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${quantity}`
         })
-        .then(response => {
-            // Check if response indicates user needs to login (401 or 403)
-            if (response.status === 401 || response.status === 403) {
-                console.log('User not authenticated, redirecting to login...');
-                // Redirect to login page
-                window.location.href = '/dang-nhap';
-                return null;
-            }
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return response.json();
-        })
-        .then(data => {
-            // If data is null, it means we redirected to login
-            if (data === null) return;
-            
-            if (data.success) {
-                // Chuyển đến trang thanh toán
-                window.location.href = '/checkout';
-            } else {
-                // Check if the error message indicates need to login or if requireLogin flag is set
-                if (data.requireLogin || (data.message && (data.message.includes('đăng nhập') || data.message.includes('login')))) {
-                    console.log('Login required, redirecting to login page...');
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
                     window.location.href = '/dang-nhap';
-                    return;
+                    return null;
                 }
-                
-                showAlert(data.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng!');
-        })
-        .finally(() => {
-            // Khôi phục nút
-            buyNowBtn.innerHTML = originalText;
-            buyNowBtn.disabled = false;
-        });
+                if (!response.ok) throw new Error('Lỗi khi thêm vào giỏ hàng');
+                return response.json();
+            })
+            .then(data => {
+                if (data === null) return;
+                if (data.success) {
+                    // Chuyển sang trang thanh toán với tham số buyNow
+                    window.location.href = `/checkout?buyNow=true&itemId=${sanPhamChiTietId}&quantity=${quantity}`;
+                } else {
+                    showAlert(data.message || 'Có lỗi khi thêm sản phẩm vào giỏ hàng!');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                showAlert('Có lỗi xảy ra, vui lòng thử lại!');
+            });
     }
+
 
     // Hàm tìm ID sản phẩm chi tiết dựa vào size và color
     function getSanPhamChiTietId(size, color) {

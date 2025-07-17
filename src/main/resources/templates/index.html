@@ -60,7 +60,7 @@
                class="product-image">
           <div class="product-info">
             <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-            <p class="product-price" th:text="${#numbers.formatCurrency(product.giaBan)}">Giá</p>
+            <p class="product-price" th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">Giá</p>
             <p class="product-brand" th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
           </div>
         </a>
@@ -82,7 +82,7 @@
                class="product-image">
           <div class="product-info">
             <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-            <p class="product-price" th:text="${#numbers.formatCurrency(product.giaBan)}">Giá</p>
+            <p class="product-price" th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">Giá</p>
             <p class="product-brand" th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
           </div>
         </a>

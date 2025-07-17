@@ -33,13 +33,14 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
                         .requestMatchers("/favicon.ico", "/robots.txt").permitAll()
 
-                        // API endpoints - Tùy theo yêu cầu
+                        // API endpoints - Cho phép guest thao tác giỏ hàng
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/cart/info").permitAll() // Cho phép guest user kiểm tra giỏ hàng
-                        .requestMatchers("/api/cart/**").authenticated() // Các API cart khác cần đăng nhập
+                        .requestMatchers("/api/cart/**").permitAll()
+
+                        // Giỏ hàng cho guest cũng được phép truy cập
+                        .requestMatchers("/gio-hang", "/gio-hang/", "/cart", "/cart/").permitAll()
 
                         // User area - Cần đăng nhập
-                        .requestMatchers("/gio-hang/**", "/cart/**").authenticated()
                         .requestMatchers("/don-hang/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
                         .requestMatchers("/thanh-toan/**", "/checkout/**").authenticated()

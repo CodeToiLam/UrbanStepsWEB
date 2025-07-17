@@ -11,44 +11,56 @@
 </head>
 <body>
 <div th:fragment="content">
-    <h2>Quản lý Tài khoản</h2>
-    <a th:href="@{/admin/users/add}" class="admin-btn admin-btn-add">Thêm tài khoản</a>
-    <div th:if="${error}" class="admin-alert admin-alert-danger" th:text="${error}"></div>
-    <div>
-        <label>Lọc theo vai trò:</label>
-        <select onchange="window.location.href=this.value;">
-            <option th:value="@{/admin/users}" th:selected="${selectedRole == null}">Tất cả</option>
-            <option th:value="@{/admin/users?role=USER}" th:selected="${selectedRole == 'USER'}">User</option>
-            <option th:value="@{/admin/users?role=ADMIN}" th:selected="${selectedRole == 'ADMIN'}">Admin</option>
-        </select>
+  <div class="admin-container">
+    <div class="admin-header">
+      <div class="admin-title"><i class="bi bi-person-badge"></i> Quản lý Tài khoản</div>
+      <div class="admin-actions">
+        <a th:href="@{/admin/users/add}"><i class="bi bi-plus-circle-fill"></i> Thêm tài khoản</a>
+      </div>
     </div>
+    <form class="admin-form">
+      <label for="role"><i class="bi bi-filter"></i> Lọc theo vai trò:</label>
+      <select id="role" onchange="window.location.href=this.value;">
+        <option th:value="@{/admin/users}" th:selected="${selectedRole == null}">Tất cả</option>
+        <option th:value="@{/admin/users?role=USER}" th:selected="${selectedRole == 'USER'}">User</option>
+        <option th:value="@{/admin/users?role=ADMIN}" th:selected="${selectedRole == 'ADMIN'}">Admin</option>
+      </select>
+    </form>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <table class="admin-table">
-        <thead>
+      <thead>
         <tr>
-            <th>ID</th>
-            <th>Tài khoản</th>
-            <th>Họ tên</th>
-            <th>Email</th>
-            <th>SĐT</th>
-            <th>Vai trò</th>
-            <th>Hành động</th>
+          <th>ID</th>
+          <th>Tài khoản</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>SĐT</th>
+          <th>Vai trò</th>
+          <th>Hành động</th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         <tr th:each="user : ${users}">
-            <td th:text="${user.id != null ? user.id : 'N/A'}"></td>
-            <td th:text="${user.taiKhoan}"></td>
-            <td th:text="${user.hoTenTaiKhoan} ?: '-'"></td>
-            <td th:text="${user.email} ?: '-'"></td>
-            <td th:text="${user.sdt} ?: '-'"></td>
-            <td th:text="${user.role}"></td>
-            <td>
-                <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" th:if="${user.id != null}" class="admin-btn admin-btn-edit">Sửa</a>
-                <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" th:if="${user.id != null}" class="admin-btn admin-btn-delete"
-                   onclick="if (!confirm('Bạn có chắc muốn xóa?')) event.preventDefault();">Xóa</a>
-            </td>
+          <td th:text="${user.id != null ? user.id : 'N/A'}"></td>
+          <td th:text="${user.taiKhoan}"></td>
+          <td th:text="${user.hoTenTaiKhoan} ?: '-'" ></td>
+          <td th:text="${user.email} ?: '-'" ></td>
+          <td th:text="${user.sdt} ?: '-'" ></td>
+          <td>
+            <span th:classappend="${user.role == 'ADMIN'} ? 'admin-status active' : 'admin-status inactive'" th:text="${user.role}"></span>
+          </td>
+          <td>
+            <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" th:if="${user.id != null}" class="admin-actions" title="Sửa"><i class="bi bi-pen-fill"></i></a>
+            <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" th:if="${user.id != null}" class="admin-actions" title="Xóa" onclick="if (!confirm('Bạn có chắc muốn xóa?')) event.preventDefault();"><i class="bi bi-trash-fill"></i></a>
+          </td>
         </tr>
-        </tbody>
+      </tbody>
     </table>
+    <div class="admin-pagination">
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+    </div>
+  </div>
 </div>
 </body>

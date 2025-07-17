@@ -7,47 +7,35 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<header>
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-        <h2>Admin-UrbanSteps</h2>
-        <div>
-            <span>Xin chào Admin!</span>
-            <form th:action="@{/dang-xuat}" method="post" style="display: inline; margin-left: 10px;">
-                <button type="submit" class="logout-btn" style="background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                    Đăng xuất
-                </button>
-            </form>
-        </div>
+<header class="admin-main-header">
+  <div class="admin-header-bar">
+    <div class="admin-header-title">Admin-UrbanSteps</div>
+    <div class="admin-header-actions">
+      <span>Xin chào Admin!</span>
+      <form th:action="@{/dang-xuat}" method="post" style="display: inline; margin-left: 10px;">
+        <button type="submit" class="logout-btn">Đăng xuất</button>
+      </form>
     </div>
+  </div>
 </header>
 
-<div class="d-flex">
-    <nav class="sidebar bg-secondary vh-100 p-3">
-        <h5 class="text-white mb-4">Xin chào Admin!</h5>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link text-white" href="/admin/products"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a>
-            </li>
-            <!-- Thêm mới -->
-            <li class="nav-item">
-                <a class="nav-link text-white" href="/admin/product-management"><i class="bi bi-grid-1x2"></i> Quản lý sản phẩm chi tiết</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="/admin/discount-management"><i class="bi bi-tag-fill"></i> Quản lý phiếu giảm giá <!-- Thay icon từ bi-grid-1x2 thành bi-tag-fill -->
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="/"><i class="bi bi-house"></i> Về trang chủ</a>
-            </li>
-        </ul>
-    </nav>
+<div class="admin-layout">
+  <nav class="admin-sidebar">
+    <h5>Xin chào Admin!</h5>
+    <ul>
+      <li><a href="/admin/products"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a></li>
+      <li><a href="/admin/product-management"><i class="bi bi-grid-1x2"></i> Quản lý sản phẩm chi tiết</a></li>
+      <li><a href="/admin/discount-management"><i class="bi bi-tag-fill"></i> Quản lý phiếu giảm giá</a></li>
+      <li><a href="/"><i class="bi bi-house"></i> Về trang chủ</a></li>
+    </ul>
+  </nav>
+  <main class="admin-main-content">
+    <div th:replace="~{::content}"></div>
+  </main>
 </div>
 
-<main>
-    <div th:replace="~{::content}"></div> <!-- Thay bằng fragment content -->
-</main>
-<footer>
-    <p>© 2025 UrbanSteps. All rights reserved.</p>
+<footer class="admin-footer">
+  <p>© 2025 UrbanSteps. All rights reserved.</p>
 </footer>
 <script th:src="@{/js/admin.js}"></script>
 </body>

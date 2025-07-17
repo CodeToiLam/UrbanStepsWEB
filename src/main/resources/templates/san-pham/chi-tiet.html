@@ -15,13 +15,52 @@
 <div layout:fragment="content">
     <div class="container mt-5">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/san-pham}">Sản phẩm</a></li>
-                <li class="breadcrumb-item active" aria-current="page" th:text="${product.tenSanPham}">Chi tiết sản
-                    phẩm
+            <ol class="breadcrumb custom-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/}"><i class="bi bi-house-door"></i> Trang chủ</a>
                 </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.646 1.646a.5.5 0 0 1 .708 0l4.5 4.5a.5.5 0 0 1 0 .708l-4.5 4.5a.5.5 0 0 1-.708-.708L10.293 6 6.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/san-pham}">Sản phẩm</a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.646 1.646a.5.5 0 0 1 .708 0l4.5 4.5a.5.5 0 0 1 0 .708l-4.5 4.5a.5.5 0 0 1-.708-.708L10.293 6 6.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${product.tenSanPham}">Chi tiết sản phẩm</li>
             </ol>
+            <style>
+                .custom-breadcrumb {
+                    background: none;
+                    padding: 0;
+                    margin-bottom: 1rem;
+                    font-size: 1.1rem;
+                }
+                .custom-breadcrumb .breadcrumb-item a {
+                    color: #1976d2;
+                    text-decoration: underline;
+                    font-weight: 500;
+                    transition: color 0.2s;
+                }
+                .custom-breadcrumb .breadcrumb-item a:hover {
+                    color: #ff6600;
+                    text-decoration: underline;
+                }
+                .custom-breadcrumb .breadcrumb-separator {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin: 0 0.3rem;
+                }
+                .custom-breadcrumb .breadcrumb-item.active {
+                    color: #333;
+                    font-weight: 600;
+                }
+            </style>
         </nav>
 
         <div class="row">
@@ -44,7 +83,7 @@
                                             <img th:src="${img.duongDan}"
                                                  th:alt="${product.tenSanPham + ' - Ảnh ' + (imgStat.count)}"
                                                  class="thumbnail-img"
-                                                 onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none';">
+                                                 onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none'; if(window.updateImageCounter) window.updateImageCounter();">
                                             <div class="thumbnail-overlay">
                                                 <div class="thumbnail-number" th:text="${imgStat.count}">1</div>
                                             </div>
@@ -119,8 +158,8 @@
                 
                 <!-- Image info -->
                 <div class="image-info mt-3" th:if="${productImages != null and !#lists.isEmpty(productImages)}">
-                    <div class="image-counter">
-                        <span id="currentImageIndex">1</span> / <span th:text="${productImages.size()}">1</span>
+                    <div class="image-counter" id="imageCounterBlock">
+                        <span id="currentImageIndex">1</span> / <span th:text="${productImages.size()}" id="totalImageCount">[[${productImages.size()}]]</span>
                     </div>
                     <div class="image-actions">
                         <button class="btn btn-sm btn-outline-primary" onclick="openLightbox()" th:if="${productImages.size() > 1}">
@@ -143,8 +182,8 @@
             </div>
 
             <div class="product-price mb-4">
-                    <span class="current-price"
-                          th:text="${#numbers.formatDecimal(product.giaBan, 0, 0)} + ' ₫'">1,200,000 ₫</span>
+                <span class="current-price"
+                      th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">1,200,000đ</span>
             </div>
 
             <!-- Chọn kích cỡ -->
@@ -159,7 +198,7 @@
             </div>
 
             <!-- Chọn màu sắc -->
-            <div class="product-color mb-3" th:if="${!mauSacs.empty && mauSacs.size() > 1}">
+            <div class="product-color mb-3" th:if="${!mauSacs.empty}">
                 <h5>Màu sắc:</h5>
                 <div class="color-options">
                     <div th:each="color : ${mauSacs}" class="color-option">
@@ -170,9 +209,8 @@
             </div>
 
             <!-- Hidden input for single color -->
-            <div th:if="${!mauSacs.empty && mauSacs.size() == 1}" style="display: none;">
-                <input type="radio" th:id="${'color-' + mauSacs[0]}" name="color" th:value="${mauSacs[0]}" checked>
-            </div>
+            <!-- Hidden input for single color (giữ lại nếu muốn auto-check) -->
+            <!-- Nếu muốn cho phép chọn, có thể bỏ đoạn này hoặc để auto-check khi chỉ có 1 màu -->
 
             <!-- Số lượng tồn kho -->
             <div class="product-stock mb-3" th:if="${!kichCos.empty && !mauSacs.empty}">
@@ -247,8 +285,8 @@
                         <div class="card-body">
                             <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
                             <p class="card-text product-price"
-                               th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 0)} + ' ₫'">
-                                750,000 ₫</p>
+                               th:text="${relatedProduct.giaBan != null ? #numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                750,000đ</p>
                         </div>
                     </a>
                 </div>
@@ -279,6 +317,33 @@
         console.log('availableColors:', window.availableColors);
     </script>
 </th:block>
+
+<script>
+// Ẩn counter nếu không còn ảnh hợp lệ
+window.updateImageCounter = function() {
+    const counterElement = document.getElementById('currentImageIndex');
+    const totalElement = document.getElementById('totalImageCount');
+    const counterBlock = document.getElementById('imageCounterBlock');
+    // Lấy index hiện tại từ JS gallery nếu có, fallback về 1
+    let currentIndex = 1;
+    if (window.galleryImages && Array.isArray(window.galleryImages) && window.galleryImages.length > 0 && typeof window.currentImageIndex === 'number') {
+        currentIndex = window.currentImageIndex + 1;
+    }
+    const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
+        const img = thumb.querySelector('img');
+        return img && img.style.display !== 'none';
+    });
+    if (counterBlock) {
+        if (visibleThumbnails.length > 0) {
+            counterBlock.style.display = '';
+            if (counterElement) counterElement.textContent = currentIndex;
+            if (totalElement) totalElement.textContent = visibleThumbnails.length;
+        } else {
+            counterBlock.style.display = 'none';
+        }
+    }
+}
+</script>
 
 </div>
 
