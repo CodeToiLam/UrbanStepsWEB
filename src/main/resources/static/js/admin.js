@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     // Xử lý xác nhận xóa
     function confirmDelete(event) {
@@ -32,5 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             form.classList.add('was-validated');
         }, false);
+    });
+
+    // Đảm bảo các icon trong nút hành động không gây xung đột
+    document.querySelectorAll('.admin-icon-btn, .admin-btn, .logout-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            // Ngăn chặn hành vi mặc định nếu icon được click
+            if (event.target.tagName === 'I') {
+                event.stopPropagation();
+            }
+        });
     });
 });
