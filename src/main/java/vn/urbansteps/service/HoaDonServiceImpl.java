@@ -1,4 +1,4 @@
-package vn.urbansteps.service.impl;
+package vn.urbansteps.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

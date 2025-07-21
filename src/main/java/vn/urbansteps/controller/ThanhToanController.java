@@ -37,11 +37,13 @@ public class ThanhToanController {
             HttpSession session) {
         String username = (String) session.getAttribute("username");
         GioHang gioHang = null;
+        String defaultAddress = null;
 
         if (username != null) {
             TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
             if (taiKhoan != null) {
                 gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoan.getId());
+                // defaultAddress = ... (update to use DiaChiGiaoHang if needed)
             }
         } else {
             String sessionId = session.getId();
@@ -84,6 +86,9 @@ public class ThanhToanController {
         }
 
         model.addAttribute("gioHang", gioHang);
+        if (defaultAddress != null && !defaultAddress.isEmpty()) {
+            model.addAttribute("defaultAddress", defaultAddress);
+        }
         return "thanh-toan";
     }
 

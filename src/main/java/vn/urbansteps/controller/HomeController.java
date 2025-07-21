@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import vn.urbansteps.service.HomeImageService;
 import vn.urbansteps.service.SanPhamService;
 import vn.urbansteps.service.ImageService;
@@ -80,9 +81,27 @@ public class HomeController {
         return "dang-ky";
     }
 
-    @PostMapping("/dang-nhap")
-    public String processLogin() {
+    @Autowired
+    private vn.urbansteps.service.TaiKhoanService taiKhoanService;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    @PostMapping("/dang-nhap")
+    public String processLogin(@RequestParam String taiKhoan,
+                               @RequestParam String matKhau,
+                               Model model) {
+        vn.urbansteps.model.TaiKhoan user = taiKhoanService.findByTaiKhoan(taiKhoan);
+        if (user == null) {
+            model.addAttribute("loginError", "Tài khoản không tồn tại.");
+            return "dang-nhap";
+        }
+        if (!passwordEncoder.matches(matKhau, user.getMatKhau())) {
+            model.addAttribute("loginError", "Mật khẩu không đúng.");
+            return "dang-nhap";
+        }
+        model.addAttribute("loginSuccess", "Đăng nhập thành công!");
+        // TODO: Lưu session hoặc chuyển hướng hợp lý như các web lớn
         return "redirect:/";
     }
 
