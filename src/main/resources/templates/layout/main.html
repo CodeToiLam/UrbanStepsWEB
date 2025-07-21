@@ -48,7 +48,7 @@
       <div class="user-section" th:if="${#authentication.name != 'anonymousUser'}">
         <span class="welcome-text">Xin chào, <strong th:text="${#authentication.name}">User</strong>!</span>
         <div class="user-menu">
-          <a href="/tai-khoan/thong-tin" class="user-menu-item">Tài khoản</a>
+          <a href="/tai-khoan" class="user-menu-item">Tài khoản</a>
           <span class="menu-divider">|</span>
           <a href="/don-hang" class="user-menu-item">Đơn hàng</a>
           <span class="menu-divider">|</span>

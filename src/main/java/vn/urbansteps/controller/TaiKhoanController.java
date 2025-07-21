@@ -15,6 +15,22 @@ import vn.urbansteps.service.TaiKhoanService;
 @Controller
 @RequestMapping("/tai-khoan")
 public class TaiKhoanController {
+    @GetMapping
+    public String taiKhoanPage(Model model) {
+        // Lấy username từ session (Spring Security)
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if (username != null && !"anonymousUser".equals(username)) {
+            TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+            model.addAttribute("taiKhoan", taiKhoan);
+            // TODO: Lấy danh sách địa chỉ đã lưu của user
+            // ...existing code...
+            // TODO: Lấy lịch sử đơn hàng
+            // List<Order> orders = orderService.findByUserId(taiKhoan.getId());
+            // model.addAttribute("orders", orders);
+        }
+        return "tai-khoan";
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(TaiKhoanController.class);
 

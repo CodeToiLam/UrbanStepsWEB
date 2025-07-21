@@ -21,6 +21,14 @@
     </div>
 
     <div class="login-container">
+      <div th:if="${loginError}" class="alert alert-danger" style="margin-bottom:16px; border-radius:10px; font-size:1.08rem; box-shadow:0 4px 16px rgba(211,47,47,0.08); border-left:6px solid #d32f2f;">
+        <i class="bi bi-exclamation-circle-fill" style="color:#d32f2f; margin-right:8px;"></i>
+        <span th:text="${loginError}"></span>
+      </div>
+      <div th:if="${loginSuccess}" class="alert alert-success" style="margin-bottom:16px; border-radius:10px; font-size:1.08rem; box-shadow:0 4px 16px rgba(46,204,113,0.08); border-left:6px solid #27ae60;">
+        <i class="bi bi-check-circle-fill" style="color:#27ae60; margin-right:8px;"></i>
+        <span th:text="${loginSuccess}"></span>
+      </div>
       <div class="brand-logo">
         <i class="bi bi-shop"></i>
       </div>

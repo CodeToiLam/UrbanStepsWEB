@@ -41,29 +41,7 @@ public class DiaChiGiaoHang {
     @Column(name = "tinh_thanh_pho", length = 100)
     private String tinhThanhPho;
 
-    @Column(name = "la_dia_chi_mac_dinh")
-    private Boolean laDiaChiMacDinh = false;
-
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
-
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
-
-    @Column(name = "delete_at")
-    private LocalDateTime deleteAt;
-
-    @PrePersist
-    public void prePersist() {
-        createAt = LocalDateTime.now();
-        updateAt = LocalDateTime.now();
-        if (laDiaChiMacDinh == null) laDiaChiMacDinh = false;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updateAt = LocalDateTime.now();
-    }
+    // ...existing code...
 
     // Utility methods
     public String getDiaChiDayDu() {
