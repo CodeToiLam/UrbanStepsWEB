@@ -1,3 +1,4 @@
+
 package vn.urbansteps.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,22 @@ import java.util.UUID;
 @Service
 public class HoaDonServiceImpl implements HoaDonService {
 
+    @Override
+    public HoaDon getOrderById(Integer orderId) {
+        return hoaDonRepository.findById(orderId).orElse(null);
+    }
+
+    @Override
+    public HoaDon save(HoaDon hoaDon) {
+        return hoaDonRepository.save(hoaDon);
+    }
+
     @Autowired
     private HoaDonRepository hoaDonRepository;
+    @Override
+    public List<HoaDon> getOrdersByKhachHangId(Integer khachHangId) {
+        return hoaDonRepository.findByKhachHang_IdOrderByCreateAtDesc(khachHangId);
+    }
 
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;

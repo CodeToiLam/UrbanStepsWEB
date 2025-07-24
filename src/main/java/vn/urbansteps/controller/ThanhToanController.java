@@ -12,6 +12,7 @@ import vn.urbansteps.model.TaiKhoan;
 import vn.urbansteps.service.GioHangService;
 import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.service.TaiKhoanService;
+import vn.urbansteps.service.EmailService;
 
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class ThanhToanController {
 
     @Autowired
     private HoaDonService hoaDonService;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public String showCheckoutPage(
@@ -162,6 +166,15 @@ public class ThanhToanController {
                 gioHangService.clearGioHangByUserId(taiKhoanId);
             } else if (Boolean.TRUE.equals(buyNow)) {
                 gioHangService.removeFromCart(buyNowItemId);
+            }
+
+            // Gửi email xác nhận đơn hàng nếu có email
+            if (email != null && !email.isEmpty()) {
+                String subject = "Xác nhận đơn hàng UrbanSteps";
+                String text = "Cảm ơn bạn đã đặt hàng tại UrbanSteps! Mã đơn hàng: " + hoaDon.getMaHoaDon()
+                        + "\nTổng tiền: " + hoaDon.getTongThanhToan() + " VNĐ\n";
+                text += "Chúng tôi sẽ liên hệ và giao hàng sớm nhất!";
+                emailService.sendOrderConfirmation(email, subject, text);
             }
 
             return "redirect:/checkout/success";
