@@ -69,12 +69,12 @@
                 <div class="product-gallery-container">
                     <!-- Gallery layout: vertical thumbnails + main image -->
                     <div class="gallery-layout" th:if="${productImages != null and !#lists.isEmpty(productImages)}">
-                        
+
                         <!-- Thumbnail column (vertical) -->
                         <div class="thumbnails-column" th:if="${productImages.size() > 1}">
                             <div class="thumbnails-wrapper">
                                 <div class="thumbnail-scroll-container" id="thumbnailScrollContainer">
-                                    <div th:each="img, imgStat : ${productImages}" 
+                                    <div th:each="img, imgStat : ${productImages}"
                                          th:class="${imgStat.index == 0 ? 'thumbnail-item active' : 'thumbnail-item'}"
                                          th:data-image="${img.duongDan}"
                                          th:data-index="${imgStat.index}"
@@ -90,7 +90,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Scroll navigation for thumbnails -->
                                 <div class="thumbnail-nav" th:if="${productImages.size() > 5}">
                                     <button class="thumb-nav-btn thumb-nav-up" id="thumbNavUp" onclick="scrollThumbnails('up')">
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Main image area -->
                         <div class="main-image-area">
                             <div class="main-image-container">
@@ -114,23 +114,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Main product image -->
                                 <img id="main-product-image"
                                      th:src="${productImages[0].duongDan}"
                                      th:alt="${product.tenSanPham}"
                                      class="main-product-image"
                                      onerror="this.onerror=null; this.src='/images/no-image.jpg';">
-                                
+
                                 <!-- Zoom indicator -->
                                 <div class="zoom-indicator">
                                     <i class="bi bi-zoom-in"></i>
                                     <span>Click để phóng to</span>
                                 </div>
-                                
+
                                 <!-- Navigation dots for mobile -->
                                 <div class="image-dots d-md-none" th:if="${productImages.size() > 1}">
-                                    <span th:each="img, imgStat : ${productImages}" 
+                                    <span th:each="img, imgStat : ${productImages}"
                                           th:class="${imgStat.index == 0 ? 'dot active' : 'dot'}"
                                           th:data-index="${imgStat.index}"
                                           onclick="changeMainImage(document.querySelector('[data-index=\'' + this.dataset.index + '\']'))"></span>
@@ -138,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Fallback for single image or no images -->
                     <div class="single-image-container" th:if="${productImages == null or #lists.isEmpty(productImages) or productImages.size() == 1}">
                         <img id="main-product-image-single"
@@ -155,7 +155,7 @@
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
                     </div>
                 </div>
-                
+
                 <!-- Image info -->
                 <div class="image-info mt-3" th:if="${productImages != null and !#lists.isEmpty(productImages)}">
                     <div class="image-counter" id="imageCounterBlock">
@@ -215,7 +215,7 @@
             <!-- Số lượng tồn kho -->
             <div class="product-stock mb-3" th:if="${!kichCos.empty && !mauSacs.empty}">
                 <span>Còn lại: </span>
-                <span id="stock-quantity" 
+                <span id="stock-quantity"
                       th:text="${mauSacs.size() == 1 ? 'Vui lòng chọn kích cỡ' : 'Vui lòng chọn kích cỡ và màu sắc'}">
                     Vui lòng chọn kích cỡ và màu sắc
                 </span>
@@ -240,11 +240,11 @@
 
             <!-- Nút thêm vào giỏ hàng -->
             <div class="product-actions mb-4">
-                <button id="add-to-cart" class="btn btn-secondary add-to-cart-btn" disabled 
+                <button id="add-to-cart" class="btn btn-secondary add-to-cart-btn" disabled
                         th:text="${mauSacs.size() == 1 ? 'Chọn kích cỡ' : 'Chọn kích cỡ và màu'}">
                     <i class="bi bi-cart-plus"></i> Chọn kích cỡ và màu
                 </button>
-                <button id="buy-now" class="btn btn-secondary buy-now-btn" disabled 
+                <button id="buy-now" class="btn btn-secondary buy-now-btn" disabled
                         th:text="${mauSacs.size() == 1 ? 'Chọn kích cỡ' : 'Chọn kích cỡ và màu'}">
                     <i class="bi bi-lightning-fill"></i> Chọn kích cỡ và màu
                 </button>
@@ -305,10 +305,10 @@
         window.variants = /*[[${variants}]]*/ [];
         window.availableSizes = /*[[${kichCos}]]*/ [];
         window.availableColors = /*[[${mauSacs}]]*/ [];
-        
+
         // Set stock data from server (legacy function call)
         window.setStockData(/*[[${tonKhoMap}]]*/ {});
-        
+
         // Debug: Log the data structure from backend
         console.log('Backend data received:');
         console.log('tonKhoMap:', window.tonKhoMap);

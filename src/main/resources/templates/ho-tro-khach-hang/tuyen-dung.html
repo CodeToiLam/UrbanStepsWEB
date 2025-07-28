@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title layout:fragment="title">Tuyển dụng - UrbanSteps</title>
+    <style>
+        .content-wrapper { display: flex; gap: 20px; }
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .sidebar h3 { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .sidebar ul { list-style: none; padding-left: 0; }
+        .sidebar ul li { margin-bottom: 10px; }
+        .sidebar ul li a { text-decoration: none; color: black; }
+        .sidebar ul li a.active { color: red; font-weight: bold; }
+        .main-content {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 8px;
+        }
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            padding: 5px 0;
+        }
+
+        .accordion-header .arrow {
+            transition: transform 0.2s ease;
+        }
+
+        .accordion-content {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            display: none; /* Mặc định ẩn */
+        }
+
+        .accordion-content li {
+            margin-bottom: 10px;
+        }
+
+        .accordion-content li a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .accordion-content li a.active {
+            color: red;
+            font-weight: bold;
+        }
+
+        .accordion-section.open .accordion-content {
+            display: block;
+        }
+
+        .accordion-section.open .arrow {
+            transform: rotate(180deg);
+        }
+    </style>
+    <script>
+        function toggleAccordion(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+    </script>
+
+</head>
+<body>
+<div layout:fragment="content" class="container my-5">
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Danh mục</h3>
+
+            <!-- Accordion group 1 -->
+            <div class="accordion-section open">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Hỗ trợ khách hàng</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <ul class="accordion-content">
+                    <li><a href="/ho-tro">Hỗ trợ</a></li>
+                    <li><a href="/van-don">Vận đơn</a></li>
+                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
+                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
+                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
+                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+
+            <!-- Accordion group 2 -->
+            <div class="accordion-section">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Về UrbanSteps</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <ul class="accordion-content">
+                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
+                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
+                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
+                    <li><a href="/lien-he">Liên hệ</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Main content -->
+        <div class="main-content">
+            <h2>Tuyển dụng</h2>
+            <p>UrbanSteps luôn tìm kiếm những nhân sự tài năng và nhiệt huyết để cùng phát triển.</p>
+
+            <h4>Vị trí đang tuyển</h4>
+            <ul>
+                <li>Nhân viên bán hàng</li>
+                <li>Nhân viên chăm sóc khách hàng</li>
+                <li>Nhân viên marketing</li>
+                <li>Nhân viên kho</li>
+            </ul>
+
+            <h4>Yêu cầu chung</h4>
+            <ul>
+                <li>Đam mê công việc, nhiệt tình và có trách nhiệm.</li>
+                <li>Kỹ năng giao tiếp tốt.</li>
+                <li>Ưu tiên ứng viên có kinh nghiệm liên quan.</li>
+            </ul>
+
+            <h4>Cách thức ứng tuyển</h4>
+            <p>Vui lòng gửi CV và thư xin việc về email: <a href="mailto:tuyen.dung@urbansteps.vn">tuyen.dung@urbansteps.vn</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
