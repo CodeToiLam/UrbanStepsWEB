@@ -40,6 +40,9 @@ public class SecurityConfig {
                         // Giỏ hàng cho guest cũng được phép truy cập
                         .requestMatchers("/gio-hang", "/gio-hang/", "/cart", "/cart/").permitAll()
 
+                        // POS endpoints - Cho phép public
+                        .requestMatchers("/pos/products", "/pos/order").permitAll()
+
                         // User area - Cần đăng nhập
                         .requestMatchers("/don-hang/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()

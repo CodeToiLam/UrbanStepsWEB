@@ -105,7 +105,20 @@ public class SanPhamService {
     }
 
     public List<SanPham> timKiemTheoTen(String keyword) {
-        return sanPhamRepository.findByTenSanPhamContainingIgnoreCaseAndTrangThai(keyword, Boolean.TRUE);
+        String lower = keyword == null ? "" : keyword.toLowerCase();
+        return getActiveProductsWithCache().stream()
+            .filter(sp -> {
+                if (lower.isEmpty()) return true;
+                return (sp.getTenSanPham() != null && sp.getTenSanPham().toLowerCase().contains(lower))
+                    || (sp.getThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu().toLowerCase().contains(lower))
+                    || (sp.getLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham().toLowerCase().contains(lower))
+                    || (sp.getDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc().toLowerCase().contains(lower))
+                    || (sp.getMaSanPham() != null && sp.getMaSanPham().toLowerCase().contains(lower))
+                    || (sp.getXuatXu() != null && sp.getXuatXu().getTenXuatXu() != null && sp.getXuatXu().getTenXuatXu().toLowerCase().contains(lower))
+                    || (sp.getKieuDang() != null && sp.getKieuDang().getTenKieuDang() != null && sp.getKieuDang().getTenKieuDang().toLowerCase().contains(lower))
+                    || (sp.getChatLieu() != null && sp.getChatLieu().getTenChatLieu() != null && sp.getChatLieu().getTenChatLieu().toLowerCase().contains(lower));
+            })
+            .collect(Collectors.toList());
     }
 
     public List<String> layDanhSachThuongHieu() {
@@ -181,3 +194,5 @@ public class SanPhamService {
         });
     }
 }
+
+// ...existing code...

@@ -125,4 +125,65 @@ public class HoaDonServiceImpl implements HoaDonService {
         String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         return prefix + "_" + random;
     }
+
+    /**
+     * Tạo đơn POS cho bán hàng tại quầy
+     * @param hoTen Tên khách hàng (có thể null nếu khách vãng lai)
+     * @param sdt Số điện thoại khách hàng (có thể null)
+     * @param ghiChu Ghi chú đơn hàng
+     * @param items Danh sách sản phẩm bán ra
+     * @param tienMat Số tiền mặt khách trả
+     * @param tienChuyenKhoan Số tiền chuyển khoản khách trả
+     * @param phuongThucThanhToan 1: Tiền mặt, 2: Chuyển khoản, 3: Cả hai
+     * @return HoaDon đã tạo
+     */
+    @Transactional
+    public HoaDon createOrderPOS(String hoTen, String sdt, String ghiChu, List<GioHangItem> items,
+                                 BigDecimal tienMat, BigDecimal tienChuyenKhoan, int phuongThucThanhToan) {
+        // Tạo khách vãng lai
+        KhachHang khachHang = new KhachHang();
+        khachHang.setHoTenKhachHang(hoTen);
+        khachHang.setSdt(sdt);
+        khachHang.setLaKhachVangLai(true);
+        khachHangRepository.save(khachHang);
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setKhachHang(khachHang);
+        hoaDon.setMaHoaDon(generateMaHoaDon());
+        hoaDon.setPhuongThucThanhToan((byte) phuongThucThanhToan);
+        hoaDon.setGhiChu(ghiChu);
+        hoaDon.setTrangThai((byte) 5); // Đã thanh toán
+        hoaDon.setCreateAt(LocalDateTime.now());
+        hoaDon.setTienMat(tienMat != null ? tienMat : BigDecimal.ZERO);
+        hoaDon.setTienChuyenKhoan(tienChuyenKhoan != null ? tienChuyenKhoan : BigDecimal.ZERO);
+
+        // Tính tổng tiền
+        BigDecimal tongTien = BigDecimal.ZERO;
+        for (GioHangItem item : items) {
+            BigDecimal thanhTien = item.getGiaTaiThoidiem().multiply(BigDecimal.valueOf(item.getSoLuong()));
+            tongTien = tongTien.add(thanhTien);
+        }
+        hoaDon.setTongTien(tongTien);
+        hoaDon.setTienGiam(BigDecimal.ZERO);
+        hoaDon.setTongThanhToan(tongTien);
+
+        hoaDonRepository.save(hoaDon);
+
+        // Lưu chi tiết hóa đơn
+        int index = 1;
+        for (GioHangItem item : items) {
+            HoaDonChiTiet chiTiet = new HoaDonChiTiet();
+            chiTiet.setHoaDon(hoaDon);
+            chiTiet.setSanPhamChiTiet(item.getSanPhamChiTiet());
+            chiTiet.setSoLuong(item.getSoLuong());
+            chiTiet.setGiaBan(item.getGiaTaiThoidiem());
+            chiTiet.setGiaNhap(item.getSanPhamChiTiet().getSanPham().getGiaNhap());
+            chiTiet.setThanhTien(item.getGiaTaiThoidiem().multiply(BigDecimal.valueOf(item.getSoLuong())));
+            chiTiet.setMaHoaDonChiTiet(hoaDon.getMaHoaDon() + "_POS_" + index++);
+            chiTiet.setCreateAt(LocalDateTime.now());
+            hoaDonChiTietRepository.save(chiTiet);
+        }
+
+        return hoaDon;
+    }
 }
