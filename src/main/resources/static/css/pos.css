@@ -1,0 +1,138 @@
+/* Ô input tìm kiếm sản phẩm POS */
+#search {
+  border: 2px solid #1976d2;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 1.08rem;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border 0.18s, box-shadow 0.18s;
+  background: #f7fafd;
+  color: #1976d2;
+  font-weight: 600;
+}
+#search:focus {
+  border-color: #1565c0;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.13);
+}
+/* Dropdown kết quả tìm kiếm */
+.search-dropdown {
+  background: #fff;
+  border: 1.5px solid #e3eaf2;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(21,101,192,0.10);
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 1.05rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+}
+.search-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f4fa;
+  transition: background 0.15s;
+}
+.search-item:last-child {
+  border-bottom: none;
+}
+.search-item:hover {
+  background: #e3eaf2;
+}
+/* pos.css - Style riêng cho POS */
+
+/* POS dùng style giống admin */
+/* Xóa style container, dùng layout admin mặc định */
+.pos-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 24px;
+  color: #1565c0;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.pos-section {
+  margin-bottom: 28px;
+}
+.pos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+  background: #f7fafd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pos-table th, .pos-table td {
+  border: 1px solid #e3e6ed;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 1.08rem;
+}
+.pos-table th {
+  background: #e3eaf2;
+  font-weight: 700;
+  color: #1565c0;
+}
+.pos-table tr {
+  transition: background 0.2s;
+}
+.pos-table tr:hover {
+  background: #e3eaf2;
+}
+.pos-total {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #e53935;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px #f8d7da;
+}
+.pos-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 28px;
+  font-size: 1.08rem;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: background 0.18s, box-shadow 0.18s;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.07);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pos-btn:disabled {
+  background: #aaa;
+}
+.pos-btn:hover {
+  background: #1565c0;
+  box-shadow: 0 4px 16px rgba(21,101,192,0.13);
+}
+/* Form POS */
+#pos-form label {
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+#pos-form input, #pos-form select {
+  border: 1px solid #e3e6ed;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+#pos-form div {
+  margin-bottom: 12px;
+}
+#pos-form input:focus, #pos-form select:focus {
+  outline: 1px solid #1976d2;
+}

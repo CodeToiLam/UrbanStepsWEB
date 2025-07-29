@@ -11,10 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import vn.urbansteps.model.TaiKhoan;
 import vn.urbansteps.service.TaiKhoanService;
+import vn.urbansteps.service.HoaDonService;
+import vn.urbansteps.model.HoaDon;
+import vn.urbansteps.model.KhachHang;
+import vn.urbansteps.repository.KhachHangRepository;
 
 @Controller
 @RequestMapping("/tai-khoan")
 public class TaiKhoanController {
+    @Autowired
+    private HoaDonService hoaDonService;
+    @Autowired
+    private KhachHangRepository khachHangRepository;
     @GetMapping
     public String taiKhoanPage(Model model) {
         // Lấy username từ session (Spring Security)
@@ -25,9 +33,12 @@ public class TaiKhoanController {
             model.addAttribute("taiKhoan", taiKhoan);
             // TODO: Lấy danh sách địa chỉ đã lưu của user
             // ...existing code...
-            // TODO: Lấy lịch sử đơn hàng
-            // List<Order> orders = orderService.findByUserId(taiKhoan.getId());
-            // model.addAttribute("orders", orders);
+            // Lấy lịch sử đơn hàng
+            KhachHang khachHang = khachHangRepository.findByTaiKhoan(taiKhoan).orElse(null);
+            if (khachHang != null) {
+                java.util.List<HoaDon> orders = hoaDonService.getOrdersByKhachHangId(khachHang.getId());
+                model.addAttribute("orders", orders);
+            }
         }
         return "tai-khoan";
     }
@@ -105,6 +116,17 @@ public class TaiKhoanController {
         model.addAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
         return "dang-nhap";
     }
-
+    @PostMapping("/huy-don-hang")
+    public String huyDonHang(@RequestParam("orderId") Integer orderId, Model model) {
+        HoaDon hoaDon = hoaDonService.getOrderById(orderId);
+        if (hoaDon != null && (hoaDon.getTrangThai() == 0 || hoaDon.getTrangThai() == 1)) {
+            hoaDon.setTrangThai((byte) 4); // 4: Đã hủy
+            hoaDonService.save(hoaDon);
+            model.addAttribute("message", "Đã hủy đơn hàng thành công.");
+        } else {
+            model.addAttribute("error", "Không thể hủy đơn hàng này.");
+        }
+        return "redirect:/tai-khoan";
+    }
 }
 
