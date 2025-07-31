@@ -12,8 +12,8 @@ public class AdminActionLogService {
     @Autowired
     private AdminActionLogRepository adminActionLogRepository;
 
-    public void logAction(String adminUsername, String action, String details) {
-        AdminActionLog log = new AdminActionLog(adminUsername, action, details);
+    public void logAction(Integer adminId, String action, String details) {
+        AdminActionLog log = new AdminActionLog(adminId, action, details);
         adminActionLogRepository.save(log);
     }
 

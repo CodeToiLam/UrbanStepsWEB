@@ -1,44 +1,43 @@
 package vn.urbansteps.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+
 @Entity
-@Table(name = "AdminActionLog")
+@Table(name = "ThongKeHanhDongAdmin")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminActionLog {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "admin_username")
-    private String adminUsername;
+    @Column(name = "admin_id")
+    private Integer adminId;
 
-    @Column(name = "action")
-    private String action;
+    @Column(name = "hanh_dong")
+    private String hanhDong;
 
-    @Column(name = "details", columnDefinition = "TEXT")
-    private String details;
+    @Column(name = "mo_ta")
+    private String moTa;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "thoi_gian")
+    private LocalDateTime thoiGian = LocalDateTime.now();
 
-    public AdminActionLog() {}
-
-    public AdminActionLog(String adminUsername, String action, String details) {
-        this.adminUsername = adminUsername;
-        this.action = action;
-        this.details = details;
-        this.createdAt = LocalDateTime.now();
+    public AdminActionLog(Integer adminId, String hanhDong, String moTa) {
+        this.adminId = adminId;
+        this.hanhDong = hanhDong;
+        this.moTa = moTa;
+        this.thoiGian = LocalDateTime.now();
     }
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public String getAdminUsername() { return adminUsername; }
-    public void setAdminUsername(String adminUsername) { this.adminUsername = adminUsername; }
-    public String getAction() { return action; }
-    public void setAction(String action) { this.action = action; }
-    public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
