@@ -1,5 +1,7 @@
 package vn.urbansteps.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +24,17 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     
     // Tìm theo trạng thái
     List<HoaDon> findByTrangThaiOrderByCreateAtDesc(Integer trangThai);
+    Page<HoaDon> findByTrangThai(Byte trangThai, Pageable pageable);
+    
+    // Tìm kiếm cho admin với phân trang
+    Page<HoaDon> findByMaHoaDonContainingIgnoreCaseOrKhachHang_HoTenKhachHangContainingIgnoreCaseOrKhachHang_SdtContaining(
+        String maHoaDon, String hoTen, String sdt, Pageable pageable);
+    
+    Page<HoaDon> findByMaHoaDonContainingIgnoreCaseOrKhachHang_HoTenKhachHangContainingIgnoreCaseOrKhachHang_SdtContainingAndTrangThai(
+        String maHoaDon, String hoTen, String sdt, Byte trangThai, Pageable pageable);
+    
+    // Tìm đơn hàng theo mã và số điện thoại cho khách hàng tra cứu
+    Optional<HoaDon> findByMaHoaDonAndKhachHang_Sdt(String maHoaDon, String sdt);
     
     // Tìm theo phương thức thanh toán
     List<HoaDon> findByPhuongThucThanhToanOrderByCreateAtDesc(Integer phuongThucThanhToan);

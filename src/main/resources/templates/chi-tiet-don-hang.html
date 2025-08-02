@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${title}">Chi tiết đơn hàng</title>
+    <style>
+        .order-detail-page {
+            padding: 40px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 70vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .back-button {
+            margin-bottom: 30px;
+        }
+        
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .order-header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+        }
+        
+        .order-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+        
+        .order-header .order-code {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .order-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-confirmed { background-color: #cce5ff; color: #004085; }
+        .status-shipping { background-color: #d4edda; color: #155724; }
+        .status-completed { background-color: #d1ecf1; color: #0c5460; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+        .status-paid { background-color: #d4edda; color: #155724; }
+        
+        .order-timeline {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 40px 0;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .timeline-progress {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+        
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-circle.active {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+        }
+        
+        .step-circle.inactive {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+        
+        .step-circle.cancelled {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .step-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .step-label.active {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+        
+        .info-card h3 {
+            color: #2c3e50;
+            margin: 0 0 20px 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .products-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .section-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .product-item {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+        
+        .product-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .product-details h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .product-attributes {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .product-pricing {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .quantity {
+            background: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: #007bff;
+            font-size: 1.1rem;
+        }
+        
+        .order-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-top: 3px solid #007bff;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .summary-row.total {
+            border-top: 2px solid #007bff;
+            margin-top: 15px;
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #007bff;
+        }
+        
+        .order-actions {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .timeline-steps {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .timeline-line,
+            .timeline-progress {
+                display: none;
+            }
+            
+            .timeline-step {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+            
+            .step-circle {
+                margin-bottom: 0;
+            }
+            
+            .product-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .product-pricing {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="order-detail-page">
+        <div class="container">
+            <div class="back-button">
+                <a href="/don-hang" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại danh sách đơn hàng
+                </a>
+            </div>
+            
+            <!-- Thông báo -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            
+            <!-- Header đơn hàng -->
+            <div class="order-header">
+                <h1><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h1>
+                <div class="order-code" th:text="${order.maHoaDon}">HD20240802_ABC123</div>
+                <div>Ngày đặt: <span th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">02/08/2024 10:30</span></div>
+                <span th:class="'order-status ' + 
+                    (${order.trangThai == 0} ? 'status-pending' :
+                     ${order.trangThai == 1} ? 'status-confirmed' :
+                     ${order.trangThai == 2} ? 'status-shipping' :
+                     ${order.trangThai == 3} ? 'status-completed' :
+                     ${order.trangThai == 4} ? 'status-cancelled' : 'status-paid')"
+                      th:text="${order.trangThaiText}">
+                    Chờ xử lý
+                </span>
+            </div>
+            
+            <!-- Timeline trạng thái -->
+            <div class="order-timeline" th:unless="${order.trangThai == 4}">
+                <div class="timeline-header">
+                    <h2><i class="fas fa-route"></i> Tiến trình đơn hàng</h2>
+                    <p style="color: #6c757d;">Theo dõi trạng thái đơn hàng của bạn</p>
+                </div>
+                
+                <div class="timeline-steps">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-progress" th:style="'width: ' + (${order.trangThai >= 3} ? '100%' : ${order.trangThai >= 2} ? '75%' : ${order.trangThai >= 1} ? '50%' : '25%')"></div>
+                    
+                    <div class="timeline-step">
+                        <div th:class="'step-circle ' + (${order.trangThai >= 0} ? 'active' : 'inactive')">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div th:class="'step-label ' + (${order.trangThai >= 0} ? 'active' : '')">Đã đặt hàng</div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div th:class="'step-circle ' + (${order.trangThai >= 1} ? 'active' : 'inactive')">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div th:class="'step-label ' + (${order.trangThai >= 1} ? 'active' : '')">Đã xác nhận</div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div th:class="'step-circle ' + (${order.trangThai >= 2} ? 'active' : 'inactive')">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div th:class="'step-label ' + (${order.trangThai >= 2} ? 'active' : '')">Đang giao hàng</div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div th:class="'step-circle ' + (${order.trangThai >= 3} ? 'active' : 'inactive')">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div th:class="'step-label ' + (${order.trangThai >= 3} ? 'active' : '')">Hoàn thành</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thông tin đã hủy -->
+            <div class="order-timeline" th:if="${order.trangThai == 4}">
+                <div class="timeline-header">
+                    <h2><i class="fas fa-times-circle"></i> Đơn hàng đã bị hủy</h2>
+                    <p style="color: #dc3545;">Đơn hàng này đã được hủy vào ngày <span th:text="${#temporals.format(order.updateAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+                </div>
+                
+                <div style="text-align: center; padding: 40px;">
+                    <div class="step-circle cancelled" style="margin: 0 auto 20px; width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h3 style="color: #dc3545; margin-bottom: 15px;">Đơn hàng đã hủy</h3>
+                    <p style="color: #6c757d;">Bạn có thể đặt hàng mới hoặc liên hệ với chúng tôi nếu cần hỗ trợ.</p>
+                </div>
+            </div>
+            
+            <!-- Thông tin đơn hàng -->
+            <div class="info-grid">
+                <!-- Thông tin khách hàng -->
+                <div class="info-card">
+                    <h3><i class="fas fa-user"></i> Thông tin khách hàng</h3>
+                    <div class="info-row">
+                        <span class="info-label">Họ tên:</span>
+                        <span class="info-value" th:text="${order.khachHang.hoTenKhachHang}">Nguyễn Văn A</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Số điện thoại:</span>
+                        <span class="info-value" th:text="${order.khachHang.sdt}">0123456789</span>
+                    </div>
+                    <div class="info-row" th:if="${order.khachHang.email}">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value" th:text="${order.khachHang.email}">example@email.com</span>
+                    </div>
+                    <div class="info-row" th:if="${order.diaChiGiaoHang}">
+                        <span class="info-label">Địa chỉ giao hàng:</span>
+                        <span class="info-value" th:text="${order.diaChiGiaoHang}">123 Đường ABC, Quận 1, TP.HCM</span>
+                    </div>
+                </div>
+                
+                <!-- Thông tin thanh toán -->
+                <div class="info-card">
+                    <h3><i class="fas fa-credit-card"></i> Thông tin thanh toán</h3>
+                    <div class="info-row">
+                        <span class="info-label">Phương thức:</span>
+                        <span class="info-value" th:text="${order.phuongThucThanhToanText}">Tiền mặt</span>
+                    </div>
+                    <div class="info-row" th:if="${order.tienMat != null && order.tienMat > 0}">
+                        <span class="info-label">Tiền mặt:</span>
+                        <span class="info-value" th:text="${#numbers.formatDecimal(order.tienMat, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
+                    </div>
+                    <div class="info-row" th:if="${order.tienChuyenKhoan != null && order.tienChuyenKhoan > 0}">
+                        <span class="info-label">Chuyển khoản:</span>
+                        <span class="info-value" th:text="${#numbers.formatDecimal(order.tienChuyenKhoan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
+                    </div>
+                    <div class="info-row" th:if="${order.ghiChu}">
+                        <span class="info-label">Ghi chú:</span>
+                        <span class="info-value" th:text="${order.ghiChu}">Giao hàng nhanh</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Danh sách sản phẩm -->
+            <div class="products-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-box"></i> Sản phẩm đã đặt (<span th:text="${order.hoaDonChiTietList.size()}">3</span> sản phẩm)</h3>
+                </div>
+                
+                <div class="product-item" th:each="item : ${order.hoaDonChiTietList}">
+                    <div class="product-info">
+                        <img th:src="@{/images/no-image.svg}" alt="Product Image" class="product-image">
+                        <div class="product-details">
+                            <h4 th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Giày thể thao Nike Air Max</h4>
+                            <div class="product-attributes">
+                                <span><i class="fas fa-palette"></i> Màu: <strong th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}">Đỏ</strong></span> | 
+                                <span><i class="fas fa-ruler"></i> Size: <strong th:text="${item.sanPhamChiTiet.kichCo.tenKichCo}">42</strong></span>
+                            </div>
+                            <div class="product-pricing">
+                                <div>
+                                    <span class="quantity"><i class="fas fa-times"></i> <span th:text="${item.soLuong}">2</span></span>
+                                </div>
+                                <div class="price" th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">2,000,000 VNĐ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tổng kết đơn hàng -->
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Tổng tiền hàng:</span>
+                        <span th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">2,500,000 VNĐ</span>
+                    </div>
+                    <div class="summary-row" th:if="${order.tienGiam != null && order.tienGiam > 0}">
+                        <span>Giảm giá:</span>
+                        <span style="color: #dc3545;" th:text="'-' + ${#numbers.formatDecimal(order.tienGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">-250,000 VNĐ</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng thanh toán:</span>
+                        <span th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">2,250,000 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thao tác với đơn hàng -->
+            <div class="order-actions" th:if="${order.canCancel()}">
+                <h3 style="margin-bottom: 20px;"><i class="fas fa-cog"></i> Thao tác với đơn hàng</h3>
+                <p style="color: #6c757d; margin-bottom: 20px;">Bạn có thể hủy đơn hàng này nếu chưa được xác nhận hoặc chưa giao hàng.</p>
+                
+                <form th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger" 
+                            onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.')">
+                        <i class="fas fa-times"></i> Hủy đơn hàng
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Hỗ trợ khách hàng -->
+            <div class="order-actions">
+                <h3 style="margin-bottom: 20px;"><i class="fas fa-headset"></i> Cần hỗ trợ?</h3>
+                <p style="color: #6c757d; margin-bottom: 20px;">
+                    Nếu bạn có bất kỳ thắc mắc nào về đơn hàng này, vui lòng liên hệ với chúng tôi.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="tel:1900123456" class="btn" style="background: #28a745; color: white; text-decoration: none;">
+                        <i class="fas fa-phone"></i> Gọi điện: 1900 123 456
+                    </a>
+                    <a href="mailto:support@urbansteps.vn" class="btn" style="background: #17a2b8; color: white; text-decoration: none;">
+                        <i class="fas fa-envelope"></i> Email: support@urbansteps.vn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
