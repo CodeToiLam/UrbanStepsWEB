@@ -1,20 +1,25 @@
 
-
-package vn.urbansteps.service;
-
+        package vn.urbansteps.service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vn.urbansteps.model.GioHangItem;
 import vn.urbansteps.model.HoaDon;
-
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface HoaDonService {
+    Page<HoaDon> searchOrders(String keyword, Byte status, Pageable pageable);
+    Page<HoaDon> getAllOrders(Pageable pageable);
+    Optional<HoaDon> findByMaHoaDonAndSdt(String maHoaDon, String sdt);
+    HoaDon createOrderPOS(String hoTen, String sdt, String ghiChu, List<GioHangItem> items,
+                          BigDecimal tienMat, BigDecimal tienChuyenKhoan, int phuongThucThanhToan,
+                          String voucherCode, BigDecimal tongThanhToan);
     HoaDon taoHoaDon(String hoTen, String sdt, String email, String diaChiGiaoHang,
-                     int phuongThucThanhToan, String ghiChu, List<GioHangItem> gioHangItems,
-                     Integer taiKhoanId, boolean laKhachVangLai);
-
-    // Lấy lịch sử đơn hàng theo id khách hàng
-    List<HoaDon> getOrdersByKhachHangId(Integer khachHangId);
-
+                     int phuongThucThanhToan, String ghiChu, List<GioHangItem> items,
+                     Integer taiKhoanId, boolean laKhachVangLai, String appliedVoucherCode,
+                     BigDecimal tongThanhToan);
     HoaDon getOrderById(Integer orderId);
     HoaDon save(HoaDon hoaDon);
+    List<HoaDon> getOrdersByKhachHangId(Integer khachHangId);
 }
