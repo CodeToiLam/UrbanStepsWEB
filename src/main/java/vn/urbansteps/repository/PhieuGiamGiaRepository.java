@@ -59,7 +59,10 @@ public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia, Inte
             "GROUP BY MONTH(pg.createAt) ORDER BY MONTH(pg.createAt)")
     List<Object[]> getActiveMonthlyStatistics(@Param("year") Integer year);
 
-    // Thêm phương thức để kiểm tra danh sách phiếu theo tháng
     @Query("SELECT pg FROM PhieuGiamGia pg WHERE YEAR(pg.createAt) = :year AND MONTH(pg.createAt) = :month")
     List<PhieuGiamGia> findVouchersByMonth(@Param("year") Integer year, @Param("month") Integer month);
+
+    @Query("SELECT pg FROM PhieuGiamGia pg WHERE pg.apDungChoTatCa = true " +
+            "AND pg.trangThai = true AND pg.ngayKetThuc >= :now")
+    List<PhieuGiamGia> findByApDungChoTatCaAndTrangThaiTrueAndNgayKetThucAfter(boolean b, @Param("now") LocalDateTime now);
 }

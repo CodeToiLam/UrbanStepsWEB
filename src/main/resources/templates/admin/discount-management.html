@@ -48,6 +48,7 @@
                     <th>Giảm tối thiểu</th>
                     <th>Giảm tối đa</th>
                     <th>Áp dụng tất cả</th>
+                    <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
                 </thead>
@@ -64,13 +65,10 @@
                     <td th:text="${pg.giaTriGiam} ?: '0'"></td>
                     <td th:text="${pg.giamToiDa} ?: '0'"></td>
                     <td th:text="${pg.apDungChoTatCa ? 'Có' : 'Không'}"></td>
+                    <td th:text="${pg.trangThai ? 'Hoạt động' : 'Ngừng'}"></td>
                     <td class="action-column">
-                        <a th:href="@{'/admin/discount/edit/' + ${pg.id}}" class="admin-icon-btn"><i class="fa-solid fa-pen-to-square"></i></a>
-                        <form th:action="@{/admin/discount/update-status/__${pg.id}__}" method="post" style="display: inline;">
-                            <button type="submit" class="admin-icon-btn delete-discount" onclick="return confirm('Bạn có chắc chắn muốn ngừng hoạt động phiếu này?')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
+                        <a th:href="@{/admin/discount-edit/{id}(id=${pg.id})}" class="admin-icon-btn" title="Sửa phiếu giảm giá"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a th:href="@{/admin/discount-delete/{id}(id=${pg.id})}" class="admin-icon-btn" onclick="return confirm('Bạn có chắc chắn muốn vô hiệu hóa phiếu này?')" title="Vô hiệu hóa phiếu giảm giá"><i class="fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 </tbody>
@@ -90,7 +88,7 @@
             </thead>
             <tbody>
             <tr th:each="stat : ${monthlyStats}">
-                <td th:text="${stat[0]}"></td> <!-- Hiển thị monthYear (MM/YYYY) -->
+                <td th:text="${stat[0]}"></td>
                 <td th:text="${stat[1]}"></td>
             </tr>
             </tbody>

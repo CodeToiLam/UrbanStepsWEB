@@ -4,13 +4,15 @@
       layout:decorate="~{layout/main}">
 <head>
     <title layout:fragment="title">Giỏ hàng - UrbanSteps</title>
+    <!-- Thêm: CSRF meta tag -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
     </th:block>
 </head>
 <body>
-    <div layout:fragment="content">
-        <main class="container my-5">
+<div layout:fragment="content">
+    <main class="container my-5">
         <div class="row">
             <div class="col-12">
                 <nav aria-label="breadcrumb">
@@ -94,14 +96,14 @@
                                 <!-- Số lượng -->
                                 <div class="col-md-2 text-center">
                                     <div class="cart-quantity-selector">
-                                        <button class="quantity-btn decrease-btn" 
+                                        <button class="quantity-btn decrease-btn"
                                                 th:onclick="'updateQuantity(' + ${item.id} + ', ' + (${item.soLuong} - 1) + ')'">
                                             <i class="bi bi-dash"></i>
                                         </button>
                                         <div class="quantity-display">
                                             <span class="quantity-value" th:text="${item.soLuong}">1</span>
                                         </div>
-                                        <button class="quantity-btn increase-btn" 
+                                        <button class="quantity-btn increase-btn"
                                                 th:onclick="'updateQuantity(' + ${item.id} + ', ' + (${item.soLuong} + 1) + ')'">
                                             <i class="bi bi-plus"></i>
                                         </button>
@@ -111,7 +113,7 @@
                                 <!-- Thành tiền -->
                                 <div class="col-md-2 text-center">
                                     <span class="total-price" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">3,500,000đ</span>
-                                    <button class="btn btn-sm btn-outline-danger remove-item-btn" 
+                                    <button class="btn btn-sm btn-outline-danger remove-item-btn"
                                             th:onclick="'removeItem(' + ${item.id} + ')'">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -125,17 +127,28 @@
                 <div class="col-lg-4">
                     <div class="cart-summary">
                         <h4>Tổng kết đơn hàng</h4>
-                        
+
                         <div class="summary-row">
                             <span>Tạm tính:</span>
                             <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
                         </div>
-                        
+
                         <div class="summary-row">
                             <span>Phí vận chuyển:</span>
                             <span class="text-success">Miễn phí</span>
                         </div>
-                        
+
+                        <div class="summary-row">
+                            <span>Giảm giá:</span>
+                            <span id="discountAmount" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal, 0, 0) + 'đ') : '0đ'}"></span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <strong>
+                                <span>Tổng thanh toán:</span>
+                                <span id="finalTotal" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal, 0, 0) + 'đ') : (#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ')}">10,500,000đ</span>
+                            </strong>
+                        </div>
+
                         <div class="summary-row total-row">
                             <strong>
                                 <span>Tổng cộng:</span>
@@ -158,19 +171,25 @@
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Nhập mã khuyến mãi">
                                 <button class="btn btn-outline-secondary" type="button">Áp dụng</button>
+                                <select id="voucherCode" class="form-select">
+                                    <option value="">Chọn mã khuyến mãi</option>
+                                    <option th:each="voucher : ${publicVouchers}" th:value="${voucher.maPhieu}"
+                                            th:text="${voucher.maPhieu} + ' - ' + ${voucher.moTa}"></option>
+                                </select>
+                                <button id="applyVoucherBtn" class="btn btn-secondary">Áp dụng</button>
                             </div>
+                            <div id="voucherMessage" class="text-success" style="display: none;"></div>
+                            <div id="voucherError" class="text-danger" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+</div>
 
-        </main>
-    </div>
-    
-    <th:block layout:fragment="extra-js">
-        <script th:src="@{/js/gio-hang.js}"></script>
-    </th:block>
+<th:block layout:fragment="extra-js">
+    <script th:src="@{/js/gio-hang.js}"></script>
+</th:block>
 </body>
 </html>

@@ -11,6 +11,8 @@ public class POSOrderRequest {
     private BigDecimal tienMat;
     private BigDecimal tienChuyenKhoan;
     private int phuongThucThanhToan;
+    private String voucherCode;
+    private BigDecimal tongThanhToan;
 
     public List<GioHangItem> toGioHangItems() {
         List<GioHangItem> items = new java.util.ArrayList<>();
@@ -43,4 +45,8 @@ public class POSOrderRequest {
     public void setTienChuyenKhoan(BigDecimal tienChuyenKhoan) { this.tienChuyenKhoan = tienChuyenKhoan; }
     public int getPhuongThucThanhToan() { return phuongThucThanhToan; }
     public void setPhuongThucThanhToan(int phuongThucThanhToan) { this.phuongThucThanhToan = phuongThucThanhToan; }
+    public String getVoucherCode() { return voucherCode; }
+    public void setVoucherCode(String voucherCode) { this.voucherCode = voucherCode; }
+    public BigDecimal getTongThanhToan() { return tongThanhToan; }
+    public void setTongThanhToan(BigDecimal tongThanhToan) { this.tongThanhToan = tongThanhToan; }
 }

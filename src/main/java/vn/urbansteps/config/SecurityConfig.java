@@ -43,6 +43,7 @@ public class SecurityConfig {
                         // POS endpoints - Cho phép public
                         .requestMatchers("/pos/products", "/pos/order").permitAll()
 
+                        .requestMatchers("/checkout/api/**").permitAll()
                         // User area - Cần đăng nhập
                         .requestMatchers("/don-hang/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
@@ -91,7 +92,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API
+                        .ignoringRequestMatchers("/api/**", "/checkout/api/**") // Thêm: Tắt CSRF cho checkout API
                 )
                 .sessionManagement(session -> session
                         .maximumSessions(1)

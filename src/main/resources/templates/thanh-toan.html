@@ -4,45 +4,47 @@
       layout:decorate="~{layout/main}">
 <head>
     <title layout:fragment="title">Thanh toán - UrbanSteps</title>
+    <!-- Thêm: CSRF meta tag -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
         <style>
-        /* QR Section Styling */
-        #qr-section {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(52, 152, 219, 0.08);
-            padding: 32px 24px 24px 24px;
-            margin-top: 18px;
-            margin-bottom: 18px;
-            text-align: center;
-            max-width: 420px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #qr-section label {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #1976d2;
-            margin-bottom: 12px;
-            display: block;
-        }
-        #qr-image {
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(52, 152, 219, 0.12);
-            border: 2px solid #1976d2;
-            margin-bottom: 12px;
-        }
-        #qr-section .mt-2, #qr-section .text-muted, #qr-section div {
-            font-size: 1.08rem;
-        }
-        #qr-section strong {
-            color: #1976d2;
-        }
-        #qr-content {
-            font-weight: 600;
-            color: #d32f2f;
-        }
+            /* QR Section Styling */
+            #qr-section {
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                border-radius: 18px;
+                box-shadow: 0 8px 32px rgba(52, 152, 219, 0.08);
+                padding: 32px 24px 24px 24px;
+                margin-top: 18px;
+                margin-bottom: 18px;
+                text-align: center;
+                max-width: 420px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #qr-section label {
+                font-size: 1.15rem;
+                font-weight: 600;
+                color: #1976d2;
+                margin-bottom: 12px;
+                display: block;
+            }
+            #qr-image {
+                border-radius: 12px;
+                box-shadow: 0 4px 24px rgba(52, 152, 219, 0.12);
+                border: 2px solid #1976d2;
+                margin-bottom: 12px;
+            }
+            #qr-section .mt-2, #qr-section .text-muted, #qr-section div {
+                font-size: 1.08rem;
+            }
+            #qr-section strong {
+                color: #1976d2;
+            }
+            #qr-content {
+                font-weight: 600;
+                color: #d32f2f;
+            }
         </style>
     </th:block>
 </head>
@@ -85,6 +87,28 @@
                     <div class="p-3 text-end">
                         <strong>Tổng tiền: </strong>
                         <span class="text-danger fs-5 fw-bold" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">0đ</span>
+                        <div class="mt-2">
+                            <strong>Giảm giá: </strong>
+                            <span id="discountAmount" class="fs-5" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal, 0, 0) + 'đ') : '0đ'}"></span>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Tổng thanh toán: </strong>
+                            <span id="finalTotal" class="text-danger fs-5 fw-bold" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal, 0, 0) + 'đ') : (#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ')}"></span>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label">Mã khuyến mãi</label>
+                            <div class="input-group">
+                                <input type="text" name="maGiamGia" class="form-control" placeholder="Nhập mã giảm giá nếu có">
+                                <select id="voucherCode" class="form-select">
+                                    <option value="">Chọn mã khuyến mãi</option>
+                                    <option th:each="voucher : ${publicVouchers}" th:value="${voucher.maPhieuGiamGia}"
+                                            th:text="${voucher.maPhieuGiamGia} + ' - ' + ${voucher.moTa}"></option>
+                                </select>
+                                <button id="applyVoucherBtn" class="btn btn-secondary" type="button">Áp dụng</button>
+                            </div>
+                            <div id="voucherMessage" class="text-success mt-2" style="display: none;"></div>
+                            <div id="voucherError" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,14 +168,14 @@
                         <textarea id="diaChiGiaoHang" name="diaChiGiaoHang" class="form-control" rows="2" required></textarea>
                         <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể</div>
                         <script th:if="${defaultAddress != null}" th:inline="javascript">
-                        /*<![CDATA[*/
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var addressInput = document.getElementById('diaChiGiaoHang');
-                            if (addressInput && !addressInput.value) {
-                                addressInput.value = /*[[${defaultAddress}]]*/ '';
-                            }
-                        });
-                        /*]]>*/
+                            /*<![CDATA[*/
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var addressInput = document.getElementById('diaChiGiaoHang');
+                                if (addressInput && !addressInput.value) {
+                                    addressInput.value = /*[[${defaultAddress}]]*/ '';
+                                }
+                            });
+                            /*]]>*/
                         </script>
                     </div>
 
@@ -173,24 +197,21 @@
                             <option value="2">Chuyển khoản ngân hàng</option>
                             <option value="3">Kết hợp: tiền mặt + chuyển khoản</option>
                         </select>
-                    <!-- QR Code chuyển khoản -->
-                    <div class="mb-3" id="qr-section" style="display:none;">
-                        <label class="form-label">Quét mã QR để chuyển khoản Vietcombank</label>
-                        <div class="d-flex flex-column align-items-center">
-                            <img id="qr-image" src="/images/qr-code.jpg" alt="QR chuyển khoản Vietcombank" style="width:200px;height:200px;object-fit:contain;" />
-                            <div class="mt-2">Số tài khoản: <strong>1042116409</strong></div>
-                            <div class="">Chủ tài khoản: <strong>PHAM NHU SON TUNG</strong></div>
-                            <div class="">Ngân hàng: Vietcombank - Trụ sở CN Chương Dương</div>
-                            <div class="text-muted">Nội dung chuyển khoản: <span id="qr-content">Thanh toán UrbanSteps</span></div>
+                        <!-- QR Code chuyển khoản -->
+                        <div class="mb-3" id="qr-section" style="display:none;">
+                            <label class="form-label">Quét mã QR để chuyển khoản Vietcombank</label>
+                            <div class="d-flex flex-column align-items-center">
+                                <img id="qr-image" src="/images/qr-code.jpg" alt="QR chuyển khoản Vietcombank" style="width:200px;height:200px;object-fit:contain;" />
+                                <div class="mt-2">Số tài khoản: <strong>1042116409</strong></div>
+                                <div class="">Chủ tài khoản: <strong>PHAM NHU SON TUNG</strong></div>
+                                <div class="">Ngân hàng: Vietcombank - Trụ sở CN Chương Dương</div>
+                                <div class="text-muted">Nội dung chuyển khoản: <span id="qr-content">Thanh toán UrbanSteps</span></div>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="mb-3">
                         <label for="ghiChu" class="form-label">Ghi chú (nếu có)</label>
                         <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" name="maGiamGia" class="form-control" placeholder="Nhập mã giảm giá nếu có">
                     </div>
                 </div>
             </div>
@@ -333,6 +354,7 @@
             }
         });
     </script>
+    <script th:src="@{/js/thanh-toan.js}"></script>
 </th:block>
 </body>
 </html>
