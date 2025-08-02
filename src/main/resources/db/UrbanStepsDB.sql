@@ -1,4 +1,5 @@
 ﻿-- XÓA VÀ TẠO LẠI DATABASE HOÀN TOÀN MỚI
+
 USE master;
 GO
 
@@ -16,6 +17,16 @@ GO
 
 -- Sử dụng database mới
 USE UrbanStepsDB;
+GO
+
+-- Tạo bảng log hành động admin
+CREATE TABLE ThongKeHanhDongAdmin (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    admin_id INT NOT NULL,
+    hanh_dong NVARCHAR(255) NOT NULL,
+    mo_ta NVARCHAR(1000),
+    thoi_gian DATETIME DEFAULT GETDATE()
+);
 GO
 
 CREATE TABLE LoaiSanPham (
@@ -913,3 +924,4 @@ BEGIN
     ORDER BY ngay DESC;
 END
 GO
+v

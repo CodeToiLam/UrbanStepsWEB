@@ -16,7 +16,69 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" type="text/css" href="/css/main.css">
   <link rel="stylesheet" type="text/css" href="/css/layout-main.css">
-  
+
+  <style>
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-image {
+      height: 65px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 36px;
+      font-weight: bold;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-link:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    @media (max-width: 768px) {
+      .logo-image {
+        height: 50px;
+      }
+
+      .logo-text {
+        font-size: 30px;
+      }
+
+      .logo {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-image {
+        height: 40px;
+      }
+
+      .logo-text {
+        font-size: 24px;
+      }
+
+      .logo {
+        gap: 10px;
+      }
+    }
+  </style>
+
 </head>
 <body>
 
@@ -28,7 +90,10 @@
 <div class="header-main">
   <div class="header-content">
     <div class="logo">
-      <a th:href="@{/}" class="logo-link">UrbanSteps</a>
+      <a th:href="@{/}" class="logo-link">
+        <img src="/images/Home/logo.jpg" alt="UrbanSteps Logo" class="logo-image">
+        <span class="logo-text">UrbanSteps</span>
+      </a>
     </div>
     <div class="nav-menu">
       <a href="/san-pham?thuongHieu=MLB" th:href="@{/san-pham(thuongHieu='MLB')}">MLB</a>
@@ -38,35 +103,42 @@
     <a href="/san-pham?hot=true" th:href="@{/san-pham(hot=true)}" class="hot">HOT</a>
     </div>
     <div class="icons">
-      <a href="/tim-kiem" th:href="@{/tim-kiem}"><i class="bi bi-search"></i></a>
-      <a href="/gio-hang" th:href="@{/gio-hang}" class="cart-icon">
+      <a href="/tim-kiem" th:href="@{/tim-kiem}" class="icon-btn" title="Tìm kiếm">
+        <i class="bi bi-search"></i>
+      </a>
+      <a href="/gio-hang" th:href="@{/gio-hang}" class="cart-icon" title="Giỏ hàng">
         <i class="bi bi-cart"></i>
         <span class="cart-count" th:text="${gioHang != null ? gioHang.items.size() : 0}">0</span>
       </a>
       
       <!-- User authentication section -->
       <div class="user-section" th:if="${#authentication.name != 'anonymousUser'}">
-        <span class="welcome-text">Xin chào, <strong th:text="${#authentication.name}">User</strong>!</span>
-        <div class="user-menu">
-          <a href="/tai-khoan" class="user-menu-item">Tài khoản</a>
-          <span class="menu-divider">|</span>
-          <a href="/don-hang" class="user-menu-item">Đơn hàng</a>
-          <span class="menu-divider">|</span>
-          <!-- Admin Panel link - only show for admin -->
-          <span sec:authorize="hasRole('ADMIN')">
-            <a href="/admin" class="user-menu-item admin-link">Quản trị</a>
-            <span class="menu-divider">|</span>
-          </span>
-          <form th:action="@{/dang-xuat}" method="post" style="display: inline;">
-            <button type="submit" class="logout-link">Đăng xuất</button>
-          </form>
-        </div>
+        <a href="/tai-khoan" class="icon-btn" title="Tài khoản">
+          <i class="bi bi-person"></i>
+        </a>
+        <a href="/don-hang" class="icon-btn" title="Đơn hàng">
+          <i class="bi bi-box-seam"></i>
+        </a>
+        <!-- Admin Panel link - only show for admin -->
+        <span sec:authorize="hasRole('ADMIN')">
+          <a href="/admin" class="icon-btn" title="Quản trị">
+            <i class="bi bi-gear"></i>
+          </a>
+        </span>
+        <form th:action="@{/dang-xuat}" method="post" style="display: inline;">
+          <button type="submit" class="icon-btn logout-btn" title="Đăng xuất">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </form>
       </div>
       
       <!-- Login section for non-authenticated users -->
       <div class="login-section" th:if="${#authentication.name == 'anonymousUser'}">
-        <a href="/dang-nhap" th:href="@{/dang-nhap}" class="login-btn">
-          <i class="bi bi-person"></i> Đăng nhập
+        <a href="/don-hang" class="icon-btn" title="Tra cứu đơn hàng">
+          <i class="bi bi-box-seam"></i>
+        </a>
+        <a href="/dang-nhap" th:href="@{/dang-nhap}" class="icon-btn" title="Đăng nhập">
+          <i class="bi bi-person"></i>
         </a>
       </div>
     </div>
