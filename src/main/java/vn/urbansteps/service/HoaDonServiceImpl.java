@@ -2,6 +2,8 @@
 package vn.urbansteps.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.urbansteps.model.*;
@@ -9,15 +11,27 @@ import vn.urbansteps.repository.HoaDonChiTietRepository;
 import vn.urbansteps.repository.HoaDonRepository;
 import vn.urbansteps.repository.KhachHangRepository;
 import vn.urbansteps.repository.TaiKhoanRepository;
-import vn.urbansteps.service.HoaDonService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class HoaDonServiceImpl implements HoaDonService {
+
+    @Autowired
+    private HoaDonRepository hoaDonRepository;
+    
+    @Autowired
+    private HoaDonChiTietRepository hoaDonChiTietRepository;
+
+    @Autowired
+    private KhachHangRepository khachHangRepository;
+
+    @Autowired
+    private TaiKhoanRepository taiKhoanRepository;
 
     @Override
     public HoaDon getOrderById(Integer orderId) {
@@ -29,21 +43,38 @@ public class HoaDonServiceImpl implements HoaDonService {
         return hoaDonRepository.save(hoaDon);
     }
 
-    @Autowired
-    private HoaDonRepository hoaDonRepository;
     @Override
     public List<HoaDon> getOrdersByKhachHangId(Integer khachHangId) {
         return hoaDonRepository.findByKhachHang_IdOrderByCreateAtDesc(khachHangId);
     }
-
-    @Autowired
-    private HoaDonChiTietRepository hoaDonChiTietRepository;
-
-    @Autowired
-    private KhachHangRepository khachHangRepository;
-
-    @Autowired
-    private TaiKhoanRepository taiKhoanRepository;
+    
+    @Override
+    public Page<HoaDon> getAllOrders(Pageable pageable) {
+        return hoaDonRepository.findAll(pageable);
+    }
+    
+    @Override
+    public Page<HoaDon> searchOrders(String search, Byte status, Pageable pageable) {
+        if (search != null && !search.isEmpty() && status != null) {
+            // Tìm kiếm theo mã hóa đơn, tên khách hàng hoặc SĐT và trạng thái
+            return hoaDonRepository.findByMaHoaDonContainingIgnoreCaseOrKhachHang_HoTenKhachHangContainingIgnoreCaseOrKhachHang_SdtContainingAndTrangThai(
+                search, search, search, status, pageable);
+        } else if (search != null && !search.isEmpty()) {
+            // Chỉ tìm kiếm theo từ khóa
+            return hoaDonRepository.findByMaHoaDonContainingIgnoreCaseOrKhachHang_HoTenKhachHangContainingIgnoreCaseOrKhachHang_SdtContaining(
+                search, search, search, pageable);
+        } else if (status != null) {
+            // Chỉ lọc theo trạng thái
+            return hoaDonRepository.findByTrangThai(status, pageable);
+        } else {
+            return hoaDonRepository.findAll(pageable);
+        }
+    }
+    
+    @Override
+    public Optional<HoaDon> findByMaHoaDonAndSdt(String maHoaDon, String sdt) {
+        return hoaDonRepository.findByMaHoaDonAndKhachHang_Sdt(maHoaDon, sdt);
+    }
 
     @Transactional
     @Override

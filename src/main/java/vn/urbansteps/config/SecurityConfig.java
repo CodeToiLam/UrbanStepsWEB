@@ -43,8 +43,10 @@ public class SecurityConfig {
                         // POS endpoints - Cho phép public
                         .requestMatchers("/pos/products", "/pos/order").permitAll()
 
+                        // Order tracking - Cho phép public (cả guest và user)
+                        .requestMatchers("/don-hang", "/don-hang/", "/order", "/order/").permitAll()
+
                         // User area - Cần đăng nhập
-                        .requestMatchers("/don-hang/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
                         .requestMatchers("/thanh-toan/**", "/checkout/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
