@@ -1,9 +1,14 @@
 package vn.urbansteps.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import vn.urbansteps.model.GioHang;
@@ -25,6 +30,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/checkout")
 public class ThanhToanController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ThanhToanController.class);
 
     @Autowired
     private GioHangService gioHangService;
@@ -48,15 +55,17 @@ public class ThanhToanController {
             @RequestParam(required = false) Integer buyNowQuantity,
             Model model,
             HttpSession session) {
-        String username = (String) session.getAttribute("username");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
+        logger.info("Username from SecurityContext: {}", username);
         GioHang gioHang = null;
         String defaultAddress = null;
 
         if (username != null) {
             TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+            logger.info("TaiKhoan found: {}", taiKhoan != null ? taiKhoan.getId() : "null");
             if (taiKhoan != null) {
                 gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoan.getId());
-                // defaultAddress = ... (cập nhật nếu cần dùng DiaChiGiaoHang)
             }
         } else {
             String sessionId = session.getId();
@@ -110,9 +119,12 @@ public class ThanhToanController {
         Map<String, Object> response = new HashMap<>();
         try {
             GioHang gioHang = null;
-            String username = (String) session.getAttribute("username");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
+            logger.info("Username from SecurityContext (apply-voucher): {}", username);
             if (username != null) {
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                logger.info("TaiKhoan found (apply-voucher): {}", taiKhoan != null ? taiKhoan.getId() : "null");
                 if (taiKhoan != null) {
                     gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
                 }
@@ -143,6 +155,7 @@ public class ThanhToanController {
             }
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            logger.error("Lỗi khi áp dụng mã khuyến mãi: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Có lỗi xảy ra khi áp dụng mã khuyến mãi: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
@@ -161,9 +174,12 @@ public class ThanhToanController {
         }
         try {
             GioHang gioHang = null;
-            String username = (String) session.getAttribute("username");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
+            logger.info("Username from SecurityContext (apply-voucher-json): {}", username);
             if (username != null) {
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                logger.info("TaiKhoan found (apply-voucher-json): {}", taiKhoan != null ? taiKhoan.getId() : "null");
                 if (taiKhoan != null) {
                     gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
                 }
@@ -195,6 +211,7 @@ public class ThanhToanController {
             }
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            logger.error("Lỗi khi áp dụng mã khuyến mãi: {}", e.getMessage(), e);
             response.put("success", false);
             response.put("message", "Có lỗi xảy ra khi áp dụng mã khuyến mãi: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
@@ -202,98 +219,107 @@ public class ThanhToanController {
     }
 
     @PostMapping("/place-order")
-    public String placeOrder(
-            @RequestParam String hoTen,
-            @RequestParam String sdt,
-            @RequestParam(required = false) String email,
-            @RequestParam String diaChiGiaoHang,
-            @RequestParam int phuongThucThanhToan,
-            @RequestParam(required = false) String ghiChu,
-            @RequestParam(required = false) Boolean buyNow,
-            @RequestParam(required = false) Integer buyNowItemId,
-            @RequestParam(required = false) Integer buyNowQuantity,
-            HttpSession session,
-            Model model) {
-
-        String username = (String) session.getAttribute("username");
-        Integer taiKhoanId = null;
-        boolean laKhachVangLai = true;
-
-        if (username != null) {
-            TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
-            if (taiKhoan != null) {
-                taiKhoanId = taiKhoan.getId();
-                laKhachVangLai = false;
-            }
-        }
-
-        GioHang gioHang = null;
-        List<GioHangItem> itemsToProcess = null;
-        if (!laKhachVangLai) {
-            gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoanId);
-        } else {
-            gioHang = gioHangService.getGioHangWithItemsBySessionId(session.getId());
-        }
-
-        if (gioHang == null || gioHang.getItems().isEmpty()) {
-            model.addAttribute("error", "Giỏ hàng của bạn đang trống.");
-            return "thanh-toan";
-        }
-
-        if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
-            GioHangItem selectedItem = gioHang.getItems().stream()
-                    .filter(item -> item.getId().equals(buyNowItemId))
-                    .findFirst()
-                    .orElse(null);
-
-            if (selectedItem == null) {
-                model.addAttribute("error", "Không tìm thấy sản phẩm được chọn.");
-                return "thanh-toan";
-            }
-
-            if (buyNowQuantity != null && buyNowQuantity > 0) {
-                selectedItem.setSoLuong(buyNowQuantity);
-            }
-            itemsToProcess = List.of(selectedItem);
-        } else {
-            itemsToProcess = gioHang.getItems();
-        }
-
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<Map<String, Object>> placeOrder(
+            @RequestBody Map<String, Object> orderData,
+            HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            BigDecimal tongThanhToan = (BigDecimal) session.getAttribute("discountedTotal");
-            if (tongThanhToan == null) {
-                tongThanhToan = gioHang.getTongTien();
-            }
-            String appliedVoucherCode = (String) session.getAttribute("appliedVoucherCode");
+            logger.info("Bắt đầu xử lý đặt hàng...");
+            String hoTen = (String) orderData.get("fullName");
+            String sdt = (String) orderData.get("phoneNumber");
+            String email = (String) orderData.get("email");
+            String province = (String) orderData.get("province");
+            String district = (String) orderData.get("district");
+            String ward = (String) orderData.get("ward");
+            String addressDetail = (String) orderData.get("addressDetail");
+            String diaChiGiaoHang = addressDetail + ", " + ward + ", " + district + ", " + province;
+            String ghiChu = (String) orderData.get("note");
+            int phuongThucThanhToan = Integer.parseInt((String) orderData.get("paymentMethod"));
+            String appliedVoucherCode = (String) orderData.get("promoCode");
 
-            HoaDon hoaDon = hoaDonService.taoHoaDon(hoTen, sdt, email, diaChiGiaoHang,
-                    phuongThucThanhToan, ghiChu, itemsToProcess, taiKhoanId, laKhachVangLai,
-                    appliedVoucherCode, tongThanhToan);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
+            logger.info("Username from SecurityContext (place-order): {}", username);
+            Integer taiKhoanId = null;
+            boolean laKhachVangLai = true;
 
-            if (!Boolean.TRUE.equals(buyNow) && !laKhachVangLai) {
-                gioHangService.clearGioHangByUserId(taiKhoanId);
-            } else if (Boolean.TRUE.equals(buyNow)) {
-                gioHangService.removeFromCart(buyNowItemId);
-            }
-
-            if (email != null && !email.isEmpty()) {
-                String subject = "Xác nhận đơn hàng UrbanSteps";
-                String text = "Cảm ơn bạn đã đặt hàng tại UrbanSteps! Mã đơn hàng: " + hoaDon.getMaHoaDon()
-                        + "\nTổng tiền: " + hoaDon.getTongThanhToan() + " VNĐ\n";
-                if (appliedVoucherCode != null) {
-                    text += "Mã khuyến mãi: " + appliedVoucherCode + "\n";
+            if (username != null) {
+                TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                logger.info("TaiKhoan found (place-order): {}", taiKhoan != null ? taiKhoan.getId() : "null");
+                if (taiKhoan != null) {
+                    taiKhoanId = taiKhoan.getId();
+                    laKhachVangLai = false;
+                } else {
+                    logger.warn("Tài khoản không tồn tại cho username: {}", username);
+                    response.put("success", false);
+                    response.put("message", "Tài khoản không tồn tại hoặc phiên đăng nhập không hợp lệ");
+                    return ResponseEntity.badRequest().body(response);
                 }
-                text += "Chúng tôi sẽ liên hệ và giao hàng sớm nhất!";
-                emailService.sendOrderConfirmation(email, subject, text);
             }
 
-            session.removeAttribute("appliedVoucherCode");
-            session.removeAttribute("discountedTotal");
-            return "redirect:/checkout/success";
+            GioHang gioHang = null;
+            List<GioHangItem> itemsToProcess = null;
+            if (!laKhachVangLai) {
+                gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoanId);
+            } else {
+                gioHang = gioHangService.getGioHangWithItemsBySessionId(session.getId());
+            }
+
+            if (gioHang == null || gioHang.getItems().isEmpty()) {
+                logger.warn("Giỏ hàng rỗng hoặc không tồn tại");
+                response.put("success", false);
+                response.put("message", "Giỏ hàng của bạn đang trống.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            itemsToProcess = gioHang.getItems();
+
+            try {
+                BigDecimal tongThanhToan = (BigDecimal) session.getAttribute("discountedTotal");
+                if (tongThanhToan == null) {
+                    tongThanhToan = gioHang.getTongTien();
+                }
+
+                logger.info("Tạo hóa đơn với tổng thanh toán: {}", tongThanhToan);
+                HoaDon hoaDon = hoaDonService.taoHoaDon(hoTen, sdt, email, diaChiGiaoHang,
+                        phuongThucThanhToan, ghiChu, itemsToProcess, taiKhoanId, laKhachVangLai,
+                        appliedVoucherCode, tongThanhToan);
+
+                logger.info("Xóa giỏ hàng cho tài khoản ID: {}", taiKhoanId);
+                if (!laKhachVangLai) {
+                    gioHangService.clearGioHangByUserId(taiKhoanId);
+                }
+
+                if (email != null && !email.isEmpty()) {
+                    String subject = "Xác nhận đơn hàng UrbanSteps";
+                    String text = "Cảm ơn bạn đã đặt hàng tại UrbanSteps! Mã đơn hàng: " + hoaDon.getMaHoaDon()
+                            + "\nTổng tiền: " + hoaDon.getTongThanhToan() + " VNĐ\n";
+                    if (appliedVoucherCode != null) {
+                        text += "Mã khuyến mãi: " + appliedVoucherCode + "\n";
+                    }
+                    text += "Chúng tôi sẽ liên hệ và giao hàng sớm nhất!";
+                    emailService.sendOrderConfirmation(email, subject, text);
+                }
+
+                session.removeAttribute("appliedVoucherCode");
+                session.removeAttribute("discountedTotal");
+                response.put("success", true);
+                response.put("message", "Đặt hàng thành công!");
+                logger.info("Đặt hàng thành công, mã hóa đơn: {}", hoaDon.getMaHoaDon());
+                return ResponseEntity.ok(response);
+            } catch (Exception e) {
+                logger.error("Lỗi khi đặt hàng: {}", e.getMessage(), e);
+                response.put("success", false);
+                response.put("message", "Đặt hàng thất bại: " + e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
         } catch (Exception e) {
-            model.addAttribute("error", "Đặt hàng thất bại: " + e.getMessage());
-            model.addAttribute("gioHang", gioHang);
-            return "thanh-toan";
+            logger.error("Lỗi xử lý yêu cầu đặt hàng: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Đặt hàng thất bại: Lỗi xử lý yêu cầu");
+            return ResponseEntity.badRequest().body(response);
         }
     }
 

@@ -164,4 +164,31 @@ public class HoaDon {
     public Boolean canCancel() {
         return trangThai != null && trangThai <= 1; // Chỉ có thể hủy khi chờ xử lý hoặc đã xác nhận
     }
+    public enum TrangThai {
+        CHO_XU_LY(0),
+        DA_XAC_NHAN(1),
+        DANG_GIAO(2),
+        DA_GIAO(3),
+        DA_HOAN_THANH(5),
+        DA_HUY(4);
+
+        private final int value;
+
+        TrangThai(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static TrangThai fromValue(int value) {
+            for (TrangThai trangThai : TrangThai.values()) {
+                if (trangThai.value == value) {
+                    return trangThai;
+                }
+            }
+            throw new IllegalArgumentException("Invalid TrangThai value: " + value);
+        }
+    }
 }

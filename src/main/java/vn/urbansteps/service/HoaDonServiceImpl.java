@@ -1,5 +1,7 @@
 package vn.urbansteps.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,8 @@ import java.util.UUID;
 
 @Service
 public class HoaDonServiceImpl implements HoaDonService {
+
+    private static final Logger logger = LoggerFactory.getLogger(HoaDonServiceImpl.class);
 
     @Autowired
     private HoaDonRepository hoaDonRepository;
@@ -71,6 +75,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     public HoaDon createOrderPOS(String hoTen, String sdt, String ghiChu, List<GioHangItem> items,
                                  BigDecimal tienMat, BigDecimal tienChuyenKhoan, int phuongThucThanhToan,
                                  String voucherCode, BigDecimal tongThanhToan) {
+        logger.info("Tạo hóa đơn POS: hoTen={}, sdt={}, phuongThucThanhToan={}", hoTen, sdt, phuongThucThanhToan);
         // Tạo khách vãng lai
         KhachHang khachHang = new KhachHang();
         khachHang.setHoTenKhachHang(hoTen);
@@ -83,7 +88,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setMaHoaDon(generateMaHoaDon());
         hoaDon.setPhuongThucThanhToan((byte) phuongThucThanhToan);
         hoaDon.setGhiChu(ghiChu);
-        hoaDon.setTrangThai((byte) 5); // Đã thanh toán
+        hoaDon.setTrangThai((byte) HoaDon.TrangThai.DA_HOAN_THANH.getValue()); // Đã thanh toán
         hoaDon.setCreateAt(LocalDateTime.now());
         hoaDon.setTienMat(tienMat != null ? tienMat : BigDecimal.ZERO);
         hoaDon.setTienChuyenKhoan(tienChuyenKhoan != null ? tienChuyenKhoan : BigDecimal.ZERO);
@@ -94,6 +99,7 @@ public class HoaDonServiceImpl implements HoaDonService {
             phieuGiamGiaOpt.ifPresent(phieu -> {
                 hoaDon.setPhieuGiamGia(phieu);
                 phieuGiamGiaRepository.incrementUsageCount(phieu.getId());
+                logger.info("Áp dụng phiếu giảm giá: {}", voucherCode);
             });
         }
 
@@ -107,6 +113,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setTienGiam(tongTien.subtract(tongThanhToan));
         hoaDon.setTongThanhToan(tongThanhToan);
 
+        logger.info("Lưu hóa đơn POS: maHoaDon={}", hoaDon.getMaHoaDon());
         hoaDonRepository.save(hoaDon);
 
         // Lưu chi tiết hóa đơn
@@ -122,8 +129,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             chiTiet.setMaHoaDonChiTiet(hoaDon.getMaHoaDon() + "_POS_" + index++);
             chiTiet.setCreateAt(LocalDateTime.now());
             hoaDonChiTietRepository.save(chiTiet);
+            logger.info("Lưu chi tiết hóa đơn: maHoaDonChiTiet={}", chiTiet.getMaHoaDonChiTiet());
         }
 
+        logger.info("Tạo hóa đơn POS thành công: maHoaDon={}", hoaDon.getMaHoaDon());
         return hoaDon;
     }
 
@@ -133,11 +142,14 @@ public class HoaDonServiceImpl implements HoaDonService {
                             int phuongThucThanhToan, String ghiChu, List<GioHangItem> gioHangItems,
                             Integer taiKhoanId, boolean laKhachVangLai, String appliedVoucherCode,
                             BigDecimal tongThanhToan) {
+        logger.info("Tạo hóa đơn: hoTen={}, sdt={}, taiKhoanId={}, laKhachVangLai={}",
+                hoTen, sdt, taiKhoanId, laKhachVangLai);
         KhachHang khachHang = null;
 
         if (taiKhoanId != null) {
             TaiKhoan taiKhoan = taiKhoanRepository.findById(taiKhoanId).orElse(null);
             if (taiKhoan == null) {
+                logger.error("Tài khoản không tồn tại: taiKhoanId={}", taiKhoanId);
                 throw new RuntimeException("Tài khoản không tồn tại");
             }
             khachHang = khachHangRepository.findByTaiKhoan(taiKhoan).orElse(null);
@@ -149,6 +161,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                 khachHang.setEmail(email);
                 khachHang.setLaKhachVangLai(false);
                 khachHangRepository.save(khachHang);
+                logger.info("Tạo khách hàng mới cho tài khoản: taiKhoanId={}", taiKhoanId);
             }
         } else {
             // Khách vãng lai
@@ -158,6 +171,7 @@ public class HoaDonServiceImpl implements HoaDonService {
             khachHang.setEmail(email);
             khachHang.setLaKhachVangLai(true);
             khachHangRepository.save(khachHang);
+            logger.info("Tạo khách hàng vãng lai: hoTen={}, sdt={}", hoTen, sdt);
         }
 
         HoaDon hoaDon = new HoaDon();
@@ -166,7 +180,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setPhuongThucThanhToan((byte) phuongThucThanhToan);
         hoaDon.setGhiChu(ghiChu);
         hoaDon.setDiaChiGiaoHang(diaChiGiaoHang);
-        hoaDon.setTrangThai((byte) 0); // Chờ xử lý
+        hoaDon.setTrangThai((byte) HoaDon.TrangThai.CHO_XU_LY.getValue()); // Chờ xử lý
         hoaDon.setCreateAt(LocalDateTime.now());
 
         // Gán phiếu giảm giá nếu có
@@ -175,6 +189,7 @@ public class HoaDonServiceImpl implements HoaDonService {
             phieuGiamGiaOpt.ifPresent(phieu -> {
                 hoaDon.setPhieuGiamGia(phieu);
                 phieuGiamGiaRepository.incrementUsageCount(phieu.getId());
+                logger.info("Áp dụng phiếu giảm giá: {}", appliedVoucherCode);
             });
         }
 
@@ -188,6 +203,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setTienGiam(tongTien.subtract(tongThanhToan));
         hoaDon.setTongThanhToan(tongThanhToan);
 
+        logger.info("Lưu hóa đơn: maHoaDon={}", hoaDon.getMaHoaDon());
         hoaDonRepository.save(hoaDon);
 
         // Lưu chi tiết hóa đơn
@@ -203,8 +219,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             chiTiet.setMaHoaDonChiTiet(hoaDon.getMaHoaDon() + "_" + index++);
             chiTiet.setCreateAt(LocalDateTime.now());
             hoaDonChiTietRepository.save(chiTiet);
+            logger.info("Lưu chi tiết hóa đơn: maHoaDonChiTiet={}", chiTiet.getMaHoaDonChiTiet());
         }
 
+        logger.info("Tạo hóa đơn thành công: maHoaDon={}", hoaDon.getMaHoaDon());
         return hoaDon;
     }
 
@@ -214,7 +232,9 @@ public class HoaDonServiceImpl implements HoaDonService {
     }
 
     @Override
+    @Transactional
     public HoaDon save(HoaDon hoaDon) {
+        logger.info("Lưu hóa đơn: maHoaDon={}", hoaDon.getMaHoaDon());
         return hoaDonRepository.save(hoaDon);
     }
 

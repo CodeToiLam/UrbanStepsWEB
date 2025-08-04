@@ -319,18 +319,18 @@
         
         <!-- Phân trang -->
         <div class="pagination" th:if="${orders.totalPages > 1}">
-            <a th:if="${currentPage > 0}" 
+            <a th:if="${currentPage > 0}"
                th:href="@{/admin/order-management(page=${currentPage-1}, search=${search}, status=${status})}">&laquo; Trước</a>
-            
+
             <th:block th:each="page : ${#numbers.sequence(0, orders.totalPages-1)}">
-                <a th:if="${page != currentPage}" 
+                <a th:if="${page != currentPage}"
                    th:href="@{/admin/order-management(page=${page}, search=${search}, status=${status})}"
                    th:text="${page + 1}">1</a>
-                <span th:if="${page == currentPage}" 
+                <span th:if="${page == currentPage}"
                       class="active" th:text="${page + 1}">1</span>
             </th:block>
-            
-            <a th:if="${currentPage < orders.totalPages - 1}" 
+
+            <a th:if="${currentPage < orders.totalPages - 1}"
                th:href="@{/admin/order-management(page=${currentPage+1}, search=${search}, status=${status})}">Sau &raquo;</a>
         </div>
     </div>

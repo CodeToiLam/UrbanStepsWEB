@@ -157,29 +157,14 @@
                         </div>
 
                         <div class="cart-actions">
-                            <button class="btn btn-primary btn-lg btn-block checkout-btn">
-                                <i class="fas fa-credit-card"></i> Thanh toán
-                            </button>
+                            <a th:href="@{/checkout}">
+                                <button class="btn btn-primary btn-lg btn-block checkout-btn">
+                                    <i class="fas fa-credit-card"></i> Thanh toán
+                                </button>
+                            </a>
                             <a th:href="@{/}" class="btn btn-outline-primary btn-lg btn-block">
                                 <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
                             </a>
-                        </div>
-
-                        <!-- Khuyến mãi -->
-                        <div class="promo-section">
-                            <h5>Mã khuyến mãi</h5>
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Nhập mã khuyến mãi">
-                                <button class="btn btn-outline-secondary" type="button">Áp dụng</button>
-                                <select id="voucherCode" class="form-select">
-                                    <option value="">Chọn mã khuyến mãi</option>
-                                    <option th:each="voucher : ${publicVouchers}" th:value="${voucher.maPhieu}"
-                                            th:text="${voucher.maPhieu} + ' - ' + ${voucher.moTa}"></option>
-                                </select>
-                                <button id="applyVoucherBtn" class="btn btn-secondary">Áp dụng</button>
-                            </div>
-                            <div id="voucherMessage" class="text-success" style="display: none;"></div>
-                            <div id="voucherError" class="text-danger" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
