@@ -101,6 +101,7 @@
                                             <i class="bi bi-dash"></i>
                                         </button>
                                         <div class="quantity-display">
+                                            <input type="hidden" th:data-item-id="${item.id}" th:value="${item.soLuong}">
                                             <span class="quantity-value" th:text="${item.soLuong}">1</span>
                                         </div>
                                         <button class="quantity-btn increase-btn"
@@ -112,7 +113,7 @@
 
                                 <!-- Thành tiền -->
                                 <div class="col-md-2 text-center">
-                                    <span class="total-price" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">3,500,000đ</span>
+                                    <span class="total-price" th:data-item-total="${item.id}" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">3,500,000đ</span>
                                     <button class="btn btn-sm btn-outline-danger remove-item-btn"
                                             th:onclick="'removeItem(' + ${item.id} + ')'">
                                         <i class="fas fa-trash"></i>
@@ -152,7 +153,7 @@
                         <div class="summary-row total-row">
                             <strong>
                                 <span>Tổng cộng:</span>
-                                <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
+                                <span id="cart-total" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
                             </strong>
                         </div>
 

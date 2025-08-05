@@ -21,11 +21,13 @@ import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.service.PhieuGiamGiaService;
 import vn.urbansteps.service.TaiKhoanService;
 import vn.urbansteps.service.EmailService;
+import vn.urbansteps.service.SanPhamChiTietService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/checkout")
@@ -48,6 +50,9 @@ public class ThanhToanController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SanPhamChiTietService sanPhamChiTietService;
+
     @GetMapping
     public String showCheckoutPage(
             @RequestParam(required = false) Boolean buyNow,
@@ -61,34 +66,54 @@ public class ThanhToanController {
         GioHang gioHang = null;
         String defaultAddress = null;
 
-        if (username != null) {
-            TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
-            logger.info("TaiKhoan found: {}", taiKhoan != null ? taiKhoan.getId() : "null");
-            if (taiKhoan != null) {
-                gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoan.getId());
-            }
-        } else {
-            String sessionId = session.getId();
-            gioHang = gioHangService.getGioHangWithItemsBySessionId(sessionId);
-        }
-
         if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
+            // Mua ngay - chỉ tạo giỏ hàng tạm thời với 1 sản phẩm
             GioHang tempCart = new GioHang();
-            GioHangItem selectedItem = gioHang.getItems().stream()
-                    .filter(item -> item.getId().equals(buyNowItemId))
-                    .findFirst()
-                    .orElse(null);
-
-            if (selectedItem != null) {
-                if (buyNowQuantity != null && buyNowQuantity > 0) {
-                    selectedItem.setSoLuong(buyNowQuantity);
+            tempCart.setId(0); // ID tạm thời
+            tempCart.setItems(new ArrayList<>());
+            
+            // Tìm sản phẩm từ buyNowItemId (đây là sanPhamChiTietId từ chi-tiet-san-pham.js)
+            try {
+                java.util.Optional<vn.urbansteps.model.SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietService.findById(buyNowItemId);
+                if (sanPhamChiTietOpt.isPresent()) {
+                    vn.urbansteps.model.SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietOpt.get();
+                    GioHangItem buyNowItem = new GioHangItem();
+                    buyNowItem.setId(0); // ID tạm thời
+                    buyNowItem.setGioHang(tempCart);
+                    buyNowItem.setSanPhamChiTiet(sanPhamChiTiet);
+                    buyNowItem.setSoLuong(buyNowQuantity != null && buyNowQuantity > 0 ? buyNowQuantity : 1);
+                    buyNowItem.setGiaTaiThoidiem(sanPhamChiTiet.getGiaBanThucTe());
+                    
+                    tempCart.getItems().add(buyNowItem);
+                    gioHang = tempCart;
+                    
+                    logger.info("Tạo giỏ hàng mua ngay: sanPhamChiTietId={}, soLuong={}", buyNowItemId, buyNowItem.getSoLuong());
+                } else {
+                    logger.warn("Không tìm thấy sản phẩm với ID: {}", buyNowItemId);
+                    model.addAttribute("error", "Sản phẩm không tồn tại.");
+                    return "gio-hang";
                 }
-                tempCart.getItems().add(selectedItem);
-                gioHang = tempCart;
+            } catch (Exception e) {
+                logger.error("Lỗi khi tạo giỏ hàng mua ngay: {}", e.getMessage(), e);
+                model.addAttribute("error", "Có lỗi xảy ra khi xử lý mua ngay.");
+                return "gio-hang";
             }
+            
             model.addAttribute("buyNow", true);
             model.addAttribute("buyNowItemId", buyNowItemId);
             model.addAttribute("buyNowQuantity", buyNowQuantity);
+        } else {
+            // Checkout bình thường - lấy giỏ hàng của user
+            if (username != null) {
+                TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                logger.info("TaiKhoan found: {}", taiKhoan != null ? taiKhoan.getId() : "null");
+                if (taiKhoan != null) {
+                    gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoan.getId());
+                }
+            } else {
+                String sessionId = session.getId();
+                gioHang = gioHangService.getGioHangWithItemsBySessionId(sessionId);
+            }
         }
 
         if (gioHang == null || gioHang.getItems().isEmpty()) {
@@ -287,9 +312,16 @@ public class ThanhToanController {
                         phuongThucThanhToan, ghiChu, itemsToProcess, taiKhoanId, laKhachVangLai,
                         appliedVoucherCode, tongThanhToan);
 
-                logger.info("Xóa giỏ hàng cho tài khoản ID: {}", taiKhoanId);
+                // XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
+                logger.info("Xóa giỏ hàng sau khi đặt hàng thành công");
                 if (!laKhachVangLai) {
+                    // User đã đăng nhập
                     gioHangService.clearGioHangByUserId(taiKhoanId);
+                    logger.info("Đã xóa giỏ hàng cho user ID: {}", taiKhoanId);
+                } else {
+                    // Guest user
+                    gioHangService.clearGioHangBySessionId(session.getId());
+                    logger.info("Đã xóa giỏ hàng cho session ID: {}", session.getId());
                 }
 
                 if (email != null && !email.isEmpty()) {

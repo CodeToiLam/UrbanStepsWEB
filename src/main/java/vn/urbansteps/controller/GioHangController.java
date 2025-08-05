@@ -11,6 +11,7 @@ import vn.urbansteps.service.GioHangService;
 import vn.urbansteps.service.TaiKhoanService;
 
 import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -171,6 +172,59 @@ public class GioHangController {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "Có lỗi xảy ra khi xóa sản phẩm");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/api/cart/update")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateCartQuantity(
+            @RequestParam Integer gioHangChiTietId,
+            @RequestParam int soLuong,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            System.out.println("=== UPDATE CART DEBUG ===");
+            System.out.println("GioHangChiTiet ID: " + gioHangChiTietId);
+            System.out.println("So luong moi: " + soLuong);
+            
+            boolean success = gioHangService.updateQuantity(gioHangChiTietId, soLuong);
+            
+            if (success) {
+                // Lấy thông tin giỏ hàng mới
+                GioHang gioHang = null;
+                String username = (String) session.getAttribute("username");
+                if (username != null) {
+                    TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                    if (taiKhoan != null) {
+                        gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
+                    }
+                } else {
+                    String sessionId = session.getId();
+                    gioHang = gioHangService.getGioHangBySessionId(sessionId);
+                }
+                
+                BigDecimal itemTotal = gioHangService.getItemTotal(gioHangChiTietId);
+                BigDecimal cartTotal = gioHang != null ? gioHangService.calculateTotal(gioHang) : BigDecimal.ZERO;
+                int cartCount = gioHang != null ? gioHangService.countItems(gioHang) : 0;
+                
+                response.put("success", true);
+                response.put("itemTotal", itemTotal.doubleValue());
+                response.put("cartTotal", cartTotal.doubleValue());
+                response.put("cartCount", cartCount);
+                response.put("message", "Cập nhật thành công");
+            } else {
+                response.put("success", false);
+                response.put("message", "Không thể cập nhật số lượng");
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi cập nhật");
             return ResponseEntity.badRequest().body(response);
         }
     }

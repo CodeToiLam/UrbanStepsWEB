@@ -105,11 +105,19 @@ public class SanPhamService {
     }
 
     public List<SanPham> timKiemTheoTen(String keyword) {
+        System.out.println("=== DEBUG SEARCH ===");
+        System.out.println("Search keyword: '" + keyword + "'");
+        
         String lower = keyword == null ? "" : keyword.toLowerCase();
-        return getActiveProductsWithCache().stream()
+        List<SanPham> allProducts = getActiveProductsWithCache();
+        
+        System.out.println("Total active products: " + allProducts.size());
+        
+        List<SanPham> result = allProducts.stream()
             .filter(sp -> {
                 if (lower.isEmpty()) return true;
-                return (sp.getTenSanPham() != null && sp.getTenSanPham().toLowerCase().contains(lower))
+                
+                boolean matches = (sp.getTenSanPham() != null && sp.getTenSanPham().toLowerCase().contains(lower))
                     || (sp.getThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu().toLowerCase().contains(lower))
                     || (sp.getLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham().toLowerCase().contains(lower))
                     || (sp.getDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc().toLowerCase().contains(lower))
@@ -117,8 +125,18 @@ public class SanPhamService {
                     || (sp.getXuatXu() != null && sp.getXuatXu().getTenXuatXu() != null && sp.getXuatXu().getTenXuatXu().toLowerCase().contains(lower))
                     || (sp.getKieuDang() != null && sp.getKieuDang().getTenKieuDang() != null && sp.getKieuDang().getTenKieuDang().toLowerCase().contains(lower))
                     || (sp.getChatLieu() != null && sp.getChatLieu().getTenChatLieu() != null && sp.getChatLieu().getTenChatLieu().toLowerCase().contains(lower));
+                
+                if (matches && sp.getTenSanPham() != null) {
+                    System.out.println("Match found: " + sp.getTenSanPham());
+                }
+                return matches;
             })
             .collect(Collectors.toList());
+            
+        System.out.println("Search results: " + result.size() + " products");
+        System.out.println("=== END DEBUG SEARCH ===");
+        
+        return result;
     }
 
     public List<String> layDanhSachThuongHieu() {

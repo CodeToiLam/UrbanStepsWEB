@@ -242,6 +242,25 @@ public class GioHangService {
     }
 
     /**
+     * Lấy tổng tiền của một item trong giỏ hàng
+     */
+    public BigDecimal getItemTotal(Integer gioHangItemId) {
+        try {
+            Optional<GioHangItem> item = gioHangItemRepository.findById(gioHangItemId);
+            if (item.isPresent()) {
+                GioHangItem gioHangItem = item.get();
+                BigDecimal giaBan = gioHangItem.getSanPhamChiTiet().getGiaBanThucTe();
+                int soLuong = gioHangItem.getSoLuong();
+                return giaBan.multiply(BigDecimal.valueOf(soLuong));
+            }
+            return BigDecimal.ZERO;
+        } catch (Exception e) {
+            logger.error("Lỗi khi tính tổng tiền item: {}", e.getMessage(), e);
+            return BigDecimal.ZERO;
+        }
+    }
+
+    /**
      * Xóa sản phẩm khỏi giỏ hàng
      */
     @Transactional
@@ -370,6 +389,29 @@ public class GioHangService {
             return true;
         } catch (Exception e) {
             logger.error("Lỗi khi merge giỏ hàng: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+    
+    /**
+     * Xóa giỏ hàng theo session ID (cho guest)
+     */
+    @Transactional
+    public boolean clearGioHangBySessionId(String sessionId) {
+        try {
+            Optional<GioHang> gioHang = gioHangRepository.findBySessionId(sessionId);
+            if (gioHang.isPresent()) {
+                // Xóa tất cả items trước
+                gioHangItemRepository.deleteByGioHang(gioHang.get());
+                // Xóa giỏ hàng
+                gioHangRepository.delete(gioHang.get());
+                logger.info("Đã xóa giỏ hàng session: sessionId={}", sessionId);
+                return true;
+            }
+            logger.warn("Không tìm thấy giỏ hàng cho session: {}", sessionId);
+            return true; // Trả về true vì mục tiêu đã đạt được (giỏ hàng trống)
+        } catch (Exception e) {
+            logger.error("Lỗi khi xóa giỏ hàng session: {}", e.getMessage(), e);
             return false;
         }
     }
