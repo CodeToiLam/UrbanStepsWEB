@@ -176,7 +176,7 @@ public class GioHangController {
         }
     }
 
-    @PostMapping("/api/cart/update")
+    @PostMapping("/api/cart/update-quantity")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateCartQuantity(
             @RequestParam Integer gioHangChiTietId,

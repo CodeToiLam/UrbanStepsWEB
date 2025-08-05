@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('gioHangChiTietId', itemId);
         formData.append('soLuong', newQuantity);
 
-        fetch('/api/cart/update', {
+        fetch('/api/cart/update-quantity', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken
