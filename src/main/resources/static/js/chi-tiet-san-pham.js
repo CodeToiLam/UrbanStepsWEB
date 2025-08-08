@@ -522,6 +522,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('- Selected color:', selectedColor);
             console.log('- Final quantity:', stockQuantity);
             
+            // Thay đổi ảnh theo màu sắc đã chọn
+            updateImagesByColor(selectedColor);
+            
             // Update stock display
             const stockQuantityElement = document.getElementById('stock-quantity');
             if (stockQuantityElement) {
@@ -586,6 +589,125 @@ document.addEventListener('DOMContentLoaded', function () {
                 buyNowBtn.disabled = true;
                 buyNowBtn.textContent = 'Chọn kích cỡ và màu';
             }
+        }
+    }
+
+    // Hàm thay đổi ảnh theo màu sắc
+    function updateImagesByColor(colorName) {
+        if (!colorName) {
+            console.log('No color name provided');
+            return;
+        }
+        
+        if (!window.variants) {
+            console.log('No variants data available');
+            return;
+        }
+        
+        console.log('=== UPDATE IMAGES BY COLOR ===');
+        console.log('Selected color:', colorName);
+        console.log('Available variants:', window.variants);
+        
+        // Tìm variant theo màu sắc để lấy ảnh - thử nhiều cách khác nhau
+        const colorVariants = window.variants.filter(variant => {
+            const variantColor1 = variant.mauSac ? (variant.mauSac.tenMauSac || variant.mauSac) : '';
+            const variantColor2 = variant.mauSac || '';
+            const variantColor3 = variant.tenMauSac || '';
+            
+            console.log(`Checking variant: color1="${variantColor1}", color2="${variantColor2}", color3="${variantColor3}" vs "${colorName}"`);
+            
+            return variantColor1 === colorName || variantColor2 === colorName || variantColor3 === colorName;
+        });
+        
+        console.log('Found color variants:', colorVariants);
+        
+        if (colorVariants.length > 0) {
+            const firstVariant = colorVariants[0];
+            console.log('Using variant for color:', firstVariant);
+            
+            // Cập nhật ảnh chính nếu variant có ảnh - sử dụng ID chính xác
+            if (firstVariant.sanPham && firstVariant.sanPham.idHinhAnhDaiDien) {
+                const mainImage = document.getElementById('main-product-image');
+                if (mainImage) {
+                    const newImageSrc = firstVariant.sanPham.idHinhAnhDaiDien.duongDan || '/images/no-image.svg';
+                    mainImage.src = newImageSrc;
+                    console.log('Updated main image to:', newImageSrc);
+                    
+                    // Cập nhật thumbnail active state
+                    document.querySelectorAll('.thumbnail-item').forEach(thumb => {
+                        thumb.classList.remove('active');
+                        const thumbImg = thumb.querySelector('img');
+                        if (thumbImg && thumbImg.src === newImageSrc) {
+                            thumb.classList.add('active');
+                        }
+                    });
+                } else {
+                    console.log('Main product image element not found');
+                }
+            } else {
+                console.log('No main image found in variant');
+            }
+            
+            // Cập nhật gallery thumbnails nếu có nhiều ảnh
+            if (firstVariant.sanPham && firstVariant.sanPham.hinhAnhs && firstVariant.sanPham.hinhAnhs.length > 0) {
+                const thumbnailsContainer = document.querySelector('.thumbnail-scroll-container');
+                if (thumbnailsContainer) {
+                    // Ẩn tất cả thumbnails hiện tại
+                    document.querySelectorAll('.thumbnail-item').forEach(thumb => {
+                        thumb.style.display = 'none';
+                    });
+                    
+                    // Hiển thị hoặc tạo thumbnails cho màu được chọn
+                    firstVariant.sanPham.hinhAnhs.forEach((image, index) => {
+                        let existingThumb = document.querySelector(`.thumbnail-item[data-color-image="${image.duongDan}"]`);
+                        
+                        if (!existingThumb) {
+                            // Tạo thumbnail mới
+                            const thumbElement = document.createElement('div');
+                            thumbElement.className = index === 0 ? 'thumbnail-item active' : 'thumbnail-item';
+                            thumbElement.setAttribute('data-image', image.duongDan);
+                            thumbElement.setAttribute('data-color-image', image.duongDan);
+                            thumbElement.setAttribute('data-index', thumbnailsContainer.children.length);
+                            thumbElement.onclick = function() { changeMainImage(this); };
+                            
+                            thumbElement.innerHTML = `
+                                <div class="thumbnail-frame">
+                                    <img src="${image.duongDan}"
+                                         alt="${firstVariant.sanPham.tenSanPham} - Ảnh ${index + 1}"
+                                         class="thumbnail-img"
+                                         onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none';">
+                                    <div class="thumbnail-overlay">
+                                        <div class="thumbnail-number">${index + 1}</div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            thumbnailsContainer.appendChild(thumbElement);
+                        } else {
+                            // Hiển thị thumbnail đã có
+                            existingThumb.style.display = 'block';
+                            if (index === 0) {
+                                existingThumb.classList.add('active');
+                            }
+                        }
+                    });
+                    
+                    console.log('Updated gallery with', firstVariant.sanPham.hinhAnhs.length, 'images');
+                } else {
+                    console.log('Thumbnails container not found');
+                }
+            } else {
+                console.log('No additional images found in variant');
+            }
+        } else {
+            console.log('No variants found for color:', colorName);
+            console.log('Available colors in variants:', window.variants.map(v => {
+                return {
+                    mauSac: v.mauSac,
+                    tenMauSac: v.tenMauSac,
+                    color1: v.mauSac ? (v.mauSac.tenMauSac || v.mauSac) : '',
+                };
+            }));
         }
     }
 
@@ -767,7 +889,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             console.log('Response data:', data);
             if (data.success) {
-                showAlert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng thành công!`);
+                showAlert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng thành công! <a href="/gio-hang" class="alert-link">Xem giỏ hàng</a>`);
                 // Cập nhật số lượng giỏ hàng trên header nếu có
                 updateCartCount(data.cartCount);
             } else {

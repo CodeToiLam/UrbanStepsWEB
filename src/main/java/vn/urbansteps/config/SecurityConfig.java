@@ -37,8 +37,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/cart/**").permitAll()
 
-                        // Giỏ hàng cho guest cũng được phép truy cập
+                        // Giỏ hàng và thanh toán cho guest cũng được phép truy cập
                         .requestMatchers("/gio-hang", "/gio-hang/", "/cart", "/cart/").permitAll()
+                        .requestMatchers("/thanh-toan/**", "/checkout/**").permitAll()
 
                         // POS endpoints - Cho phép public
                         .requestMatchers("/pos/products", "/pos/order").permitAll()
@@ -46,7 +47,6 @@ public class SecurityConfig {
                         // User area - Cần đăng nhập
                         .requestMatchers("/don-hang/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
-                        .requestMatchers("/thanh-toan/**", "/checkout/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
 
                         // Admin area - Cần quyền ADMIN
@@ -89,6 +89,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
+                )
+                .rememberMe(remember -> remember
+                        .key("urbanStepsRememberMeKey")
+                        .tokenValiditySeconds(86400) // 1 day
                 );
 
         return http.build();

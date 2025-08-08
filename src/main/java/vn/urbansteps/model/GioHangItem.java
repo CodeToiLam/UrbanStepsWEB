@@ -68,6 +68,10 @@ public class GioHangItem {
             ? sanPhamChiTiet.getMauSac().getTenMauSac() 
             : "";
     }
+    
+    public Integer getSoLuongTon() {
+        return sanPhamChiTiet != null ? sanPhamChiTiet.getSoLuong() : 0;
+    }
 
     @PrePersist
     public void prePersist() {

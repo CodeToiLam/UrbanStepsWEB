@@ -12,18 +12,97 @@ function addToCart(button) {
     button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Đang thêm...';
     button.disabled = true;
     
-    // Giả lập thêm vào giỏ hàng (thay thế bằng AJAX call thực tế)
-    setTimeout(() => {
-        button.innerHTML = '<i class="bi bi-check"></i> Đã thêm';
-        button.classList.replace('btn-primary', 'btn-success');
+    // Thực hiện AJAX call để thêm vào giỏ hàng
+    fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `sanPhamChiTietId=${productId}&soLuong=1`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i class="bi bi-check"></i> Đã thêm';
+            button.classList.replace('btn-primary', 'btn-success');
+            
+            // Hiện thông báo thành công
+            showMessage('Đã thêm sản phẩm vào giỏ hàng', 'success');
+            
+            // Cập nhật số lượng giỏ hàng nếu có
+            if (data.cartCount && document.querySelector('.cart-count')) {
+                document.querySelector('.cart-count').textContent = data.cartCount;
+            }
+            
+            // Reset lại nút sau 2 giây
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.replace('btn-success', 'btn-primary');
+                button.disabled = false;
+            }, 2000);
+        } else {
+            button.innerHTML = '<i class="bi bi-x"></i> Lỗi';
+            button.classList.replace('btn-primary', 'btn-danger');
+            
+            // Hiện thông báo lỗi
+            showMessage(data.message || 'Không thể thêm vào giỏ hàng', 'danger');
+            
+            // Reset lại nút sau 2 giây
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.replace('btn-danger', 'btn-primary');
+                button.disabled = false;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = '<i class="bi bi-x"></i> Lỗi';
+        button.classList.replace('btn-primary', 'btn-danger');
+        
+        // Hiện thông báo lỗi
+        showMessage('Có lỗi xảy ra khi thêm vào giỏ hàng', 'danger');
         
         // Reset lại nút sau 2 giây
         setTimeout(() => {
             button.innerHTML = originalText;
-            button.classList.replace('btn-success', 'btn-primary');
+            button.classList.replace('btn-danger', 'btn-primary');
             button.disabled = false;
         }, 2000);
-    }, 1000);
+    });
+}
+
+// Hiển thị thông báo
+function showMessage(message, type = 'info') {
+    // Kiểm tra nếu đã có thông báo thì xóa đi
+    const existingAlert = document.querySelector('.search-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Tạo thông báo mới
+    const alertEl = document.createElement('div');
+    alertEl.className = `alert alert-${type} alert-dismissible fade show search-alert`;
+    alertEl.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Chèn vào đầu danh sách sản phẩm
+    const productList = document.querySelector('.product-grid');
+    if (productList && productList.parentNode) {
+        productList.parentNode.insertBefore(alertEl, productList);
+    } else {
+        document.querySelector('main').insertBefore(alertEl, document.querySelector('main').firstChild);
+    }
+    
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+        if (alertEl.parentNode) {
+            alertEl.classList.remove('show');
+            setTimeout(() => alertEl.remove(), 300);
+        }
+    }, 3000);
 }
 
 // Khởi tạo trang tìm kiếm khi DOM đã sẵn sàng

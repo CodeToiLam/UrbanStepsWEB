@@ -60,29 +60,31 @@
                             </div>
                         </div>
 
-                        <div class="cart-item" th:each="item : ${gioHang.items}">
+                        <div class="cart-item" th:each="item : ${gioHang.items}" 
+                             th:data-item-id="${item.id}"
+                             th:data-max-stock="${item.soLuongTon}">
                             <div class="row align-items-center">
                                 <!-- Thông tin sản phẩm -->
                                 <div class="col-md-6">
                                     <div class="product-info">
                                         <div class="product-image">
-                                            <img th:src="@{${item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null ? item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan : '/images/no-image.svg'}}"
-                                                 th:alt="${item.sanPhamChiTiet.sanPham.tenSanPham}"
+                                            <img th:src="@{${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null && item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null) ? item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan : '/images/no-image.svg'}}"
+                                                 th:alt="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.tenSanPham : 'Sản phẩm'}"
                                                  class="img-fluid"
                                                  onerror="this.onerror=null;this.src='/images/no-image.svg';">
                                         </div>
                                         <div class="product-details">
-                                            <h5 class="product-name" th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Tên sản phẩm</h5>
+                                            <h5 class="product-name" th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.tenSanPham : 'Sản phẩm'}">Tên sản phẩm</h5>
                                             <div class="product-variants">
                                                 <span class="variant-item">
-                                                    <strong>Kích cỡ:</strong> <span th:text="${item.kichCo}">40</span>
+                                                    <strong>Kích cỡ:</strong> <span th:text="${item.kichCo != null ? item.kichCo : 'N/A'}">40</span>
                                                 </span>
                                                 <span class="variant-item">
-                                                    <strong>Màu sắc:</strong> <span th:text="${item.mauSac}">Đen</span>
+                                                    <strong>Màu sắc:</strong> <span th:text="${item.mauSac != null ? item.mauSac : 'N/A'}">Đen</span>
                                                 </span>
                                             </div>
                                             <div class="product-sku">
-                                                <small class="text-muted">Mã SP: <span th:text="${item.sanPhamChiTiet.sanPham.maSanPham}">ABC123</span></small>
+                                                <small class="text-muted">Mã SP: <span th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.maSanPham : 'N/A'}">ABC123</span></small>
                                             </div>
                                         </div>
                                     </div>
@@ -90,7 +92,7 @@
 
                                 <!-- Giá -->
                                 <div class="col-md-2 text-center">
-                                    <span class="price" th:text="${#numbers.formatDecimal(item.giaTaiThoidiem, 0, 0) + 'đ'}">3,500,000đ</span>
+                                    <span class="price" th:text="${#numbers.formatDecimal(item.giaTaiThoidiem, 0, 'COMMA', 0, 'POINT') + 'đ'}">3,500,000đ</span>
                                 </div>
 
                                 <!-- Số lượng -->
@@ -102,7 +104,12 @@
                                         </button>
                                         <div class="quantity-display">
                                             <input type="hidden" th:data-item-id="${item.id}" th:value="${item.soLuong}">
-                                            <span class="quantity-value" th:text="${item.soLuong}">1</span>
+                                            <input type="number" 
+                                                   class="quantity-input" 
+                                                   th:data-item-id="${item.id}"
+                                                   th:value="${item.soLuong}"
+                                                   min="1" max="999"
+                                                   onchange="updateQuantityFromInput(this)">
                                         </div>
                                         <button class="quantity-btn increase-btn"
                                                 th:onclick="'updateQuantity(' + ${item.id} + ', ' + (${item.soLuong} + 1) + ')'">
@@ -111,13 +118,17 @@
                                     </div>
                                 </div>
 
-                                <!-- Thành tiền -->
+                                <!-- Thành tiền và nút xóa -->
                                 <div class="col-md-2 text-center">
-                                    <span class="total-price" th:data-item-total="${item.id}" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">3,500,000đ</span>
-                                    <button class="btn btn-sm btn-outline-danger remove-item-btn"
-                                            th:onclick="'removeItem(' + ${item.id} + ')'">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <div class="item-total-section">
+                                        <span class="total-price" th:data-item-total="${item.id}" th:text="${#numbers.formatDecimal(item.tongGia, 0, 'COMMA', 0, 'POINT') + 'đ'}">3,500,000đ</span>
+                                        <button class="btn btn-sm btn-outline-danger remove-item-btn mt-2"
+                                                th:onclick="'removeItem(' + ${item.id} + ')'"
+                                                th:data-item-id="${item.id}"
+                                                title="Xóa sản phẩm khỏi giỏ hàng">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +142,7 @@
 
                         <div class="summary-row">
                             <span>Tạm tính:</span>
-                            <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
+                            <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">10,500,000đ</span>
                         </div>
 
                         <div class="summary-row">
@@ -141,19 +152,19 @@
 
                         <div class="summary-row">
                             <span>Giảm giá:</span>
-                            <span id="discountAmount" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal, 0, 0) + 'đ') : '0đ'}"></span>
+                            <span id="discountAmount" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal, 0, 'COMMA', 0, 'POINT') + 'đ') : '0đ'}"></span>
                         </div>
                         <div class="summary-row total-row">
                             <strong>
                                 <span>Tổng thanh toán:</span>
-                                <span id="finalTotal" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal, 0, 0) + 'đ') : (#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ')}">10,500,000đ</span>
+                                <span id="finalTotal" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal, 0, 'COMMA', 0, 'POINT') + 'đ') : (#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ')}">10,500,000đ</span>
                             </strong>
                         </div>
 
                         <div class="summary-row total-row">
                             <strong>
                                 <span>Tổng cộng:</span>
-                                <span id="cart-total" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 0) + 'đ'}">10,500,000đ</span>
+                                <span id="cart-total" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">10,500,000đ</span>
                             </strong>
                         </div>
 

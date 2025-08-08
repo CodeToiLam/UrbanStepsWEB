@@ -64,7 +64,7 @@ public class ThanhToanController {
         String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
         logger.info("Username from SecurityContext: {}", username);
         GioHang gioHang = null;
-        String defaultAddress = null;
+        String defaultAddress = ""; // Khởi tạo empty string thay vì null
 
         if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
             // Mua ngay - chỉ tạo giỏ hàng tạm thời với 1 sản phẩm
@@ -125,9 +125,11 @@ public class ThanhToanController {
         model.addAttribute("gioHang", gioHang);
         model.addAttribute("publicVouchers", publicVouchers);
         model.addAttribute("discountedTotal", session.getAttribute("discountedTotal") != null ? session.getAttribute("discountedTotal") : gioHang.getTongTien());
-        if (defaultAddress != null && !defaultAddress.isEmpty()) {
-            model.addAttribute("defaultAddress", defaultAddress);
-        }
+        
+        // Thêm logging để debug
+        logger.info("Checkout page - GioHang items: {}, Total: {}", 
+                gioHang.getItems().size(), gioHang.getTongTien());
+        
         return "thanh-toan";
     }
 

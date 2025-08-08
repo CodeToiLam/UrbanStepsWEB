@@ -10,6 +10,18 @@ import java.util.List;
 
 @Repository
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
+    
+    // Đếm sản phẩm còn hàng
+    @Query("SELECT COUNT(s) FROM SanPhamChiTiet s WHERE s.soLuong > 0 AND s.trangThai = true AND s.deleteAt IS NULL")
+    long countInStockProducts();
+    
+    // Lấy danh sách sản phẩm hết hàng
+    @Query("SELECT s FROM SanPhamChiTiet s WHERE s.soLuong <= 0 AND s.trangThai = true AND s.deleteAt IS NULL")
+    List<SanPhamChiTiet> findOutOfStockProducts();
+    
+    // Lấy danh sách sản phẩm sắp hết hàng
+    @Query("SELECT s FROM SanPhamChiTiet s WHERE s.soLuong <= :threshold AND s.soLuong > 0 AND s.trangThai = true AND s.deleteAt IS NULL")
+    List<SanPhamChiTiet> findLowStockProducts(@Param("threshold") int threshold);
 
     @Query("SELECT spct FROM SanPhamChiTiet spct " +
             "JOIN FETCH spct.kichCo " +

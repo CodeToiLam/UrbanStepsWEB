@@ -3,9 +3,10 @@ package vn.urbansteps.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.urbansteps.dto.CartErrorType;
+import vn.urbansteps.dto.CartOperationResult;
 import vn.urbansteps.model.GioHang;
 import vn.urbansteps.model.GioHangItem;
 import vn.urbansteps.model.SanPhamChiTiet;
@@ -15,6 +16,9 @@ import vn.urbansteps.repository.GioHangItemRepository;
 import vn.urbansteps.repository.SanPhamChiTietRepository;
 import vn.urbansteps.repository.TaiKhoanRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,8 +41,8 @@ public class GioHangService {
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Lấy giỏ hàng của user (đã đăng nhập)
@@ -136,28 +140,59 @@ public class GioHangService {
     }
 
     /**
-     * Thêm sản phẩm vào giỏ hàng
+     * Thêm sản phẩm vào giỏ hàng với validation đầy đủ
+     * @return CartOperationResult object with operation result and details
      */
-    public boolean addToCart(GioHang gioHang, Integer sanPhamChiTietId, int soLuong) {
+    public CartOperationResult addToCart(GioHang gioHang, Integer sanPhamChiTietId, int soLuong) {
         try {
             logger.info("Thêm sản phẩm vào giỏ hàng: gioHangId={}, sanPhamChiTietId={}, soLuong={}",
                     gioHang.getId(), sanPhamChiTietId, soLuong);
+
+            // Validation đầu vào
+            if (soLuong <= 0) {
+                logger.warn("Số lượng không hợp lệ: {}", soLuong);
+                return CartOperationResult.error(CartErrorType.INVALID_QUANTITY);
+            }
+
+            if (soLuong > 999) {
+                logger.warn("Số lượng vượt quá giới hạn cho phép (999): {}", soLuong);
+                return CartOperationResult.error(CartErrorType.MAXIMUM_QUANTITY);
+            }
 
             // Kiểm tra sản phẩm có tồn tại không
             Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(sanPhamChiTietId);
             if (!sanPhamChiTiet.isPresent()) {
                 logger.warn("Không tìm thấy sản phẩm chi tiết ID: {}", sanPhamChiTietId);
-                return false;
+                return CartOperationResult.error(CartErrorType.PRODUCT_NOT_FOUND);
             }
 
             SanPhamChiTiet spct = sanPhamChiTiet.get();
             logger.info("Tìm thấy sản phẩm: {} - {}, stock={}",
                     spct.getId(), spct.getSanPham().getTenSanPham(), spct.getSoLuong());
 
+            // Validation sản phẩm
+            if (!spct.isAvailable()) {
+                logger.warn("Sản phẩm không khả dụng: {}", sanPhamChiTietId);
+                return CartOperationResult.error(CartErrorType.PRODUCT_UNAVAILABLE);
+            }
+
+            if (spct.getSanPham() == null) {
+                logger.warn("Sản phẩm không có thông tin sản phẩm cha: {}", sanPhamChiTietId);
+                return CartOperationResult.error(CartErrorType.PRODUCT_NOT_FOUND);
+            }
+
+            // Validation giá
+            BigDecimal giaBan = spct.getGiaBanThucTe();
+            if (giaBan == null || giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+                logger.warn("Sản phẩm không có giá hợp lệ: {}, giá: {}", sanPhamChiTietId, giaBan);
+                return CartOperationResult.error(CartErrorType.INVALID_PRICE);
+            }
+
             // Kiểm tra số lượng tồn kho
             if (spct.getSoLuong() < soLuong) {
                 logger.warn("Không đủ hàng trong kho: available={}, requested={}", spct.getSoLuong(), soLuong);
-                return false;
+                return CartOperationResult.error(CartErrorType.INSUFFICIENT_STOCK, 
+                        String.format("Sản phẩm chỉ còn %d trong kho, bạn yêu cầu %d", spct.getSoLuong(), soLuong));
             }
 
             // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
@@ -172,11 +207,18 @@ public class GioHangService {
                 logger.info("Sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng từ {} lên {}",
                         item.getSoLuong(), newQuantity);
 
-                // Kiểm tra số lượng tồn kho
+                // Validation số lượng mới
+                if (newQuantity > 999) {
+                    logger.warn("Tổng số lượng vượt quá giới hạn cho phép (999): {}", newQuantity);
+                    return CartOperationResult.error(CartErrorType.MAXIMUM_QUANTITY);
+                }
+
+                // Kiểm tra số lượng tồn kho cho số lượng mới
                 if (spct.getSoLuong() < newQuantity) {
                     logger.warn("Không đủ hàng trong kho để cập nhật: available={}, requested={}",
                             spct.getSoLuong(), newQuantity);
-                    return false;
+                    return CartOperationResult.error(CartErrorType.INSUFFICIENT_STOCK,
+                            String.format("Sản phẩm chỉ còn %d trong kho, bạn yêu cầu %d", spct.getSoLuong(), newQuantity));
                 }
 
                 item.setSoLuong(newQuantity);
@@ -190,7 +232,7 @@ public class GioHangService {
                 newItem.setGioHang(gioHang);
                 newItem.setSanPhamChiTiet(spct);
                 newItem.setSoLuong(soLuong);
-                newItem.setGiaTaiThoidiem(spct.getSanPham().getGiaBan());
+                newItem.setGiaTaiThoidiem(giaBan);
                 newItem.setCreateAt(LocalDateTime.now());
                 newItem.setUpdateAt(LocalDateTime.now());
                 GioHangItem savedItem = gioHangItemRepository.save(newItem);
@@ -199,32 +241,73 @@ public class GioHangService {
 
             // Cập nhật thời gian giỏ hàng
             updateGioHangTime(gioHang);
-            logger.info("Thêm sản phẩm vào giỏ hàng thành công!");
-            return true;
+            
+            // Tính toán tổng tiền và số lượng sản phẩm trong giỏ hàng
+            BigDecimal cartTotal = calculateTotal(gioHang);
+            int cartCount = countItems(gioHang);
+            
+            logger.info("Thêm sản phẩm vào giỏ hàng thành công! Total={}, Count={}", cartTotal, cartCount);
+            return CartOperationResult.success(cartTotal, cartCount);
         } catch (Exception e) {
             logger.error("Lỗi khi thêm sản phẩm vào giỏ hàng: {}", e.getMessage(), e);
-            return false;
+            return CartOperationResult.error(CartErrorType.SERVER_ERROR, "Lỗi hệ thống: " + e.getMessage());
         }
     }
 
     /**
-     * Cập nhật số lượng sản phẩm trong giỏ hàng
+     * Cập nhật số lượng sản phẩm trong giỏ hàng với validation đầy đủ
      */
-    public boolean updateQuantity(Integer gioHangItemId, int soLuong) {
+    public CartOperationResult updateQuantity(Integer gioHangItemId, int soLuong) {
         try {
+            // Validation đầu vào
+            if (soLuong <= 0) {
+                logger.warn("Số lượng không hợp lệ: {}", soLuong);
+                return CartOperationResult.error(CartErrorType.INVALID_QUANTITY, "Số lượng phải lớn hơn 0");
+            }
+
+            if (soLuong > 999) {
+                logger.warn("Số lượng vượt quá giới hạn cho phép (999): {}", soLuong);
+                return CartOperationResult.error(CartErrorType.QUANTITY_EXCEEDS_LIMIT, "Số lượng không được vượt quá 999");
+            }
+
             Optional<GioHangItem> item = gioHangItemRepository.findById(gioHangItemId);
             if (!item.isPresent()) {
                 logger.warn("Không tìm thấy sản phẩm trong giỏ hàng: itemId={}", gioHangItemId);
-                return false;
+                return CartOperationResult.error(CartErrorType.ITEM_NOT_FOUND, "Sản phẩm không còn trong giỏ hàng");
             }
 
             GioHangItem gioHangItem = item.get();
+            SanPhamChiTiet sanPhamChiTiet = gioHangItem.getSanPhamChiTiet();
+
+            // Validation sản phẩm
+            if (sanPhamChiTiet == null) {
+                logger.warn("Sản phẩm chi tiết không tồn tại cho item: {}", gioHangItemId);
+                return CartOperationResult.error(CartErrorType.PRODUCT_NOT_FOUND, "Sản phẩm không còn tồn tại");
+            }
+
+            if (!sanPhamChiTiet.isAvailable()) {
+                logger.warn("Sản phẩm không khả dụng: itemId={}, sanPhamChiTietId={}", 
+                        gioHangItemId, sanPhamChiTiet.getId());
+                return CartOperationResult.error(CartErrorType.PRODUCT_UNAVAILABLE, "Sản phẩm này hiện không còn kinh doanh");
+            }
+
+            // Validation giá
+            BigDecimal giaBan = sanPhamChiTiet.getGiaBanThucTe();
+            if (giaBan == null || giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+                logger.warn("Sản phẩm không có giá hợp lệ: itemId={}, giá={}", gioHangItemId, giaBan);
+                return CartOperationResult.error(CartErrorType.INVALID_PRICE, "Sản phẩm không có giá hợp lệ");
+            }
 
             // Kiểm tra số lượng tồn kho
-            if (gioHangItem.getSanPhamChiTiet().getSoLuong() < soLuong) {
+            if (sanPhamChiTiet.getSoLuong() == 0) {
+                logger.warn("Sản phẩm hết hàng: itemId={}, requested={}", gioHangItemId, soLuong);
+                return CartOperationResult.error(CartErrorType.OUT_OF_STOCK, 
+                    "Sản phẩm đã hết hàng", sanPhamChiTiet.getId());
+            } else if (sanPhamChiTiet.getSoLuong() < soLuong) {
                 logger.warn("Không đủ hàng trong kho: itemId={}, available={}, requested={}",
-                        gioHangItemId, gioHangItem.getSanPhamChiTiet().getSoLuong(), soLuong);
-                return false;
+                        gioHangItemId, sanPhamChiTiet.getSoLuong(), soLuong);
+                return CartOperationResult.error(CartErrorType.INSUFFICIENT_STOCK, 
+                    "Chỉ còn " + sanPhamChiTiet.getSoLuong() + " sản phẩm trong kho", sanPhamChiTiet.getId());
             }
 
             gioHangItem.setSoLuong(soLuong);
@@ -232,12 +315,18 @@ public class GioHangService {
             gioHangItemRepository.save(gioHangItem);
 
             // Cập nhật thời gian giỏ hàng
-            updateGioHangTime(gioHangItem.getGioHang());
-            logger.info("Cập nhật số lượng sản phẩm thành công: itemId={}", gioHangItemId);
-            return true;
+            GioHang gioHang = gioHangItem.getGioHang();
+            updateGioHangTime(gioHang);
+            
+            // Tính toán thông tin giỏ hàng mới
+            BigDecimal cartTotal = calculateTotal(gioHang);
+            int cartCount = countItems(gioHang);
+            
+            logger.info("Cập nhật số lượng sản phẩm thành công: itemId={}, newQuantity={}", gioHangItemId, soLuong);
+            return CartOperationResult.success(cartTotal, cartCount);
         } catch (Exception e) {
             logger.error("Lỗi khi cập nhật số lượng: {}", e.getMessage(), e);
-            return false;
+            return CartOperationResult.error(CartErrorType.SERVER_ERROR, "Lỗi hệ thống: " + e.getMessage());
         }
     }
 
@@ -264,27 +353,45 @@ public class GioHangService {
      * Xóa sản phẩm khỏi giỏ hàng
      */
     @Transactional
-    public boolean removeFromCart(Integer gioHangItemId) {
+    public CartOperationResult removeFromCart(Integer gioHangItemId) {
         try {
-            Optional<GioHangItem> item = gioHangItemRepository.findById(gioHangItemId);
-            if (!item.isPresent()) {
-                logger.warn("Không tìm thấy sản phẩm trong giỏ hàng: itemId={}", gioHangItemId);
-                return false;
+            // Lấy thông tin giỏ hàng trước khi xóa để tính toán giá trị mới
+            Optional<GioHangItem> itemOpt = gioHangItemRepository.findById(gioHangItemId);
+            if (!itemOpt.isPresent()) {
+                logger.warn("Không tìm thấy sản phẩm trong giỏ hàng để xóa: itemId={}", gioHangItemId);
+                return CartOperationResult.error(CartErrorType.ITEM_NOT_FOUND, "Sản phẩm không tồn tại trong giỏ hàng");
             }
-
-            GioHangItem gioHangItem = item.get();
-            GioHang gioHang = gioHangItem.getGioHang();
-
-            logger.info("Xóa sản phẩm khỏi giỏ hàng: itemId={}", gioHangItemId);
-            gioHangItemRepository.delete(gioHangItem);
-
-            // Cập nhật thời gian giỏ hàng
-            updateGioHangTime(gioHang);
-            logger.info("Xóa sản phẩm khỏi giỏ hàng thành công: itemId={}", gioHangItemId);
-            return true;
+            
+            GioHang gioHang = itemOpt.get().getGioHang();
+            
+            // Sử dụng native query để tránh vấn đề với Hibernate cascade
+            Query updateCartTimeQuery = entityManager.createNativeQuery(
+                "UPDATE GioHang SET update_at = CURRENT_TIMESTAMP " +
+                "WHERE id = (SELECT id_gio_hang FROM GioHangItem WHERE id = :itemId)");
+            updateCartTimeQuery.setParameter("itemId", gioHangItemId);
+            updateCartTimeQuery.executeUpdate();
+            
+            // Xóa item bằng native query
+            Query deleteQuery = entityManager.createNativeQuery(
+                "DELETE FROM GioHangItem WHERE id = :itemId");
+            deleteQuery.setParameter("itemId", gioHangItemId);
+            int deletedCount = deleteQuery.executeUpdate();
+            
+            if (deletedCount > 0) {
+                logger.info("Xóa sản phẩm khỏi giỏ hàng thành công: itemId={}", gioHangItemId);
+                
+                // Tính lại thông tin giỏ hàng sau khi xóa
+                BigDecimal cartTotal = calculateTotal(gioHang);
+                int cartCount = countItems(gioHang);
+                
+                return CartOperationResult.success(cartTotal, cartCount);
+            } else {
+                logger.warn("Không thể xóa sản phẩm trong giỏ hàng: itemId={}", gioHangItemId);
+                return CartOperationResult.error(CartErrorType.DELETE_FAILED, "Không thể xóa sản phẩm khỏi giỏ hàng");
+            }
         } catch (Exception e) {
             logger.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng: {}", e.getMessage(), e);
-            return false;
+            return CartOperationResult.error(CartErrorType.SERVER_ERROR, "Lỗi hệ thống: " + e.getMessage());
         }
     }
 
@@ -306,9 +413,26 @@ public class GioHangService {
      * Cập nhật thời gian giỏ hàng
      */
     private void updateGioHangTime(GioHang gioHang) {
-        gioHang.setUpdateAt(LocalDateTime.now());
-        gioHangRepository.save(gioHang);
-        logger.info("Cập nhật thời gian giỏ hàng: gioHangId={}", gioHang.getId());
+        if (gioHang == null || gioHang.getId() == null) {
+            logger.warn("Không thể cập nhật thời gian cho giỏ hàng null hoặc không có ID");
+            return;
+        }
+        
+        try {
+            // Sử dụng native query để cập nhật thời gian giỏ hàng trực tiếp trong DB
+            Query updateQuery = entityManager.createNativeQuery(
+                "UPDATE GioHang SET update_at = CURRENT_TIMESTAMP WHERE id = :id");
+            updateQuery.setParameter("id", gioHang.getId());
+            int updatedRows = updateQuery.executeUpdate();
+            
+            if (updatedRows > 0) {
+                logger.info("Cập nhật thời gian giỏ hàng thành công: gioHangId={}", gioHang.getId());
+            } else {
+                logger.warn("Không tìm thấy giỏ hàng với ID={} để cập nhật thời gian", gioHang.getId());
+            }
+        } catch (Exception e) {
+            logger.error("Lỗi khi cập nhật thời gian giỏ hàng: {}", e.getMessage(), e);
+        }
     }
 
     /**
