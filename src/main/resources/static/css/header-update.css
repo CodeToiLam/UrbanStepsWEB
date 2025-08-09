@@ -1,0 +1,42 @@
+/* Style updates for the header in layout-main.css */
+
+/* Adjust the logo size and spacing */
+.logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    max-height: 60px; /* Reduce from default size */
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* Make header more compact */
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px; /* Reduced from 15px 20px */
+}
+
+/* Add subtle hover effect to logo */
+.logo-link:hover .logo-image {
+    transform: scale(1.05);
+}
+
+/* Tighten up the nav menu */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Reduced from 30px */
+}
+
+/* Adjust the icons section */
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Reduced from 8px */
+}

@@ -12,131 +12,60 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
   <link rel="stylesheet" type="text/css" href="/css/main.css">
-  <link rel="stylesheet" type="text/css" href="/css/layout-main.css">
-
-  <style>
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo-image {
-      height: 80px; /* Tăng kích thước logo cho màn hình lớn */
-      width: auto;
-      object-fit: contain;
-    }
-
-    .logo-text {
-      font-size: 42px; /* Tăng kích thước chữ cho màn hình lớn */
-      font-weight: bold;
-      color: #333;
-      text-decoration: none;
-    }
-
-    .logo-link {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .logo-link:hover {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    @media (max-width: 768px) {
-      .logo-image {
-        height: 60px; /* Tăng kích thước logo cho máy tính bảng */
-      }
-
-      .logo-text {
-        font-size: 36px; /* Tăng kích thước chữ cho máy tính bảng */
-      }
-
-      .logo {
-        gap: 12px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .logo-image {
-        height: 50px; /* Tăng kích thước logo cho điện thoại */
-      }
-
-      .logo-text {
-        font-size: 28px; /* Tăng kích thước chữ cho điện thoại */
-      }
-
-      .logo {
-        gap: 10px;
-      }
-    }
-  </style>
+  <!-- Consolidated header/footer styles with version for cache busting -->
+  <link rel="stylesheet" th:href="@{'/css/layout-main.css?v=20250809a'}">
+  <link rel="stylesheet" th:href="@{'/css/footer.css?v=20250809a'}">
 
 </head>
 <body>
 
-<div class="header-top">
-  Mua giày, đến UrbanSteps.vn! - Giày chính hãng số 1 thế giới
-</div>
+<div class="header-top">Mua giày chính hãng tại UrbanSteps • FREESHIP đơn từ 500K • Đổi trả 7 ngày</div>
 
-<div class="header-main">
-  <div class="header-content">
-    <div class="logo">
-      <a th:href="@{/}" class="logo-link">
-        <img src="/images/Home/logo.jpg" alt="UrbanSteps Logo" class="logo-image">
-
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="/" class="brand" aria-label="UrbanSteps home">
+        <img src="/images/Home/logo.jpg" alt="UrbanSteps" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+        <span class="brand-fallback">Urban<span>Steps</span></span>
       </a>
+      <nav class="primary-nav" aria-label="Danh mục chính">
+        <a href="/san-pham?thuongHieu=MLB">MLB</a>
+        <a href="/san-pham?thuongHieu=Adidas">Adidas</a>
+        <a href="/san-pham?thuongHieu=Converse">Converse</a>
+        <a href="/san-pham?sale=true" class="nav-label sale" aria-label="Sản phẩm giảm giá">SALE</a>
+        <a href="/san-pham?hot=true" class="nav-label hot" aria-label="Sản phẩm nổi bật">HOT</a>
+      </nav>
     </div>
-    <div class="nav-menu">
-      <a href="/san-pham?thuongHieu=MLB" th:href="@{/san-pham(thuongHieu='MLB')}">MLB</a>
-      <a href="/san-pham?thuongHieu=Adidas" th:href="@{/san-pham(thuongHieu='Adidas')}">Adidas</a>
-      <a href="/san-pham?thuongHieu=Converse" th:href="@{/san-pham(thuongHieu='Converse')}">Converse</a>
-      <a href="/san-pham?sale=true" th:href="@{/san-pham(sale=true)}" class="sale">SALE</a>
-      <a href="/san-pham?hot=true" th:href="@{/san-pham(hot=true)}" class="hot">HOT</a>
-    </div>
-    <div class="icons">
-      <a href="/tim-kiem" th:href="@{/tim-kiem}" class="icon-btn" title="Tìm kiếm">
-        <i class="bi bi-search"></i>
-      </a>
-      <a href="/gio-hang" th:href="@{/gio-hang}" class="cart-icon" title="Giỏ hàng">
+    <div class="header-right">
+      <div class="search-wrapper" data-search>
+        <form action="/tim-kiem" method="get" class="header-search-form" role="search">
+          <input type="text" name="q" class="header-search-input" placeholder="Tìm kiếm giày..." aria-label="Tìm kiếm" />
+          <button type="submit" class="icon-btn header-search-btn" aria-label="Tìm kiếm"><i class="bi bi-search"></i></button>
+          <button type="button" class="icon-btn header-close-search" aria-label="Đóng tìm kiếm"><i class="bi bi-x"></i></button>
+        </form>
+        <button type="button" class="icon-btn header-trigger-search" aria-label="Mở tìm kiếm"><i class="bi bi-search"></i></button>
+      </div>
+      <a href="/gio-hang" class="icon-btn cart-icon" title="Giỏ hàng" aria-label="Giỏ hàng">
         <i class="bi bi-cart"></i>
         <span class="cart-count" th:text="${gioHang != null ? gioHang.items.size() : 0}">0</span>
       </a>
-
-      <div class="user-section" th:if="${#authentication.name != 'anonymousUser'}">
-        <a href="/tai-khoan" class="icon-btn" title="Tài khoản">
-          <i class="bi bi-person"></i>
-        </a>
-        <a href="/don-hang" class="icon-btn" title="Đơn hàng">
-          <i class="bi bi-box-seam"></i>
-        </a>
+      <div class="account-cluster" th:if="${#authentication.name != 'anonymousUser'}">
+        <a href="/don-hang" class="icon-btn" title="Đơn hàng" aria-label="Đơn hàng"><i class="bi bi-box-seam"></i></a>
+        <a href="/tai-khoan" class="icon-btn" title="Tài khoản" aria-label="Tài khoản"><i class="bi bi-person"></i></a>
         <span sec:authorize="hasRole('ADMIN')">
-          <a href="/admin" class="icon-btn" title="Quản trị">
-            <i class="bi bi-gear"></i>
-          </a>
+          <a href="/admin" class="icon-btn" title="Quản trị" aria-label="Quản trị"><i class="bi bi-speedometer2"></i></a>
         </span>
-        <form th:action="@{/dang-xuat}" method="post" style="display: inline;">
-          <button type="submit" class="icon-btn logout-btn" title="Đăng xuất">
-            <i class="bi bi-box-arrow-right"></i>
-          </button>
+        <form th:action="@{/dang-xuat}" method="post" class="logout-form">
+          <button type="submit" class="icon-btn logout-btn" title="Đăng xuất" aria-label="Đăng xuất"><i class="bi bi-box-arrow-right"></i></button>
         </form>
       </div>
-
-      <div class="login-section" th:if="${#authentication.name == 'anonymousUser'}">
-        <a href="/don-hang" class="icon-btn" title="Tra cứu đơn hàng">
-          <i class="bi bi-box-seam"></i>
-        </a>
-        <a href="/dang-nhap" th:href="@{/dang-nhap}" class="icon-btn" title="Đăng nhập">
-          <i class="bi bi-person"></i>
-        </a>
+      <div class="account-cluster" th:if="${#authentication.name == 'anonymousUser'}">
+        <a href="/don-hang" class="icon-btn" title="Tra cứu đơn hàng" aria-label="Tra cứu đơn hàng"><i class="bi bi-box-seam"></i></a>
+        <a href="/dang-nhap" th:href="@{/dang-nhap}" class="icon-btn" title="Đăng nhập" aria-label="Đăng nhập"><i class="bi bi-person"></i></a>
       </div>
     </div>
   </div>
-</div>
+</header>
 
 <main class="main-content" layout:fragment="content">
 </main>
@@ -146,32 +75,32 @@
     <div class="footer-section">
       <h3>Thương hiệu nổi bật</h3>
       <ul>
-        <li><a href="#" th:href="@{/san-pham(thuongHieu='UrbanSteps')}">UrbanSteps</a></li>
-        <li><a href="#" th:href="@{/san-pham(thuongHieu='Nike')}">Giày Nike</a></li>
-        <li><a href="#" th:href="@{/san-pham(thuongHieu='Adidas')}">Giày Adidas</a></li>
-        <li><a href="#" th:href="@{/san-pham(thuongHieu='Converse')}">Giày Converse</a></li>
-        <li><a href="#" th:href="@{/san-pham(thuongHieu='Peak')}">Giày Peak</a></li>
+        <li><a href="/san-pham?thuongHieu=UrbanSteps">UrbanSteps</a></li>
+        <li><a href="/san-pham?thuongHieu=Nike">Giày Nike</a></li>
+        <li><a href="/san-pham?thuongHieu=Adidas">Giày Adidas</a></li>
+        <li><a href="/san-pham?thuongHieu=Converse">Giày Converse</a></li>
+        <li><a href="/san-pham?thuongHieu=Peak">Giày Peak</a></li>
       </ul>
     </div>
     <div class="footer-section">
       <h3>Hỗ trợ khách hàng</h3>
       <ul>
-        <li><a href="#" th:href="@{/ho-tro}">FAQs & Help</a></li>
-        <li><a href="#" th:href="@{/van-don}">Vận đơn</a></li>
-        <li><a href="#" th:href="@{/huong-dan-tra-gop}">Hướng dẫn thanh toán trả góp</a></li>
-        <li><a href="#" th:href="@{/huong-dan-doi-tra}">Hướng dẫn đổi trả</a></li>
-        <li><a href="#" th:href="@{/chinh-sach-doi-tra}">Chính sách đổi trả</a></li>
-        <li><a href="#" th:href="@{/chinh-sach-bao-hanh}">Chính sách bảo hành</a></li>
+        <li><a href="/ho-tro">FAQs & Help</a></li>
+        <li><a href="/van-don">Vận đơn</a></li>
+        <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
+        <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
+        <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
+        <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
       </ul>
     </div>
     <div class="footer-section">
       <h3>Về UrbanSteps</h3>
       <ul>
-        <li><a href="#" th:href="@{/gioi-thieu}">Giới thiệu UrbanSteps</a></li>
-        <li><a href="#" th:href="@{/cau-hoi-thuong-gap}">Câu hỏi thường gặp</a></li>
-        <li><a href="#" th:href="@{/tuyen-dung}">Tuyển dụng</a></li>
-        <li><a href="#" th:href="@{/dang-ky-ban-hang}">Đăng ký bán hàng</a></li>
-        <li><a href="#" th:href="@{/lien-he}">Liên hệ</a></li>
+        <li><a href="/gioi-thieu">Giới thiệu UrbanSteps</a></li>
+        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+        <li><a href="/tuyen-dung">Tuyển dụng</a></li>
+        <li><a href="/dang-ky-ban-hang">Đăng ký bán hàng</a></li>
+        <li><a href="/lien-he">Liên hệ</a></li>
       </ul>
     </div>
     <div class="footer-section">
@@ -192,6 +121,20 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="/js/banner-carousel.js"></script>
+
+<script>
+  // Header interactions: shrink on scroll & search toggle
+  (function(){
+    const onScroll=()=>{ if(window.scrollY>10){document.body.classList.add('scrolled')} else {document.body.classList.remove('scrolled')} };window.addEventListener('scroll',onScroll);onScroll();
+    const wrapper=document.querySelector('[data-search]');
+    if(wrapper){
+      const trigger=wrapper.querySelector('.header-trigger-search');
+      const closeBtn=wrapper.querySelector('.header-close-search');
+      trigger && trigger.addEventListener('click',()=>wrapper.classList.add('active'));
+      closeBtn && closeBtn.addEventListener('click',()=>wrapper.classList.remove('active'));
+    }
+  })();
+  </script>
 
 <th:block layout:fragment="extra-js"></th:block>
 

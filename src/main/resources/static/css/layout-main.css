@@ -6,35 +6,70 @@ body {
   background-color: #ffffff;
 }
 
-.header-top {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  text-align: center;
-  padding: 8px 0;
-  font-size: 14px;
-  font-weight: 500;
+/* ---------- Header New ---------- */
+.header-top {background:linear-gradient(90deg,#5b6df8,#8c5bff);color:#fff;text-align:center;padding:5px 0;font-size:13px;font-weight:500;letter-spacing:.35px;box-shadow:0 1px 0 rgba(255,255,255,.15) inset}
+.site-header {position:sticky;top:0;z-index:120;background:#ffffffcc;backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid rgba(0,0,0,.06)}
+.header-inner {max-width:1320px;margin:0 auto;padding:8px 34px 10px;display:flex;align-items:center;justify-content:space-between;gap:40px;position:relative}
+.header-inner:after{content:"";position:absolute;left:36px;right:36px;bottom:0;height:1px;background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.12),rgba(0,0,0,.05))}
+.header-left {display:flex;align-items:center;gap:34px;min-width:0}
+.brand-logo {height:56px;width:auto;display:block;object-fit:contain;transition:transform .35s ease}
+.brand-fallback{display:none;font-size:30px;font-weight:800;line-height:1;letter-spacing:.5px;background:linear-gradient(90deg,#1f2937,#334155);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.brand-fallback span{color:#5b6df8;-webkit-text-fill-color:initial}
+.brand:hover .brand-logo{transform:scale(1.05)}
+.primary-nav {display:flex;align-items:center;gap:30px;font-size:15px;font-weight:600;white-space:nowrap}
+.primary-nav a{position:relative;color:#222;text-decoration:none;padding:6px 0;transition:color .25s ease}
+.primary-nav a:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,#5b6df8,#8c5bff);transition:width .3s ease}
+.primary-nav a:hover{color:#5b6df8}
+.primary-nav a:hover:after{width:100%}
+/* Redesigned SALE / HOT badges */
+.nav-label{position:relative;padding:6px 16px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.5px;display:inline-flex;align-items:center;gap:4px;line-height:1;color:#1f2328;text-transform:uppercase;background:transparent;border:1px solid transparent;transition:all .25s ease}
+.nav-label.sale{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#ff7a45,#ff4d4f) border-box;border:1px solid transparent;color:#ff4d4f;box-shadow:0 2px 6px -2px rgba(255,77,79,.4)}
+.nav-label.sale:hover{color:#fff;background:linear-gradient(135deg,#ff7a45,#ff4d4f);box-shadow:0 6px 14px -6px rgba(255,77,79,.55)}
+.nav-label.hot{background:linear-gradient(135deg,#ff9f43,#ff4d79);color:#fff;box-shadow:0 4px 12px -4px rgba(255,77,121,.5)}
+.nav-label.hot:before{content:"🔥";font-size:15px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}
+.nav-label.hot:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(255,77,121,.6)}
+.header-right{display:flex;align-items:center;gap:14px;margin-left:auto}
+.account-cluster{display:flex;align-items:center;gap:6px}
+.icon-btn{width:38px;height:38px;border-radius:14px;background:#fff;border:1px solid #e6e8ec;display:flex;align-items:center;justify-content:center;color:#333;font-size:17px;transition:all .25s ease;position:relative}
+.icon-btn:hover{border-color:#c9cccf;background:#f5f7ff;color:#5b6df8}
+.cart-icon{border:1px solid #e6e8ec !important}
+.cart-icon:hover{background:#fff;box-shadow:0 4px 14px -4px rgba(90,109,248,.35);border-color:#b8bdfd}
+.cart-count{position:absolute;top:-4px;right:-6px;background:#ff4757;color:#fff;border-radius:12px;min-width:22px;height:22px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;box-shadow:0 4px 10px -4px rgba(0,0,0,.35)}
+.logout-form{display:inline}
+/* Search */
+.search-wrapper{position:relative;display:flex;align-items:center}
+/* Scoped header search (avoid conflict with search page) */
+.header-search-form{display:flex;align-items:center;background:#f5f7fa;border:1px solid #e2e6eb;border-radius:18px;padding:0 8px;height:46px;transition:all .3s ease;min-width:300px;max-width:500px;box-shadow:0 16px 42px -18px rgba(0,0,0,.12)}
+.header-search-input{border:none;background:transparent;outline:none;font-size:14px;padding:4px 12px;width:100%;font-weight:500;color:#1f2937}
+.header-search-btn{width:42px;height:38px;border:none;background:linear-gradient(135deg,#1d74d9,#165db4);color:#fff;border-radius:12px;font-size:18px;display:flex;align-items:center;justify-content:center}
+.header-close-search{display:none;width:32px;height:32px;border:none;background:transparent}
+.header-trigger-search{display:none}
+.header-search-form:focus-within{background:#fff;border-color:#c9cccf;box-shadow:0 4px 16px -4px rgba(0,0,0,.16)}
+/* Compact on scroll */
+body.scrolled .site-header .header-inner{padding:6px 30px 8px}
+body.scrolled .brand-logo{height:52px}
+/* Responsive nav collapse */
+@media (max-width: 992px){
+  .primary-nav{gap:14px}
+  .header-inner{padding:6px 18px}
 }
-
-.header-main {
-  background: white;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #f0f0f0;
+@media (max-width: 820px){
+  .header-left{flex:1}
+  .primary-nav{display:none}
+  .header-trigger-search{display:flex}
+  .search-wrapper.active .header-search-form{display:flex}
+  .search-wrapper:not(.active) .header-close-search{display:none}
+  .search-wrapper.active .header-close-search{display:flex}
+  .search-wrapper:not(.active) .header-search-form{display:none}
 }
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
+@media (max-width: 560px){
+  .header-inner{gap:16px}
+  .brand-logo{height:36px}
+  .search-form{min-width:170px}
 }
 
 .logo {
-  font-size: 32px;
+  font-size: 28px; /* Smaller font */
   font-weight: 900;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
@@ -44,104 +79,13 @@ body {
   letter-spacing: -1px;
 }
 
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
+/* legacy selectors kept minimal for backward compatibility */
+.logo-image{display:none}
+.logo-link{display:flex}
 
-.nav-menu a {
-  color: #333;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 8px 16px;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-}
+/* remove old nav-menu styles (now primary-nav / badge-pill) */
 
-.nav-menu a:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  transform: translateY(-2px);
-}
-
-.nav-menu a.sale {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  color: white;
-}
-
-.nav-menu a.hot {
-  background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
-  color: white;
-}
-
-.icons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: #333;
-  text-decoration: none;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  border-radius: 50%;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.icon-btn:hover {
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
-  text-decoration: none;
-  transform: translateY(-1px);
-}
-
-.cart-icon {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: #333;
-  text-decoration: none;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  border-radius: 50%;
-}
-
-.cart-icon:hover {
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
-  text-decoration: none;
-  transform: translateY(-1px);
-}
-
-.cart-count {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #ff4757;
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 12px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-}
+/* old icon/cart styles replaced above */
 
 .user-section,
 .login-section {

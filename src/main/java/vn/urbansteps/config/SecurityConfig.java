@@ -25,6 +25,12 @@ public class SecurityConfig {
                         // Public endpoints - Không cần đăng nhập
                         .requestMatchers("/", "/home", "/trang-chu").permitAll()
                         .requestMatchers("/san-pham/**", "/product/**").permitAll()
+                        // Footer info pages should be public
+                        .requestMatchers(
+                                "/gioi-thieu", "/cau-hoi-thuong-gap", "/tuyen-dung",
+                                "/dang-ky-ban-hang", "/lien-he", "/ho-tro", "/van-don",
+                                "/huong-dan-tra-gop", "/huong-dan-doi-tra", "/chinh-sach-doi-tra",
+                                "/chinh-sach-bao-hanh").permitAll()
                         .requestMatchers("/tim-kiem/**", "/search/**").permitAll()
                         .requestMatchers("/dang-ky", "/register", "/tai-khoan/dang-ky").permitAll()
                         .requestMatchers("/dang-nhap", "/login", "/tai-khoan/dang-nhap").permitAll()
