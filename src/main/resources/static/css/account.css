@@ -1,0 +1,45 @@
+/* Account page enhanced styles - inspired by large e-commerce platforms */
+:root {
+  --acc-bg: #f5f7fa;
+  --acc-card-bg: #ffffff;
+  --acc-border: #e5e9f2;
+  --acc-radius: 12px;
+  --acc-shadow: 0 4px 12px -2px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.05);
+  --acc-primary: #0d6efd;
+  --acc-primary-soft: #e7f1ff;
+}
+body #accountTab { border-bottom: 1px solid var(--acc-border); }
+#accountTab .nav-link { position: relative; font-weight:500; color:#445; padding: .75rem 1.25rem; }
+#accountTab .nav-link.active { color: var(--acc-primary); background: var(--acc-primary-soft); border-radius: 8px 8px 0 0; }
+#accountTab .nav-link:not(.active):hover { color: var(--acc-primary); }
+
+.tab-content { background: var(--acc-bg); padding: 1rem 1rem 2rem; border-radius: 0 0 var(--acc-radius) var(--acc-radius); }
+
+.card { border: 1px solid var(--acc-border); border-radius: var(--acc-radius); box-shadow: var(--acc-shadow); overflow:hidden; }
+.card-header { background: linear-gradient(90deg,#fff,#f2f6fb); border-bottom:1px solid var(--acc-border); }
+.card-header.fw-bold { font-size: .95rem; letter-spacing:.5px; }
+
+.form-control, .form-select { border-radius: 8px; border-color: #d5dbe3; }
+.form-control:focus, .form-select:focus { border-color: var(--acc-primary); box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
+
+.btn-primary { background: var(--acc-primary); border-color: var(--acc-primary); }
+.btn-primary:hover { filter: brightness(.95); }
+
+.table { --bs-table-bg: transparent; }
+.table th { font-weight:600; color:#334; }
+.table td { vertical-align: middle; }
+.table tbody tr { transition: background .15s; }
+.table tbody tr:hover { background: #f8fafc; }
+
+.badge { font-weight:500; letter-spacing:.3px; }
+
+.alert { border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  #accountTab { display:flex; overflow-x:auto; gap:.5rem; border-bottom:none; }
+  #accountTab .nav-link { white-space:nowrap; background:#fff; border:1px solid var(--acc-border); border-radius: 20px; }
+  #accountTab .nav-link.active { background: var(--acc-primary); color:#fff; }
+  .tab-content { padding: .75rem .75rem 1.25rem; }
+  .card { box-shadow: none; }
+}

@@ -243,6 +243,14 @@ public class HoaDonServiceImpl implements HoaDonService {
         return hoaDonRepository.findByKhachHang_IdOrderByCreateAtDesc(khachHangId);
     }
 
+    @Override
+    public List<HoaDon> getOrdersByPhone(String sdt) {
+        if (sdt == null || sdt.trim().isEmpty()) {
+            return List.of();
+        }
+        return hoaDonRepository.findByKhachHang_SdtOrderByCreateAtDesc(sdt.trim());
+    }
+
     private String generateMaHoaDon() {
         String prefix = "HD" + LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
         String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();

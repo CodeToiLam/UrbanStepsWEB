@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "DiaChiGiaoHang")
@@ -40,6 +39,10 @@ public class DiaChiGiaoHang {
 
     @Column(name = "tinh_thanh_pho", length = 100)
     private String tinhThanhPho;
+
+    // Map to existing column la_dia_chi_mac_dinh in DB (previous script already created it)
+    @Column(name = "la_dia_chi_mac_dinh", nullable = false)
+    private boolean isDefault = false;
 
     // ...existing code...
 

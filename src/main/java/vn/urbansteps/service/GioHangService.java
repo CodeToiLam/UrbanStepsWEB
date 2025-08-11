@@ -551,6 +551,11 @@ public class GioHangService {
             gioHang.ifPresent(g -> {
                 logger.info("Xóa toàn bộ giỏ hàng của tài khoản: userId={}, gioHangId={}", userId, g.getId());
                 gioHangItemRepository.deleteByGioHang(g);
+                try {
+                    gioHangRepository.delete(g); // Xóa luôn record giỏ hàng để tạo mới sạch lần sau
+                } catch (Exception ex) {
+                    logger.warn("Không thể xóa entity giỏ hàng (sẽ bỏ qua): {}", ex.getMessage());
+                }
                 logger.info("Xóa giỏ hàng thành công: userId={}", userId);
             });
         });

@@ -5,16 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 import vn.urbansteps.model.TaiKhoan;
 import vn.urbansteps.service.TaiKhoanService;
 import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.model.KhachHang;
+import vn.urbansteps.model.DiaChiGiaoHang;
 import vn.urbansteps.repository.KhachHangRepository;
+import vn.urbansteps.service.DiaChiGiaoHangService;
 
 @Controller
 @RequestMapping("/tai-khoan")
@@ -23,6 +23,8 @@ public class TaiKhoanController {
     private HoaDonService hoaDonService;
     @Autowired
     private KhachHangRepository khachHangRepository;
+    @Autowired
+    private DiaChiGiaoHangService diaChiGiaoHangService;
     @GetMapping
     public String taiKhoanPage(Model model) {
         // Lấy username từ session (Spring Security)
@@ -31,6 +33,9 @@ public class TaiKhoanController {
         if (username != null && !"anonymousUser".equals(username)) {
             TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
             model.addAttribute("taiKhoan", taiKhoan);
+            if (taiKhoan != null) {
+                model.addAttribute("customerName", taiKhoan.getHoTenTaiKhoan() != null ? taiKhoan.getHoTenTaiKhoan() : taiKhoan.getTaiKhoan());
+            }
             // TODO: Lấy danh sách địa chỉ đã lưu của user
             // ...existing code...
             // Lấy lịch sử đơn hàng
@@ -39,6 +44,9 @@ public class TaiKhoanController {
                 java.util.List<HoaDon> orders = hoaDonService.getOrdersByKhachHangId(khachHang.getId());
                 model.addAttribute("orders", orders);
             }
+            // Addresses
+            java.util.List<DiaChiGiaoHang> addresses = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
+            model.addAttribute("addresses", addresses);
         }
         return "tai-khoan";
     }
@@ -127,6 +135,51 @@ public class TaiKhoanController {
             model.addAttribute("error", "Không thể hủy đơn hàng này.");
         }
         return "redirect:/tai-khoan";
+    }
+
+    @PostMapping("/cap-nhat")
+    public String capNhatThongTin(@ModelAttribute("taiKhoan") TaiKhoan formTk, RedirectAttributes redirect) {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if (username == null || "anonymousUser".equals(username)) {
+            return "redirect:/dang-nhap";
+        }
+        TaiKhoan updated = taiKhoanService.updateProfile(username, tk -> {
+            tk.setHoTenTaiKhoan(formTk.getHoTenTaiKhoan());
+            tk.setSdt(formTk.getSdt());
+            tk.setEmail(formTk.getEmail());
+            tk.setGioiTinh(formTk.getGioiTinh());
+            tk.setDiaChi(formTk.getDiaChi());
+        });
+        if (updated != null) {
+            redirect.addFlashAttribute("success", "Cập nhật thông tin thành công");
+        } else {
+            redirect.addFlashAttribute("error", "Không thể cập nhật tài khoản");
+        }
+        return "redirect:/tai-khoan";
+    }
+
+    @PostMapping("/doi-mat-khau")
+    public String doiMatKhau(@RequestParam String oldPassword,
+                             @RequestParam String newPassword,
+                             @RequestParam String confirmPassword,
+                             RedirectAttributes redirect) {
+        if (!newPassword.equals(confirmPassword)) {
+            redirect.addFlashAttribute("error", "Mật khẩu xác nhận không khớp");
+            return "redirect:/tai-khoan#security";
+        }
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if (username == null || "anonymousUser".equals(username)) {
+            return "redirect:/dang-nhap";
+        }
+        boolean changed = taiKhoanService.changePassword(username, oldPassword, newPassword);
+        if (changed) {
+            redirect.addFlashAttribute("success", "Đổi mật khẩu thành công");
+        } else {
+            redirect.addFlashAttribute("error", "Mật khẩu hiện tại không đúng");
+        }
+        return "redirect:/tai-khoan#security";
     }
 }
 

@@ -22,4 +22,5 @@ public interface HoaDonService {
     HoaDon getOrderById(Integer orderId);
     HoaDon save(HoaDon hoaDon);
     List<HoaDon> getOrdersByKhachHangId(Integer khachHangId);
+    List<HoaDon> getOrdersByPhone(String sdt);
 }

@@ -36,7 +36,10 @@ public class OrderTrackingController {
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             // User đã đăng nhập - hiển thị đơn hàng của họ
             String username = auth.getName();
-            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
+            if (taiKhoanOpt.isEmpty()) {
+                taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            }
             
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
@@ -64,24 +67,20 @@ public class OrderTrackingController {
     }
     
     @PostMapping("/don-hang/tra-cuu")
-    public String traCuuDonHang(@RequestParam String maHoaDon, 
-                               @RequestParam String sdt,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
+    public String traCuuDonHangTheoSdt(@RequestParam String sdt,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
         try {
-            // Tìm đơn hàng theo mã và số điện thoại
-            Optional<HoaDon> hoaDonOpt = hoaDonService.findByMaHoaDonAndSdt(maHoaDon, sdt);
-            
-            if (hoaDonOpt.isPresent()) {
-                HoaDon hoaDon = hoaDonOpt.get();
-                model.addAttribute("order", hoaDon);
-                model.addAttribute("isLoggedIn", false);
-                model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
-                return "chi-tiet-don-hang";
-            } else {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng với mã và số điện thoại này!");
+            List<HoaDon> orders = hoaDonService.getOrdersByPhone(sdt);
+            if (orders.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng nào cho số điện thoại này");
                 return "redirect:/don-hang";
             }
+            model.addAttribute("orders", orders);
+            model.addAttribute("lookupPhone", sdt);
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("title", "Đơn hàng của số " + sdt);
+            return "don-hang";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tra cứu đơn hàng!");
             return "redirect:/don-hang";
@@ -99,7 +98,10 @@ public class OrderTrackingController {
         
         try {
             String username = auth.getName();
-            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
+            if (taiKhoanOpt.isEmpty()) {
+                taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            }
             
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
@@ -139,7 +141,10 @@ public class OrderTrackingController {
         
         try {
             String username = auth.getName();
-            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
+            if (taiKhoanOpt.isEmpty()) {
+                taiKhoanOpt = taiKhoanRepository.findByEmail(username);
+            }
             
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();

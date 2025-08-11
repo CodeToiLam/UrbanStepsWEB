@@ -40,4 +40,24 @@ public class TaiKhoanService {
     public TaiKhoan findByEmail(String email) {
         return taiKhoanRepository.findByEmail(email).orElse(null);
     }
+
+    public TaiKhoan updateProfile(String username, java.util.function.Consumer<TaiKhoan> updater) {
+        TaiKhoan existing = findByTaiKhoan(username);
+        if (existing == null) return null;
+        updater.accept(existing);
+        existing.setUpdateAt(LocalDateTime.now());
+        return taiKhoanRepository.save(existing);
+    }
+
+    public boolean changePassword(String username, String oldRaw, String newRaw) {
+        TaiKhoan existing = findByTaiKhoan(username);
+        if (existing == null) return false;
+        if (!passwordEncoder.matches(oldRaw, existing.getMatKhau())) {
+            return false;
+        }
+        existing.setMatKhau(passwordEncoder.encode(newRaw));
+        existing.setUpdateAt(LocalDateTime.now());
+        taiKhoanRepository.save(existing);
+        return true;
+    }
 }

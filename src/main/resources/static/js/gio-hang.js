@@ -686,6 +686,9 @@ document.addEventListener('DOMContentLoaded', function() {
             align-items: center;
             z-index: 9999;
         }
+
+    .simple-float-alert {animation:fadeInScale .35s ease}
+    @keyframes fadeInScale {0%{opacity:0;transform:translateY(-6px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
         
         .loading-content {
             background: white;

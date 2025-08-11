@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/main}">
+<head>
+    <title>Địa chỉ giao hàng</title>
+</head>
+<body>
+<div layout:fragment="content" class="container py-4">
+    <h2 class="mb-3" th:text="${address.id} != null ? 'Sửa địa chỉ' : 'Thêm địa chỉ'"></h2>
+    <form th:action="${address.id} != null ? @{/tai-khoan/dia-chi/sua/{id}(id=${address.id})} : @{/tai-khoan/dia-chi/them}" method="post" class="mt-3" th:object="${address}">
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="small text-muted">Tên & SĐT lấy từ thông tin tài khoản. Cập nhật ở tab Thông tin cá nhân nếu cần.</div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tỉnh / Thành phố</label>
+                <input type="text" name="tinhThanhPho" class="form-control" th:value="${address.tinhThanhPho}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Quận / Huyện</label>
+                <input type="text" name="quanHuyen" class="form-control" th:value="${address.quanHuyen}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Phường / Xã</label>
+                <input type="text" name="phuongXa" class="form-control" th:value="${address.phuongXa}" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Địa chỉ chi tiết</label>
+                <textarea name="diaChiChiTiet" class="form-control" rows="2" required th:text="${address.diaChiChiTiet}"></textarea>
+            </div>
+            <div class="col-12 form-check mt-2">
+                <input class="form-check-input" type="checkbox" th:field="*{default}" name="isDefault">
+                <label class="form-check-label">Đặt làm địa chỉ mặc định</label>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/tai-khoan#address" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/dang-nhap", "/login", "/tai-khoan/dang-nhap").permitAll()
 
                         // Static resources - CSS, JS, Images
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/data/**").permitAll()
                         .requestMatchers("/favicon.ico", "/robots.txt").permitAll()
 
                         // API endpoints - Cho phép guest thao tác giỏ hàng
@@ -51,7 +51,9 @@ public class SecurityConfig {
                         .requestMatchers("/pos/products", "/pos/order").permitAll()
 
                         // User area - Cần đăng nhập
-                        .requestMatchers("/don-hang/**", "/order/**").authenticated()
+                        // Order tracking: allow basic tracking & lookup for guests, protect detail/huy
+                        .requestMatchers("/don-hang/tra-cuu", "/don-hang", "/order/track", "/order/lookup").permitAll()
+                        .requestMatchers("/don-hang/chi-tiet/**", "/don-hang/huy/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
 

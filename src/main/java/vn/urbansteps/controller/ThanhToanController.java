@@ -16,12 +16,14 @@ import vn.urbansteps.model.GioHangItem;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.model.PhieuGiamGia;
 import vn.urbansteps.model.TaiKhoan;
+import vn.urbansteps.model.DiaChiGiaoHang;
 import vn.urbansteps.service.GioHangService;
 import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.service.PhieuGiamGiaService;
 import vn.urbansteps.service.TaiKhoanService;
 import vn.urbansteps.service.EmailService;
 import vn.urbansteps.service.SanPhamChiTietService;
+import vn.urbansteps.service.DiaChiGiaoHangService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -53,6 +55,9 @@ public class ThanhToanController {
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
 
+    @Autowired
+    private DiaChiGiaoHangService diaChiGiaoHangService;
+
     @GetMapping
     public String showCheckoutPage(
             @RequestParam(required = false) Boolean buyNow,
@@ -64,7 +69,28 @@ public class ThanhToanController {
         String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
         logger.info("Username from SecurityContext: {}", username);
         GioHang gioHang = null;
-        String defaultAddress = ""; // Khởi tạo empty string thay vì null
+
+        if (username != null) {
+            try {
+                TaiKhoan tk = taiKhoanService.findByTaiKhoan(username);
+                if (tk != null) {
+                    model.addAttribute("accountFullName", tk.getHoTenTaiKhoan());
+                    model.addAttribute("accountPhone", tk.getSdt());
+                    model.addAttribute("accountEmail", tk.getEmail());
+                    try {
+                        java.util.List<DiaChiGiaoHang> addresses = diaChiGiaoHangService.listByTaiKhoan(tk);
+                        model.addAttribute("addresses", addresses);
+                        DiaChiGiaoHang def = addresses.stream().filter(DiaChiGiaoHang::isDefault).findFirst().orElse(null);
+                        if(def!=null){
+                            model.addAttribute("defaultAddressFull", def.getDiaChiDayDu());
+                            model.addAttribute("defaultAddressId", def.getId());
+                        }
+                    } catch (Exception ignored) {}
+                }
+            } catch (Exception e) {
+                logger.warn("Không thể load thông tin tài khoản để prefill: {}", e.getMessage());
+            }
+        }
 
         if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
             // Mua ngay - chỉ tạo giỏ hàng tạm thời với 1 sản phẩm
@@ -252,18 +278,43 @@ public class ThanhToanController {
             @RequestBody Map<String, Object> orderData,
             HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+        long start=System.currentTimeMillis();
         try {
             logger.info("Bắt đầu xử lý đặt hàng...");
-            String hoTen = (String) orderData.get("fullName");
-            String sdt = (String) orderData.get("phoneNumber");
-            String email = (String) orderData.get("email");
-            String province = (String) orderData.get("province");
-            String district = (String) orderData.get("district");
-            String ward = (String) orderData.get("ward");
-            String addressDetail = (String) orderData.get("addressDetail");
-            String diaChiGiaoHang = addressDetail + ", " + ward + ", " + district + ", " + province;
-            String ghiChu = (String) orderData.get("note");
-            int phuongThucThanhToan = Integer.parseInt((String) orderData.get("paymentMethod"));
+            String hoTen = (String) orderData.getOrDefault("fullName", "");
+            String sdt = (String) orderData.getOrDefault("phoneNumber", "");
+            String email = (String) orderData.getOrDefault("email", "");
+            String province = (String) orderData.getOrDefault("province", "");
+            String district = (String) orderData.getOrDefault("district", "");
+            String ward = (String) orderData.getOrDefault("ward", "");
+            String addressDetail = (String) orderData.getOrDefault("addressDetail", "");
+            final Integer[] selectedAddressIdHolder = new Integer[1];
+            try {
+                Object selObj = orderData.get("selectedAddressId");
+                if(selObj!=null){
+                    String tmp=String.valueOf(selObj);
+                    if(!"null".equals(tmp) && !tmp.isBlank()) selectedAddressIdHolder[0] = Integer.parseInt(tmp);
+                }
+            } catch (Exception ignored) {}
+            String ghiChu = (String) orderData.getOrDefault("note", "");
+            // Parse payment method robustly (could come as number or string)
+            Object pmObj = orderData.get("paymentMethod");
+            int phuongThucThanhToan = 1;
+            if(pmObj!=null){
+                try { phuongThucThanhToan = Integer.parseInt(String.valueOf(pmObj)); } catch (NumberFormatException ignored) {}
+            }
+            // Basic validation
+            if(hoTen.isBlank() || sdt.isBlank() || (addressDetail.isBlank() && selectedAddressIdHolder[0]==null)){
+                response.put("success", false);
+                response.put("message", "Thiếu thông tin bắt buộc (họ tên / SĐT / địa chỉ)");
+                return ResponseEntity.badRequest().body(response);
+            }
+            // Build full address only with non-empty components (avoid 'null')
+            StringBuilder fullAddr = new StringBuilder(addressDetail.trim());
+            if(!ward.isBlank()) fullAddr.append(", ").append(ward.trim());
+            if(!district.isBlank()) fullAddr.append(", ").append(district.trim());
+            if(!province.isBlank()) fullAddr.append(", ").append(province.trim());
+            String diaChiGiaoHang = fullAddr.toString();
             String appliedVoucherCode = (String) orderData.get("promoCode");
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -272,8 +323,9 @@ public class ThanhToanController {
             Integer taiKhoanId = null;
             boolean laKhachVangLai = true;
 
+            TaiKhoan taiKhoan = null;
             if (username != null) {
-                TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
+                taiKhoan = taiKhoanService.findByTaiKhoan(username);
                 logger.info("TaiKhoan found (place-order): {}", taiKhoan != null ? taiKhoan.getId() : "null");
                 if (taiKhoan != null) {
                     taiKhoanId = taiKhoan.getId();
@@ -309,10 +361,48 @@ public class ThanhToanController {
                     tongThanhToan = gioHang.getTongTien();
                 }
 
+                // If selectedAddressId provided and user logged in, override address with saved one
+        if(selectedAddressIdHolder[0]!=null && taiKhoan!=null){
+                    try {
+                        List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
+            final Integer selId = selectedAddressIdHolder[0];
+            DiaChiGiaoHang match = existing.stream().filter(a->a.getId().equals(selId)).findFirst().orElse(null);
+                        if(match!=null){
+                            diaChiGiaoHang = match.getDiaChiDayDu();
+                        }
+                    } catch (Exception ex){ logger.warn("Không lấy được địa chỉ đã chọn: {}", ex.getMessage()); }
+                }
+
                 logger.info("Tạo hóa đơn với tổng thanh toán: {}", tongThanhToan);
                 HoaDon hoaDon = hoaDonService.taoHoaDon(hoTen, sdt, email, diaChiGiaoHang,
                         phuongThucThanhToan, ghiChu, itemsToProcess, taiKhoanId, laKhachVangLai,
                         appliedVoucherCode, tongThanhToan);
+
+                // Persist address if user logged in and have at least detail + province/district/ward optional
+                if (!laKhachVangLai && taiKhoan != null && selectedAddressIdHolder[0]==null && !addressDetail.isBlank()) {
+                    try {
+                        List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
+                        String normalized = diaChiGiaoHang.trim().toLowerCase();
+                        boolean exists = existing.stream().anyMatch(a -> {
+                            String ad = a.getDiaChiDayDu();
+                            return ad!=null && ad.trim().toLowerCase().equals(normalized);
+                        });
+                        if(!exists){
+                            DiaChiGiaoHang saveAddr = new DiaChiGiaoHang();
+                            saveAddr.setTaiKhoan(taiKhoan);
+                            saveAddr.setTenNguoiNhan(hoTen);
+                            saveAddr.setSdtNguoiNhan(sdt);
+                            saveAddr.setDiaChiChiTiet(addressDetail);
+                            saveAddr.setPhuongXa(ward);
+                            saveAddr.setQuanHuyen(district);
+                            saveAddr.setTinhThanhPho(province);
+                            saveAddr.setDefault(existing.isEmpty());
+                            diaChiGiaoHangService.save(saveAddr);
+                        }
+                    } catch (Exception e){
+                        logger.warn("Không thể lưu địa chỉ mới: {}", e.getMessage());
+                    }
+                }
 
                 // XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
                 logger.info("Xóa giỏ hàng sau khi đặt hàng thành công");
@@ -326,22 +416,21 @@ public class ThanhToanController {
                     logger.info("Đã xóa giỏ hàng cho session ID: {}", session.getId());
                 }
 
+                // Async email send moved to separate thread
                 if (email != null && !email.isEmpty()) {
                     String subject = "Xác nhận đơn hàng UrbanSteps";
                     String text = "Cảm ơn bạn đã đặt hàng tại UrbanSteps! Mã đơn hàng: " + hoaDon.getMaHoaDon()
-                            + "\nTổng tiền: " + hoaDon.getTongThanhToan() + " VNĐ\n";
-                    if (appliedVoucherCode != null) {
-                        text += "Mã khuyến mãi: " + appliedVoucherCode + "\n";
-                    }
-                    text += "Chúng tôi sẽ liên hệ và giao hàng sớm nhất!";
-                    emailService.sendOrderConfirmation(email, subject, text);
+                            + "\nTổng tiền: " + hoaDon.getTongThanhToan() + " VNĐ\n" + (appliedVoucherCode!=null?"Mã khuyến mãi: "+appliedVoucherCode+"\n":"")
+                            + "Chúng tôi sẽ liên hệ và giao hàng sớm nhất!";
+                    new Thread(() -> { try { emailService.sendOrderConfirmation(email, subject, text); } catch (Exception e) { logger.error("Async mail fail: {}", e.getMessage()); } }).start();
                 }
 
                 session.removeAttribute("appliedVoucherCode");
                 session.removeAttribute("discountedTotal");
                 response.put("success", true);
                 response.put("message", "Đặt hàng thành công!");
-                logger.info("Đặt hàng thành công, mã hóa đơn: {}", hoaDon.getMaHoaDon());
+                response.put("orderCode", hoaDon.getMaHoaDon());
+                response.put("durationMs", System.currentTimeMillis()-start);
                 return ResponseEntity.ok(response);
             } catch (Exception e) {
                 logger.error("Lỗi khi đặt hàng: {}", e.getMessage(), e);
@@ -360,5 +449,24 @@ public class ThanhToanController {
     @GetMapping("/success")
     public String showSuccessPage() {
         return "thanh-toan-thanh-cong";
+    }
+
+    @GetMapping("/addresses")
+    @ResponseBody
+    public ResponseEntity<?> listSavedAddresses(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth==null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())){
+            return ResponseEntity.status(401).body(Map.of("success",false,"message","Chưa đăng nhập"));
+        }
+        TaiKhoan tk = taiKhoanService.findByTaiKhoan(auth.getName());
+        if(tk==null) return ResponseEntity.status(404).body(Map.of("success",false,"message","Không tìm thấy tài khoản"));
+        List<DiaChiGiaoHang> list = diaChiGiaoHangService.listByTaiKhoan(tk);
+        return ResponseEntity.ok(Map.of("success",true,"data", list.stream().map(a->Map.of(
+                "id",a.getId(),
+                "ten",a.getTenNguoiNhan(),
+                "sdt",a.getSdtNguoiNhan(),
+                "full",a.getDiaChiDayDu(),
+                "default",a.isDefault()
+        ))));
     }
 }

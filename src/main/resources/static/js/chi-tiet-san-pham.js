@@ -889,7 +889,9 @@ document.addEventListener('DOMContentLoaded', function () {
             
             console.log('Response data:', data);
             if (data.success) {
-                showAlert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng thành công! <a href="/gio-hang" class="alert-link">Xem giỏ hàng</a>`);
+                const prodNameEl = document.querySelector('.product-title, h1');
+                const prodName = prodNameEl ? prodNameEl.textContent.trim() : '';
+                showAlert(`Đã thêm <strong>${quantity}</strong> x <em>${prodName}</em> vào giỏ hàng! <a href="/gio-hang" class="alert-link">Xem giỏ hàng</a>`);
                 // Cập nhật số lượng giỏ hàng trên header nếu có
                 updateCartCount(data.cartCount);
             } else {
@@ -1057,13 +1059,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showAlert(message) {
-        // Enhanced alert with better user experience
-        if (typeof toastr !== 'undefined') {
+        if (typeof showMessage === 'function') { // global toast from cart
+            showMessage(message, 'success');
+        } else if (typeof toastr !== 'undefined') {
             toastr.info(message);
         } else {
-            alert(message);
+            // minimal non-blocking fallback
+            const div=document.createElement('div');
+            div.className='simple-float-alert';
+            div.innerHTML=message;
+            Object.assign(div.style,{position:'fixed',top:'90px',right:'20px',background:'#1f2937',color:'#fff',padding:'12px 16px',borderRadius:'10px',zIndex:9999,boxShadow:'0 6px 20px -4px rgba(0,0,0,.25)',fontSize:'14px',maxWidth:'320px'});
+            document.body.appendChild(div);
+            setTimeout(()=>{div.style.opacity='0';div.style.transition='opacity .4s';setTimeout(()=>div.remove(),400);},3000);
         }
-        console.log('Alert shown:', message);
+        console.log('Alert shown (toast):', message);
     }
     
     // Debug helper function

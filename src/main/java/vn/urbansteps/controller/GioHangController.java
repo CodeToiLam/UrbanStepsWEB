@@ -12,6 +12,8 @@ import vn.urbansteps.service.GioHangService;
 import vn.urbansteps.service.TaiKhoanService;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +38,13 @@ public class GioHangController {
             
             // Kiểm tra user đã đăng nhập chưa
             String username = (String) session.getAttribute("username");
-            System.out.println("Username từ session: " + (username != null ? username : "guest"));
-            
+            if (username == null) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+                    username = auth.getName();
+                    session.setAttribute("username", username);
+                }
+            }
             if (username != null) {
                 // User đã đăng nhập
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
@@ -106,8 +113,13 @@ public class GioHangController {
             
             // Kiểm tra user đã đăng nhập chưa
             String username = (String) session.getAttribute("username");
-            System.out.println("Username from session: " + (username != null ? username : "guest"));
-
+            if (username == null) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+                    username = auth.getName();
+                    session.setAttribute("username", username);
+                }
+            }
             GioHang gioHang = null;
             if (username != null) {
                 // User đã đăng nhập
@@ -288,7 +300,8 @@ public class GioHangController {
             GioHang gioHang = null;
             
             // Kiểm tra user đã đăng nhập chưa
-            String username = (String) session.getAttribute("username");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
             if (username != null) {
                 // User đã đăng nhập
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
@@ -330,7 +343,8 @@ public class GioHangController {
             GioHang gioHang = null;
             
             // Kiểm tra user đã đăng nhập chưa
-            String username = (String) session.getAttribute("username");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
             if (username != null) {
                 // User đã đăng nhập
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
@@ -374,7 +388,8 @@ public class GioHangController {
         
         try {
             GioHang gioHang = null;
-            String username = (String) session.getAttribute("username");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) ? auth.getName() : null;
             
             // Kiểm tra user đã đăng nhập chưa
             if (username != null) {

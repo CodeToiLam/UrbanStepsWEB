@@ -1,0 +1,37 @@
+/* Order tracking & list styles */
+.order-lookup-wrapper {max-width:640px;margin:0 auto 2rem;padding:1.25rem 1.5rem;background:#fff;border:1px solid #e5e9f2;border-radius:14px;box-shadow:0 4px 14px -3px rgba(0,0,0,.06);} 
+.order-lookup-wrapper h1,.order-lookup-wrapper h2{font-size:1.25rem;margin:0 0 1rem;font-weight:600;}
+.order-lookup-wrapper form .form-control{border-radius:10px;}
+.order-lookup-wrapper button[type=submit]{border-radius:10px;padding:.65rem 1.25rem;font-weight:600;}
+
+.order-results .order-card{background:#fff;border:1px solid #e5e9f2;border-radius:16px;padding:1rem 1.1rem;margin-bottom:1rem;display:flex;gap:1rem;align-items:center;box-shadow:0 2px 8px -2px rgba(0,0,0,.05);transition:transform .15s, box-shadow .15s;}
+.order-results .order-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px -4px rgba(0,0,0,.08);} 
+.order-results .order-meta{flex:1;}
+.order-results .order-actions a{font-size:.85rem;margin-left:.5rem;}
+.order-status-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .6rem;font-size:.7rem;font-weight:600;letter-spacing:.5px;border-radius:999px;background:#eef1f6;color:#445;text-transform:uppercase;}
+.order-status-badge.status-0{background:#f0eefc;color:#563d7c;}
+.order-status-badge.status-1{background:#e3f3ff;color:#055160;}
+.order-status-badge.status-2{background:#fff3cd;color:#8a6d00;}
+.order-status-badge.status-3{background:#e6f7ed;color:#13653f;}
+.order-status-badge.status-4{background:#fdecea;color:#b02a37;}
+.order-status-badge.status-5{background:#e0ebff;color:#0a53be;}
+
+/* Filters */
+.status-filters .nav-link{padding:.35rem .75rem;border-radius:30px;font-weight:500;color:#555;background:#f4f6f9;margin-right:.4rem;transition:.15s;}
+.status-filters .nav-link:hover{background:#e6ebf2;color:#222;}
+.status-filters .nav-link.active{background:#1d5fd2;color:#fff;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);} 
+
+/* Enhanced order card layout */
+.orders-list .order-card{position:relative;cursor:pointer;}
+.orders-list .order-card .order-actions{display:flex;align-items:center;gap:.4rem;}
+.orders-list .order-card:hover .order-actions .btn-outline-secondary{border-color:#1d5fd2;color:#1d5fd2;}
+
+/* Responsive tweak */
+@media (max-width: 768px){
+  .status-filters{width:100%;overflow-x:auto;white-space:nowrap;padding:.25rem 0;}
+}
+
+@media (max-width: 640px){
+  .order-results .order-card{flex-direction:column;align-items:flex-start;}
+  .order-results .order-actions{width:100%;display:flex;justify-content:flex-end;}
+}

@@ -101,4 +101,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     // Tìm hóa đơn theo mã hóa đơn và số điện thoại khách hàng
     Optional<HoaDon> findByMaHoaDonAndKhachHang_Sdt(String maHoaDon, String sdt);
+
+        // Tìm tất cả hóa đơn theo số điện thoại khách hàng (mới nhất trước)
+        List<HoaDon> findByKhachHang_SdtOrderByCreateAtDesc(String sdt);
 }
