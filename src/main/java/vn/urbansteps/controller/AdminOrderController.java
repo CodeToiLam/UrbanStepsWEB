@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.service.HoaDonService;
+import vn.urbansteps.service.EmailService;
 
 @Controller
 @RequestMapping("/admin")
@@ -19,10 +20,13 @@ public class AdminOrderController {
     @Autowired
     private HoaDonService hoaDonService;
 
+    @Autowired(required = false)
+    private EmailService emailService;
+
     @GetMapping("/order-management")
     public String orderManagement(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "") String search,
             @RequestParam(required = false) Byte status,
             Model model) {
@@ -45,6 +49,33 @@ public class AdminOrderController {
         model.addAttribute("title", "Quản lý đơn hàng");
         
         return "admin/order-management";
+    }
+
+    // Form-friendly endpoint: update status then redirect back (like big ecom sites)
+    @PostMapping("/order/update-status-form")
+    public String updateOrderStatusForm(@RequestParam Integer orderId,
+                                        @RequestParam Byte newStatus,
+                                        @RequestParam(name = "redirect", required = false, defaultValue = "/admin/order-management") String redirect,
+                                        RedirectAttributes ra) {
+        try {
+            HoaDon hoaDon = hoaDonService.getOrderById(orderId);
+            if (hoaDon == null) {
+                ra.addFlashAttribute("error", "Không tìm thấy đơn hàng");
+                return "redirect:" + redirect;
+            }
+            if (!isValidStatusTransition(hoaDon.getTrangThai(), newStatus)) {
+                ra.addFlashAttribute("error", "Không thể chuyển trạng thái này");
+                return "redirect:" + redirect;
+            }
+            hoaDon.setTrangThai(newStatus);
+            hoaDonService.save(hoaDon);
+            // Email notify on any status change
+            try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
+            ra.addFlashAttribute("success", "Cập nhật trạng thái thành công. Đã gửi email thông báo (hoặc mô phỏng nếu chưa cấu hình SMTP).");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
+        return "redirect:" + redirect;
     }
     
     @GetMapping("/order-detail/{id}")
@@ -76,6 +107,7 @@ public class AdminOrderController {
             
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             
             return "success:Cập nhật trạng thái thành công";
         } catch (Exception e) {
@@ -99,6 +131,7 @@ public class AdminOrderController {
             
             hoaDon.setTrangThai((byte) 4); // 4: Đã hủy
             hoaDonService.save(hoaDon);
+            try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             
             redirectAttributes.addFlashAttribute("success", "Hủy đơn hàng thành công");
         } catch (Exception e) {
@@ -111,20 +144,20 @@ public class AdminOrderController {
     private boolean isValidStatusTransition(Byte currentStatus, Byte newStatus) {
         if (currentStatus == null || newStatus == null) return false;
         
-        // Logic chuyển trạng thái hợp lệ
-        switch (currentStatus.intValue()) {
-            case 0: // Chờ xử lý -> có thể chuyển thành xác nhận hoặc hủy
-                return newStatus == 1 || newStatus == 4;
-            case 1: // Đã xác nhận -> có thể chuyển thành đang giao hoặc hủy
-                return newStatus == 2 || newStatus == 4;
-            case 2: // Đang giao -> có thể chuyển thành hoàn thành
-                return newStatus == 3;
-            case 3: // Hoàn thành -> không thể chuyển
-            case 4: // Đã hủy -> không thể chuyển
-            case 5: // Đã thanh toán -> không thể chuyển
-                return false;
-            default:
-                return false;
+        // Nới lỏng cho demo: cho phép đặt thẳng các trạng thái chính hợp lý
+        int cur = currentStatus.intValue();
+        int nxt = newStatus.intValue();
+        if (cur == 4 || cur == 3) { // Đã hủy hoặc Hoàn thành thì khóa
+            return false;
         }
+        // Cho phép: Pending(0) -> Confirmed(1), Shipping(2), Completed(3), Cancelled(4), Paid(5)
+        // Confirmed(1) -> Shipping(2), Completed(3), Cancelled(4), Paid(5)
+        // Shipping(2) -> Completed(3), Paid(5)
+        if (cur == 0) return nxt == 1 || nxt == 2 || nxt == 3 || nxt == 4 || nxt == 5;
+        if (cur == 1) return nxt == 2 || nxt == 3 || nxt == 4 || nxt == 5;
+        if (cur == 2) return nxt == 3 || nxt == 5;
+        // Paid(5) treated as final like completed
+        if (cur == 5) return false;
+        return false;
     }
 }

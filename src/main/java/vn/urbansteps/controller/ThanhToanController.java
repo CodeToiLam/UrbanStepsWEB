@@ -447,7 +447,8 @@ public class ThanhToanController {
     }
 
     @GetMapping("/success")
-    public String showSuccessPage() {
+    public String showSuccessPage(@RequestParam(value = "orderCode", required = false) String orderCode, Model model) {
+        if(orderCode!=null && !orderCode.isBlank()) model.addAttribute("orderCode", orderCode);
         return "thanh-toan-thanh-cong";
     }
 

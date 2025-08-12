@@ -19,6 +19,8 @@
                 <h5>Hóa đơn #<span th:text="${invoice.maHoaDon}"></span></h5>
             </div>
             <div class="card-body">
+                <div th:if="${param.paid}" class="alert alert-success">Đã đánh dấu là đã thanh toán.</div>
+                <div th:if="${param.cancelled}" class="alert alert-warning">Đã đánh dấu hủy đơn.</div>
                 <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(invoice.createAt, 'dd/MM/yyyy HH:mm')} ?: 'N/A'"></span></p>
                 <p><strong>Tổng tiền:</strong> <span th:text="${invoice.tongTien} ?: '0'"></span></p>
                 <p><strong>Tiền giảm:</strong> <span th:text="${invoice.tienGiam} ?: '0'"></span></p>
@@ -58,6 +60,16 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <!-- Demo actions: only show when not cancelled and not paid -->
+                <div class="mt-3">
+                    <form th:if="${invoice.trangThai != 4 && invoice.trangThai != 5}" th:action="@{/admin/invoice-mark-paid/{id}(id=${invoice.id})}" method="post" style="display:inline-block;">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-check2-circle"></i> Đánh dấu ĐÃ THANH TOÁN (Demo)</button>
+                    </form>
+                    <form th:if="${invoice.trangThai != 4 && invoice.trangThai != 5}" th:action="@{/admin/invoice-mark-cancel/{id}(id=${invoice.id})}" method="post" style="display:inline-block; margin-left:8px;">
+                        <button type="submit" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Đánh dấu HỦY</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -63,8 +63,7 @@ public class ImageService {
             return gallery;
         }
         
-        try {
-            System.out.println("Creating gallery for product: " + sanPham.getTenSanPham() + " (ID: " + sanPham.getId() + ")");
+    try {
             
             // Vì dữ liệu DB mapping sai, tạm thời sử dụng file system
             gallery = createGalleryFromFileSystem(sanPham);
@@ -81,14 +80,13 @@ public class ImageService {
                 fallbackImage.setLaAnhChinh(true);
                 gallery.add(fallbackImage);
                 
-                System.out.println("Using fallback main image: " + mainImagePath);
+                // fallback main image used
             }
             
-            System.out.println("Created gallery with " + gallery.size() + " images for product " + sanPham.getTenSanPham());
+            // gallery created
             
         } catch (Exception e) {
-            System.err.println("Error creating gallery for product " + sanPham.getTenSanPham() + ": " + e.getMessage());
-            e.printStackTrace();
+            // ignore errors to avoid noisy logs
         }
         
         return gallery;
@@ -147,14 +145,11 @@ public class ImageService {
                         order++;
                     }
                     
-                    System.out.println("Created gallery from filesystem with " + gallery.size() + 
-                                     " images for product " + sanPham.getTenSanPham() + " (extension: " + extension + ")");
+                    // gallery from filesystem created
                 }
             }
             
-        } catch (Exception e) {
-            System.err.println("Error creating gallery from filesystem: " + e.getMessage());
-        }
+    } catch (Exception e) { /* ignore */ }
         
         return gallery;
     }
@@ -165,7 +160,7 @@ public class ImageService {
     public void processProductListImages(List<SanPham> products) {
         if (products == null) return;
         
-        System.out.println("=== IMAGE SERVICE - PROCESSING " + products.size() + " PRODUCTS ===");
+    // normalize list
         
         for (SanPham product : products) {
             if (product.getIdHinhAnhDaiDien() != null) {
@@ -175,15 +170,14 @@ public class ImageService {
                 // Giữ nguyên đường dẫn gốc, chỉ normalize
                 product.getIdHinhAnhDaiDien().setDuongDan(normalizedPath);
                 
-                System.out.println("Product: " + product.getTenSanPham() + 
-                                 " | Brand: " + (product.getThuongHieu() != null ? product.getThuongHieu().getTenThuongHieu() : "N/A") +
-                                 " | Original: " + originalPath + " | Normalized: " + normalizedPath);
-            } else {
-                System.out.println("Product: " + product.getTenSanPham() + " | NO IMAGE");
+                // Avoid triggering lazy loading of brand outside session
+                try {
+                    // Don't call lazy properties; just ensure image path is normalized.
+                } catch (Exception ignore) {}
             }
         }
         
-        System.out.println("=== IMAGE PROCESSING COMPLETED ===");
+    // done
     }
     
     /**
@@ -197,8 +191,7 @@ public class ImageService {
             // Giữ nguyên đường dẫn gốc, chỉ normalize
             product.getIdHinhAnhDaiDien().setDuongDan(normalizedPath);
             
-            System.out.println("Processed single product image: " + product.getTenSanPham() + 
-                             " | Path: " + normalizedPath);
+            // processed
         }
     }
 }

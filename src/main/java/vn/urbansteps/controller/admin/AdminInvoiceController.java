@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.model.HoaDonChiTiet;
 import vn.urbansteps.service.InvoiceService;
+import vn.urbansteps.service.EmailService;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +23,36 @@ public class AdminInvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
+    @Autowired(required = false)
+    private EmailService emailService;
+
     @GetMapping("/invoice-management")
     @PreAuthorize("hasRole('ADMIN')")
-    public String showInvoiceManagement(Model model) {
+    public String showInvoiceManagement(@RequestParam(value = "filter", required = false, defaultValue = "all") String filter,
+                                        Model model) {
         try {
-            List<HoaDon> invoices = invoiceService.getAllInvoices();
+            List<HoaDon> invoices;
+            switch (filter) {
+                case "pending":
+                    invoices = invoiceService.getAllInvoices().stream()
+                            .filter(h -> h.getTrangThai() != null && (h.getTrangThai() == 0 || h.getTrangThai() == 1))
+                            .toList();
+                    break;
+                case "completed":
+                    invoices = invoiceService.getAllInvoices().stream()
+                            .filter(h -> h.getTrangThai() != null && (h.getTrangThai() == 3 || h.getTrangThai() == 5))
+                            .toList();
+                    break;
+                case "cancelled":
+                    invoices = invoiceService.getAllInvoices().stream()
+                            .filter(h -> h.getTrangThai() != null && h.getTrangThai() == 4)
+                            .toList();
+                    break;
+                default:
+                    invoices = invoiceService.getAllInvoices();
+            }
             model.addAttribute("invoices", invoices);
-            model.addAttribute("filter", "all");
+            model.addAttribute("filter", filter);
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi tải danh sách hóa đơn: " + e.getMessage());
             logger.error("Error loading invoice management: {}", e.getMessage());
@@ -70,5 +94,29 @@ public class AdminInvoiceController {
             model.addAttribute("error", "Lỗi khi xóa hóa đơn: " + e.getMessage());
             return "redirect:/admin/invoice-management?error=true";
         }
+    }
+
+    // Demo offline: mark as paid (QR confirmed manually)
+    @PostMapping("/invoice-mark-paid/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String markInvoicePaid(@PathVariable Integer id) {
+        Optional<HoaDon> opt = invoiceService.findById(id);
+        if(opt.isEmpty()) return "redirect:/admin/invoice-management?error=notfound";
+        HoaDon hd = opt.get();
+        hd.setTrangThai((byte) 5); // DA_THANH_TOAN
+        invoiceService.save(hd);
+    try { if (emailService != null) emailService.sendInvoicePaidEmail(hd); } catch (Exception ex) { logger.warn("Send invoice email failed: {}", ex.getMessage()); }
+        return "redirect:/admin/invoice-detail/" + id + "?paid=1";
+    }
+
+    @PostMapping("/invoice-mark-cancel/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String markInvoiceCancelled(@PathVariable Integer id) {
+        Optional<HoaDon> opt = invoiceService.findById(id);
+        if(opt.isEmpty()) return "redirect:/admin/invoice-management?error=notfound";
+        HoaDon hd = opt.get();
+        hd.setTrangThai((byte) 4); // DA_HUY
+        invoiceService.save(hd);
+        return "redirect:/admin/invoice-detail/" + id + "?cancelled=1";
     }
 }

@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedAddressId: selectedAddressId||null
         };
         fetch('/checkout/place-order',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken},body:JSON.stringify(payload)})
-            .then(r=>r.json()).then(d=>{ if(d.success){ window.location.href='/checkout/success'; } else { toast?toast(d.message||'Đặt hàng thất bại','error'):alert(d.message||'Thất bại'); } })
+            .then(r=>r.json()).then(d=>{ if(d.success){ const code = encodeURIComponent(d.orderCode||''); window.location.href = '/checkout/success' + (code?`?orderCode=${code}`:''); } else { toast?toast(d.message||'Đặt hàng thất bại','error'):alert(d.message||'Thất bại'); } })
             .catch(()=>{toast?toast('Lỗi kết nối máy chủ','error'):alert('Lỗi kết nối');});
     });
 });

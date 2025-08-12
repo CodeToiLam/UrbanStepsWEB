@@ -10,6 +10,7 @@
     <div class="container my-5 text-center">
         <h2>Đặt hàng thành công!</h2>
         <p>Cảm ơn bạn đã mua sắm tại UrbanSteps.</p>
+        <p th:if="${orderCode}">Mã đơn hàng của bạn: <strong th:text="${orderCode}">HD2025_XXXXXX</strong></p>
         <a th:href="@{/}" class="btn btn-primary btn-lg">Về trang chủ</a>
         <a th:href="@{/don-hang}" class="btn btn-secondary btn-lg ms-2">Xem đơn hàng của tôi</a>
     </div>

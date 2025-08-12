@@ -5,196 +5,17 @@
 <head>
     <title th:text="${title}"></title>
     <link rel="stylesheet" th:href="@{/css/order-management.css}">
-    <style>
-        .order-management {
-            padding: 20px;
-        }
-        
-        .search-filter-bar {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .search-filter-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 200px;
-        }
-        
-        .form-group label {
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .form-control {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-        
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .btn-warning {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        .orders-table {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .table {
-            width: 100%;
-            margin-bottom: 0;
-            border-collapse: collapse;
-        }
-        
-        .table th,
-        .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-confirmed { background-color: #cce5ff; color: #004085; }
-        .status-shipping { background-color: #d4edda; color: #155724; }
-        .status-completed { background-color: #d1ecf1; color: #0c5460; }
-        .status-cancelled { background-color: #f8d7da; color: #721c24; }
-        .status-paid { background-color: #d4edda; color: #155724; }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            gap: 5px;
-        }
-        
-        .pagination a,
-        .pagination span {
-            padding: 8px 12px;
-            border: 1px solid #dee2e6;
-            text-decoration: none;
-            color: #007bff;
-            border-radius: 4px;
-        }
-        
-        .pagination .active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-        
-        .pagination a:hover {
-            background-color: #e9ecef;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .no-orders {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .summary-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .summary-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-            color: #333;
-        }
-        
-        .summary-card p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-        }
-    </style>
+    
 </head>
 
 <body>
 <div layout:fragment="content">
     <div class="order-management">
         <h1>Quản lý đơn hàng</h1>
+
+    <!-- Flash messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         
         <!-- Thẻ tóm tắt -->
         <div class="summary-cards">
@@ -262,10 +83,12 @@
                         <th>Mã đơn hàng</th>
                         <th>Khách hàng</th>
                         <th>Số điện thoại</th>
+                        <th>Phương thức</th>
+                        <th class="col-address">Địa chỉ</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
-                        <th>Thao tác</th>
+                        <th class="col-actions">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -275,26 +98,74 @@
                         </td>
                         <td th:text="${order.khachHang.hoTenKhachHang}">Nguyễn Văn A</td>
                         <td th:text="${order.khachHang.sdt}">0123456789</td>
+                        <td th:text="${order.phuongThucThanhToanText}">COD</td>
+                        <td class="col-address"><span th:text="${order.diaChiGiaoHang} ?: '—'"></span></td>
                         <td>
                             <strong th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</strong>
                         </td>
                         <td>
-                            <span th:class="'status-badge ' + 
-                                (${order.trangThai == 0} ? 'status-pending' :
-                                 ${order.trangThai == 1} ? 'status-confirmed' :
-                                 ${order.trangThai == 2} ? 'status-shipping' :
-                                 ${order.trangThai == 3} ? 'status-completed' :
-                                 ${order.trangThai == 4} ? 'status-cancelled' : 'status-paid')"
+                            <span class="status-badge"
+                                  th:classappend="${order.trangThai == 0} ? ' status-pending' :
+                                                  (${order.trangThai == 1} ? ' status-confirmed' :
+                                                  (${order.trangThai == 2} ? ' status-shipping' :
+                                                  (${order.trangThai == 3} ? ' status-completed' :
+                                                  (${order.trangThai == 4} ? ' status-cancelled' : ' status-paid'))))"
                                   th:text="${order.trangThaiText}">
                                 Chờ xử lý
                             </span>
                         </td>
                         <td th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
-                        <td>
+                        <td class="col-actions">
                             <div class="action-buttons">
                                 <a th:href="@{/admin/order-detail/{id}(id=${order.id})}" 
                                    class="btn btn-primary btn-sm">Chi tiết</a>
                                 
+                                                                <!-- Quick actions: one-click next status -->
+                                                                <form th:if="${order.trangThai == 0}"
+                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
+                                                                        <input type="hidden" name="newStatus" value="1" />
+                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                                                        <button type="submit" class="btn btn-success btn-sm">Đã xác nhận</button>
+                                                                </form>
+                                                                <form th:if="${order.trangThai == 1}"
+                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
+                                                                        <input type="hidden" name="newStatus" value="2" />
+                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                                                        <button type="submit" class="btn btn-warning btn-sm">Đang giao</button>
+                                                                </form>
+                                                                <form th:if="${order.trangThai == 2}"
+                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
+                                                                        <input type="hidden" name="newStatus" value="3" />
+                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                                                        <button type="submit" class="btn btn-success btn-sm">Hoàn thành</button>
+                                                                </form>
+                                                                <!-- Allow mark as Paid quickly when not final -->
+                                                                <form th:if="${order.trangThai != 3 and order.trangThai != 4 and order.trangThai != 5}"
+                                                                        th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                                                                    <input type="hidden" name="orderId" th:value="${order.id}" />
+                                                                    <input type="hidden" name="newStatus" value="5" />
+                                                                    <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                                                    <button type="submit" class="btn btn-success btn-sm">Đã thanh toán</button>
+                                                                </form>
+                                
+                                <!-- Cập nhật trạng thái nhanh -->
+                                <form th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                                    <input type="hidden" name="orderId" th:value="${order.id}" />
+                                    <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                    <select name="newStatus" class="form-control status-select" style="width:auto;display:inline-block">
+                                        <option th:value="0" th:selected="${order.trangThai==0}">Chờ xử lý</option>
+                                        <option th:value="1" th:selected="${order.trangThai==1}">Đã xác nhận</option>
+                                        <option th:value="2" th:selected="${order.trangThai==2}">Đang giao</option>
+                                        <option th:value="3" th:selected="${order.trangThai==3}">Hoàn thành</option>
+                                        <option th:value="4" th:selected="${order.trangThai==4}">Đã hủy</option>
+                                        <option th:value="5" th:selected="${order.trangThai==5}">Đã thanh toán</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-success btn-sm">Cập nhật</button>
+                                </form>
+
                                 <!-- Chỉ hiển thị nút hủy nếu có thể hủy -->
                                 <form th:if="${order.canCancel()}" 
                                       th:action="@{/admin/order/cancel/{id}(id=${order.id})}" 
@@ -336,28 +207,6 @@
     </div>
 </div>
 
-<script>
-    // Tính toán thống kê đơn hàng
-    document.addEventListener('DOMContentLoaded', function() {
-        let pendingCount = 0;
-        let completedCount = 0;
-        let cancelledCount = 0;
-        
-        // Đếm từ bảng hiện tại (chỉ trang hiện tại)
-        document.querySelectorAll('.status-badge').forEach(function(badge) {
-            if (badge.classList.contains('status-pending')) {
-                pendingCount++;
-            } else if (badge.classList.contains('status-completed') || badge.classList.contains('status-paid')) {
-                completedCount++;
-            } else if (badge.classList.contains('status-cancelled')) {
-                cancelledCount++;
-            }
-        });
-        
-        document.getElementById('pendingCount').textContent = pendingCount;
-        document.getElementById('completedCount').textContent = completedCount;
-        document.getElementById('cancelledCount').textContent = cancelledCount;
-    });
-</script>
+<script th:src="@{/js/order-management.js}"></script>
 </body>
 </html>

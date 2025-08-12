@@ -86,7 +86,6 @@
               <select name="phuongThucThanhToan" id="payment-method" onchange="updatePaymentFields()">
                 <option value="1">Tiền mặt</option>
                 <option value="2">Chuyển khoản</option>
-                <option value="3">Cả hai</option>
               </select>
             </div>
             <div id="cash-field" style="display:none;">
@@ -116,8 +115,8 @@
 <script>
 function updatePaymentFields() {
   var method = document.getElementById('payment-method').value;
-  document.getElementById('cash-field').style.display = (method === '1' || method === '3') ? 'block' : 'none';
-  document.getElementById('bank-field').style.display = (method === '2' || method === '3') ? 'block' : 'none';
+  document.getElementById('cash-field').style.display = (method === '1') ? 'block' : 'none';
+  document.getElementById('bank-field').style.display = (method === '2') ? 'block' : 'none';
 }
 window.onload = updatePaymentFields;
 </script>

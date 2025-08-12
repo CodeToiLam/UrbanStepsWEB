@@ -1,3 +1,51 @@
+/* Admin Order Management - readability and responsive fixes */
+.order-management { background:#f5f7fb; padding:20px; }
+.order-management h1 { color: #111; }
+.order-management, .order-management * { color:#111; }
+
+.search-filter-bar, .summary-card { background:#fff !important; color:#111 !important; }
+.summary-card h3, .summary-card p { color:#111 !important; }
+
+/* Buttons */
+.btn { padding:8px 16px; border:none; border-radius:4px; cursor:pointer; font-size:14px; display:inline-block; text-align:center; text-decoration:none; }
+.btn-primary { background:#007bff; color:#fff !important; }
+.btn-success { background:#28a745; color:#fff !important; }
+.btn-danger { background:#dc3545; color:#fff !important; }
+.btn-warning { background:#ffc107; color:#212529 !important; }
+.btn-secondary { background:#6c757d; color:#fff !important; }
+
+.orders-table { background:#fff; border-radius:8px; overflow-x:auto; overflow-y:hidden; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+
+/* Force dark, readable text inside the table regardless of inherited theme */
+.orders-table .table th,
+.orders-table .table td,
+.orders-table .table td *,
+.orders-table .table th * { color:#111 !important; }
+
+.orders-table .table { width:100%; border-collapse:collapse; }
+.orders-table .table th { background:#f8f9fa; font-weight:600; }
+.orders-table .table th, .orders-table .table td { padding:12px; border-bottom:1px solid #e5e7eb; white-space:nowrap; }
+.orders-table .table tbody tr:hover { background:#f8f9fa; }
+
+/* Truncate very long address */
+.orders-table .col-address { max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Keep action column visible when horizontally scrolling */
+.orders-table .col-actions { position:sticky; right:0; background:#fff; box-shadow:-8px 0 8px rgba(0,0,0,.04); }
+
+.action-buttons { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+
+.status-badge { padding:4px 8px; border-radius:12px; font-size:12px; font-weight:700; text-transform:uppercase; }
+.status-pending { background:#ffe69c; color:#664d03; }
+.status-confirmed { background:#cfe2ff; color:#084298; }
+.status-shipping { background:#d1e7dd; color:#0f5132; }
+.status-completed { background:#cff4fc; color:#055160; }
+.status-cancelled { background:#f8d7da; color:#842029; }
+.status-paid { background:#d1e7dd; color:#0f5132; }
+
+/* Buttons contrast */
+.btn { color:#fff; }
+.btn-warning { color:#212529 !important; }
 /* CSS cho trang quản lý đơn hàng */
 
 .order-management {
@@ -22,6 +70,9 @@
 
 .orders-table {
     animation: fadeInUp 0.5s ease;
+    overflow-x: auto; /* Always allow horizontal scroll to avoid content being cut off */
+    background: #ffffff;
+    color: #212529;
 }
 
 @keyframes fadeInUp {
@@ -42,15 +93,62 @@
     transition: all 0.2s ease;
 }
 
+/* Table sizing and readable layout */
+.table {
+    min-width: 1080px; /* prevent cramped columns; allow scroll instead of overflowing */
+    table-layout: auto;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+    color: #212529; /* readable text on light background */
+}
+
+/* Force readable dark text on this page even in dark mode */
+.order-management .table th,
+.order-management .table td,
+.order-management .orders-table {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+
+/* Constrain extra-wide columns (e.g., address) */
+.table .col-address {
+    max-width: 320px;
+}
+.table .col-address span {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* show ... when too long */
+}
+
+/* Keep actions usable and visible */
+.table .col-actions { min-width: 270px; }
+.action-buttons { flex-wrap: wrap; gap: 6px; }
+.action-buttons .btn { margin-bottom: 4px; }
+
 .status-badge {
     transition: all 0.2s ease;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid transparent; /* improve contrast on light/dark backgrounds */
+    white-space: nowrap; /* prevent wrapping inside small cells */
 }
 
 .status-badge:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
+
+/* Higher-contrast status colors */
+.status-pending{ background:#ffec99; color:#5f3e00; border-color:#ffd43b; }
+.status-confirmed{ background:#cfe8ff; color:#084298; border-color:#9ec5fe; }
+.status-shipping{ background:#d1f7c4; color:#0f5132; border-color:#95d5b2; }
+.status-completed{ background:#e6f0ff; color:#0a58ca; border-color:#b6d4fe; }
+.status-cancelled{ background:#ffe3e3; color:#842029; border-color:#f5c2c7; }
+.status-paid{ background:#e2f0d9; color:#0f5132; border-color:#a3cfbb; }
 
 .btn {
     transition: all 0.2s ease;
@@ -141,13 +239,9 @@
         gap: 10px;
     }
     
-    .orders-table {
-        overflow-x: auto;
-    }
+    .orders-table { overflow-x: auto; }
     
-    .table {
-        min-width: 800px;
-    }
+    .table { min-width: 900px; }
     
     .action-buttons {
         flex-direction: column;
@@ -175,25 +269,10 @@
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
+    /* Keep light look for admin orders to ensure readability and consistent screenshots */
     .order-management {
-        background-color: #1a1a1a;
-        color: #ffffff;
-    }
-    
-    .search-filter-bar,
-    .orders-table,
-    .summary-card {
-        background-color: #2d2d2d;
-        color: #ffffff;
-    }
-    
-    .table th {
-        background-color: #3d3d3d;
-        color: #ffffff;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #3d3d3d;
+        background-color: #121212;
+        color: #e9ecef;
     }
 }
 

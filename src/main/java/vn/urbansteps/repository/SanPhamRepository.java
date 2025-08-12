@@ -15,14 +15,14 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<SanPham> findTop5ByTrangThaiOrderByGiaBanAsc(Boolean trangThai);
     List<SanPham> findTop5ByTrangThaiOrderByGiaBanDesc(Boolean trangThai);
     // Lấy TẤT CẢ sản phẩm có sắp xếp - TỐI ƯU với JOIN FETCH để tránh N+1 query
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai ORDER BY sp.giaBan ASC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai ORDER BY sp.giaBan ASC")
     List<SanPham> findByTrangThaiOrderByGiaBanAsc(@Param("trangThai") Boolean trangThai);
 
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai ORDER BY sp.giaBan DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai ORDER BY sp.giaBan DESC")
     List<SanPham> findByTrangThaiOrderByGiaBanDesc(@Param("trangThai") Boolean trangThai);
 
     // Tất cả sản phẩm - TỐT ƯU với JOIN FETCH
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai")
     List<SanPham> findByTrangThai(@Param("trangThai") Boolean trangThai);
 
     // Tìm theo thương hiệu
@@ -62,37 +62,37 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     long countByTrangThai(Boolean trangThai);
 
     // Tìm kiếm sản phẩm theo tên
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.tenSanPham LIKE %:keyword% AND sp.trangThai = :trangThai")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.tenSanPham LIKE %:keyword% AND sp.trangThai = :trangThai")
     List<SanPham> findByTenSanPhamContainingIgnoreCaseAndTrangThai(@Param("keyword") String keyword, @Param("trangThai") Boolean trangThai);
 
     // Tìm sản phẩm hot
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.laHot = true AND sp.trangThai = :trangThai ORDER BY sp.luotXem DESC, sp.diemDanhGia DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.laHot = true AND sp.trangThai = :trangThai ORDER BY sp.luotXem DESC, sp.diemDanhGia DESC")
     List<SanPham> findHotProducts(@Param("trangThai") Boolean trangThai);
 
     // Tìm sản phẩm sale
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.laSale = true AND sp.phanTramGiam > 0 AND sp.trangThai = :trangThai ORDER BY sp.phanTramGiam DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.laSale = true AND sp.phanTramGiam > 0 AND sp.trangThai = :trangThai ORDER BY sp.phanTramGiam DESC")
     List<SanPham> findSaleProducts(@Param("trangThai") Boolean trangThai);
 
     // Sản phẩm bán chạy
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai ORDER BY sp.luotBan DESC, sp.luotXem DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai ORDER BY sp.luotBan DESC, sp.luotXem DESC")
     List<SanPham> findBestSellingProducts(@Param("trangThai") Boolean trangThai);
 
     // Sản phẩm xem nhiều
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai ORDER BY sp.luotXem DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai ORDER BY sp.luotXem DESC")
     List<SanPham> findMostViewedProducts(@Param("trangThai") Boolean trangThai);
 
     // Sản phẩm đánh giá cao
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.diemDanhGia >= :minRating AND sp.soLuongDanhGia >= :minReviews AND sp.trangThai = :trangThai ORDER BY sp.diemDanhGia DESC, sp.soLuongDanhGia DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.diemDanhGia >= :minRating AND sp.soLuongDanhGia >= :minReviews AND sp.trangThai = :trangThai ORDER BY sp.diemDanhGia DESC, sp.soLuongDanhGia DESC")
     List<SanPham> findHighRatedProducts(@Param("minRating") BigDecimal minRating, @Param("minReviews") Integer minReviews, @Param("trangThai") Boolean trangThai);
 
     // Tìm theo khoảng giá sau giảm
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai AND " +
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai AND " +
            "((sp.phanTramGiam = 0 AND sp.giaBan BETWEEN :minPrice AND :maxPrice) OR " +
            "(sp.phanTramGiam > 0 AND (sp.giaBan * (100 - sp.phanTramGiam) / 100) BETWEEN :minPrice AND :maxPrice))")
     List<SanPham> findByPriceRange(@Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice, @Param("trangThai") Boolean trangThai);
 
     // Tìm sản phẩm mới (theo ngày tạo)
-    @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien WHERE sp.trangThai = :trangThai ORDER BY sp.createAt DESC")
+       @Query("SELECT DISTINCT sp FROM SanPham sp LEFT JOIN FETCH sp.idHinhAnhDaiDien LEFT JOIN FETCH sp.thuongHieu WHERE sp.trangThai = :trangThai ORDER BY sp.createAt DESC")
     List<SanPham> findNewProducts(@Param("trangThai") Boolean trangThai);
 
     // Cập nhật lượt xem
@@ -108,8 +108,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     void updateRating(@Param("id") Integer id, @Param("newRating") BigDecimal newRating, @Param("totalReviews") Integer totalReviews);
 
     // Tìm kiếm nâng cao với nhiều bộ lọc
-    @Query("SELECT DISTINCT sp FROM SanPham sp " +
-           "LEFT JOIN FETCH sp.idHinhAnhDaiDien " +
+       @Query("SELECT DISTINCT sp FROM SanPham sp " +
+                 "LEFT JOIN FETCH sp.idHinhAnhDaiDien " +
+                 "LEFT JOIN FETCH sp.thuongHieu " +
            "WHERE sp.trangThai = :trangThai " +
            "AND (:thuongHieuId IS NULL OR sp.thuongHieu.id = :thuongHieuId) " +
            "AND (:danhMucId IS NULL OR sp.danhMuc.id = :danhMucId) " +

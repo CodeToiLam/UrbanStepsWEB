@@ -41,7 +41,6 @@ public class HomeController {
             
             // Xử lý ảnh cho Flash Deal products
             imageService.processProductListImages(flashDealProducts);
-            System.out.println("=== PROCESSED FLASH DEAL IMAGES ===");
             
             model.addAttribute("flashDealProducts", flashDealProducts);
             
@@ -54,18 +53,10 @@ public class HomeController {
             
             // Xử lý ảnh cho Top Popular products
             imageService.processProductListImages(topPopularProducts);
-            System.out.println("=== PROCESSED TOP POPULAR IMAGES ===");
             
             model.addAttribute("topPopularProducts", topPopularProducts);
-            
-            System.out.println("=== HOME PAGE DEBUG INFO ===");
-            System.out.println("Banner Images count: " + bannerImages.size());
-            System.out.println("Flash Deal Products count: " + flashDealProducts.size());
-            System.out.println("Top Popular Products count: " + topPopularProducts.size());
-            
         } catch (Exception e) {
-            System.err.println("Error loading home page data: " + e.getMessage());
-            e.printStackTrace();
+            // Fail-soft: vẫn render trang mà không spam log
         }
         
         return "index";

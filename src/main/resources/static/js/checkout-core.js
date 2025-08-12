@@ -21,16 +21,30 @@
     });
   }
 
-  // QR toggle
-  const payMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+  // QR toggle (support both radios and the current select UI)
   const qrSection = document.getElementById('qr-section');
-  function updateQR(){
+  function refreshQR(){
     if(!qrSection) return;
-    const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-    qrSection.style.display = method==='QR' ? 'block':'none';
+    let show = false;
+    const select = document.querySelector('select[name="phuongThucThanhToan"]');
+    if(select){ show = (select.value === '2'); }
+    else {
+      const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+      show = (method === 'QR');
+    }
+    qrSection.style.display = show ? 'block':'none';
+    if(show){
+      // update transfer content hint
+      const name = document.getElementById('hoTen')?.value?.trim()||'';
+      const phone = document.getElementById('sdt')?.value?.trim()||'';
+      const contentEl = document.getElementById('qr-content');
+      if(contentEl){ contentEl.textContent = `Thanh toán UrbanSteps${phone?` - ${phone}`:''}`; }
+    }
   }
-  payMethodRadios.forEach(r=>r.addEventListener('change',updateQR));
-  updateQR();
+  const selectPM = document.querySelector('select[name="phuongThucThanhToan"]');
+  if(selectPM){ selectPM.addEventListener('change',refreshQR); }
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(r=>r.addEventListener('change',refreshQR));
+  refreshQR();
 
   // lightweight toast system
   function ensureToastContainer(){
