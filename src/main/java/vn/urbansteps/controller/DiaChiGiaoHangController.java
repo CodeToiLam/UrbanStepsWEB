@@ -112,6 +112,18 @@ public class DiaChiGiaoHangController {
         return "redirect:/tai-khoan#address";
     }
 
+    // JSON endpoint used by account.js
+    @PostMapping(path = "/set-default/{id}", produces = "application/json")
+    @ResponseBody
+    public java.util.Map<String,Object> setDefaultJson(@PathVariable Integer id){
+        TaiKhoan tk = currentUser();
+        if(tk==null){ return java.util.Map.of("success", false, "message", "Chưa đăng nhập"); }
+        diaChiService.listByTaiKhoan(tk).forEach(a->{ if(a.isDefault()){ a.setDefault(false); diaChiService.save(a);} });
+        DiaChiGiaoHang dc = diaChiService.findById(id).orElse(null);
+        if(dc!=null && dc.getTaiKhoan().getId().equals(tk.getId())){ dc.setDefault(true); diaChiService.save(dc); return java.util.Map.of("success", true); }
+        return java.util.Map.of("success", false, "message", "Không tìm thấy địa chỉ");
+    }
+
     @PostMapping("/xoa/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes ra){
         TaiKhoan tk = currentUser();
@@ -120,5 +132,11 @@ public class DiaChiGiaoHangController {
         if(dc!=null && dc.getTaiKhoan().getId().equals(tk.getId())){ diaChiService.delete(id); ra.addFlashAttribute("success","Đã xóa địa chỉ"); }
         else ra.addFlashAttribute("error","Không tìm thấy địa chỉ");
         return "redirect:/tai-khoan#address";
+    }
+
+    // Graceful fallback for anchor href delete links
+    @GetMapping("/xoa/{id}")
+    public String deleteGet(@PathVariable Integer id, RedirectAttributes ra){
+        return delete(id, ra);
     }
 }

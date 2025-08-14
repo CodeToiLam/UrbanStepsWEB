@@ -51,14 +51,17 @@
                     
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
-                        <select id="status" name="status" class="form-control">
+                            <select id="status" name="status" class="form-control">
                             <option value="">Tất cả</option>
                             <option value="0" th:selected="${status != null && status == 0}">Chờ xử lý</option>
                             <option value="1" th:selected="${status != null && status == 1}">Đã xác nhận</option>
                             <option value="2" th:selected="${status != null && status == 2}">Đang giao</option>
                             <option value="3" th:selected="${status != null && status == 3}">Hoàn thành</option>
-                            <option value="4" th:selected="${status != null && status == 4}">Đã hủy</option>
-                            <option value="5" th:selected="${status != null && status == 5}">Đã thanh toán</option>
+                                <option value="4" th:selected="${status != null && status == 4}">Đã hủy</option>
+                                <option value="6" th:selected="${status != null && status == 6}">Trả hàng</option>
+                                <option value="7" th:selected="${status != null && status == 7}">Xử lý trả hàng</option>
+                                <option value="8" th:selected="${status != null && status == 8}">Trả hàng thất bại</option>
+                            
                         </select>
                     </div>
                     
@@ -104,76 +107,50 @@
                             <strong th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</strong>
                         </td>
                         <td>
-                            <span class="status-badge"
-                                  th:classappend="${order.trangThai == 0} ? ' status-pending' :
-                                                  (${order.trangThai == 1} ? ' status-confirmed' :
-                                                  (${order.trangThai == 2} ? ' status-shipping' :
-                                                  (${order.trangThai == 3} ? ' status-completed' :
-                                                  (${order.trangThai == 4} ? ' status-cancelled' : ' status-paid'))))"
+                    <span class="status-badge"
+                        th:classappend="${order.trangThai == 0} ? ' status-pending' :
+                                  (${order.trangThai == 1} ? ' status-confirmed' :
+                                  (${order.trangThai == 2} ? ' status-shipping' :
+                                  (${order.trangThai == 3} ? ' status-completed' :
+                                  (${order.trangThai == 4} ? ' status-cancelled' :
+                                  (${order.trangThai == 6} ? ' status-returned' :
+                                  (${order.trangThai == 7} ? ' status-return-processing' :
+                                  (${order.trangThai == 8} ? ' status-return-failed' : '')))))))"
                                   th:text="${order.trangThaiText}">
                                 Chờ xử lý
                             </span>
                         </td>
                         <td th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
                         <td class="col-actions">
-                            <div class="action-buttons">
-                                <a th:href="@{/admin/order-detail/{id}(id=${order.id})}" 
-                                   class="btn btn-primary btn-sm">Chi tiết</a>
-                                
-                                                                <!-- Quick actions: one-click next status -->
-                                                                <form th:if="${order.trangThai == 0}"
-                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
-                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
-                                                                        <input type="hidden" name="newStatus" value="1" />
-                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
-                                                                        <button type="submit" class="btn btn-success btn-sm">Đã xác nhận</button>
-                                                                </form>
-                                                                <form th:if="${order.trangThai == 1}"
-                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
-                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
-                                                                        <input type="hidden" name="newStatus" value="2" />
-                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
-                                                                        <button type="submit" class="btn btn-warning btn-sm">Đang giao</button>
-                                                                </form>
-                                                                <form th:if="${order.trangThai == 2}"
-                                                                            th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
-                                                                        <input type="hidden" name="orderId" th:value="${order.id}" />
-                                                                        <input type="hidden" name="newStatus" value="3" />
-                                                                        <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
-                                                                        <button type="submit" class="btn btn-success btn-sm">Hoàn thành</button>
-                                                                </form>
-                                                                <!-- Allow mark as Paid quickly when not final -->
-                                                                <form th:if="${order.trangThai != 3 and order.trangThai != 4 and order.trangThai != 5}"
-                                                                        th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
-                                                                    <input type="hidden" name="orderId" th:value="${order.id}" />
-                                                                    <input type="hidden" name="newStatus" value="5" />
-                                                                    <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
-                                                                    <button type="submit" class="btn btn-success btn-sm">Đã thanh toán</button>
-                                                                </form>
-                                
-                                <!-- Cập nhật trạng thái nhanh -->
-                                <form th:action="@{/admin/order/update-status-form}" method="post" style="display:inline">
+                            <div class="action-buttons toolbar">
+                                <div class="tool-group">
+                                    <a th:href="@{/admin/order-detail/{id}(id=${order.id})}" class="btn btn-primary btn-sm">Chi tiết</a>
+                                    <form th:if="${order.trangThai != 4}" 
+                                          th:action="@{/admin/order/cancel/{id}(id=${order.id})}" 
+                                          method="post" style="display: inline; margin-left: 5px;">
+                                        <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="return confirm('Hủy đơn hàng này?')">
+                                            <i class="fa fa-times"></i> Hủy
+                                        </button>
+                                    </form>
+                                    <span th:with="rrCount=${returnCounts[order.id]}"
+                                        th:if="${rrCount != null and rrCount > 0}"
+                                        class="badge bg-danger" style="border-radius:20px; margin-left: 5px;">Có [[${rrCount}]] yêu cầu trả</span>
+                                </div>
+                                <form th:action="@{/admin/order/update-status-form}" method="post" class="tool-group">
                                     <input type="hidden" name="orderId" th:value="${order.id}" />
                                     <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
-                                    <select name="newStatus" class="form-control status-select" style="width:auto;display:inline-block">
+                                    <select name="newStatus" class="form-control status-select">
                                         <option th:value="0" th:selected="${order.trangThai==0}">Chờ xử lý</option>
-                                        <option th:value="1" th:selected="${order.trangThai==1}">Đã xác nhận</option>
-                                        <option th:value="2" th:selected="${order.trangThai==2}">Đang giao</option>
+                                        <option th:value="1" th:selected="${order.trangThai==1}">Xác nhận đơn hàng</option>
+                                        <option th:value="2" th:selected="${order.trangThai==2}">Giao hàng</option>
                                         <option th:value="3" th:selected="${order.trangThai==3}">Hoàn thành</option>
                                         <option th:value="4" th:selected="${order.trangThai==4}">Đã hủy</option>
-                                        <option th:value="5" th:selected="${order.trangThai==5}">Đã thanh toán</option>
+                                        <option th:value="6" th:selected="${order.trangThai==6}">Trả hàng</option>
+                                        <option th:value="7" th:selected="${order.trangThai==7}">Xử lý trả hàng</option>
+                                        <option th:value="8" th:selected="${order.trangThai==8}">Trả hàng thất bại</option>
                                     </select>
                                     <button type="submit" class="btn btn-success btn-sm">Cập nhật</button>
-                                </form>
-
-                                <!-- Chỉ hiển thị nút hủy nếu có thể hủy -->
-                                <form th:if="${order.canCancel()}" 
-                                      th:action="@{/admin/order/cancel/{id}(id=${order.id})}" 
-                                      method="post" style="display: inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" 
-                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
-                                        Hủy
-                                    </button>
                                 </form>
                             </div>
                         </td>

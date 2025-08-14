@@ -2,7 +2,8 @@
 (function(){
   const voucherInput = document.getElementById('voucherCode');
   const applyBtn = document.getElementById('applyVoucherBtn');
-  if(applyBtn){
+  // Do NOT bind legacy handler if the button is managed by the new exclusive handler
+  if(applyBtn && applyBtn.dataset.exclusive !== '1'){
     applyBtn.addEventListener('click', () => {
       const code = voucherInput?.value.trim();
       if(!code){toast('Vui lòng nhập mã giảm giá');return;}

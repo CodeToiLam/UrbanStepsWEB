@@ -1,9 +1,16 @@
 package vn.urbansteps.config;
 
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
+import java.util.Locale;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -24,5 +31,28 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/image/**")
                 .addResourceLocations("classpath:/static/image/")
                 .setCachePeriod(0);
+    }
+
+    // i18n: use cookie-based resolver to allow manual change via ?lang and persist across sessions
+    @Bean
+    public LocaleResolver localeResolver() {
+        CookieLocaleResolver cookieResolver = new CookieLocaleResolver();
+        cookieResolver.setDefaultLocale(new Locale("vi"));
+        cookieResolver.setCookieName("LANG");
+        cookieResolver.setCookieMaxAge(60 * 60 * 24 * 30); // 30 days
+        return cookieResolver;
+    }
+
+    // i18n: change locale via ?lang=en|vi
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
     }
 }

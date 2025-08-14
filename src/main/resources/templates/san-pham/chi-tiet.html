@@ -250,6 +250,16 @@
                 </button>
             </div>
 
+            <!-- External marketplace buy buttons -->
+            <div class="external-buy mb-4" th:if="${product.shopeeUrl != null or product.lazadaUrl != null or product.facebookShopUrl != null}">
+                <h5>Mua trên sàn</h5>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <a th:if="${product.shopeeUrl != null}" th:href="${product.shopeeUrl}" target="_blank" class="btn btn-warning">Mua trên Shopee</a>
+                    <a th:if="${product.lazadaUrl != null}" th:href="${product.lazadaUrl}" target="_blank" class="btn btn-primary" style="background-color:#1a73e8;">Mua trên Lazada</a>
+                    <a th:if="${product.facebookShopUrl != null}" th:href="${product.facebookShopUrl}" target="_blank" class="btn btn-secondary">Facebook Shop</a>
+                </div>
+            </div>
+
             <!-- Mô tả sản phẩm -->
             <div class="product-description mb-4" th:if="${product.moTa != null && !product.moTa.empty}">
                 <h5>Mô tả:</h5>
@@ -286,6 +296,34 @@
                             <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
                             <p class="card-text product-price"
                                th:text="${relatedProduct.giaBan != null ? #numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                750,000đ</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gợi ý theo sản phẩm đã xem -->
+    <div class="related-products mt-5" th:if="${recommendedProducts != null and !#lists.isEmpty(recommendedProducts)}">
+        <h3 class="section-title">Gợi ý cho bạn</h3>
+        <div class="row">
+            <div class="col-md-3 mb-4" th:each="rp : ${recommendedProducts}">
+                <div class="card product-card h-100">
+                    <a th:href="@{/san-pham/chi-tiet/{id}(id=${rp.id ?: 0})}" class="text-decoration-none">
+                        <img th:if="${rp.idHinhAnhDaiDien != null}"
+                             th:src="${rp.idHinhAnhDaiDien.duongDan}"
+                             class="card-img-top"
+                             onerror="this.onerror=null; this.src='/images/no-image.jpg';"
+                             th:alt="${rp.tenSanPham}">
+                        <img th:unless="${rp.idHinhAnhDaiDien != null}"
+                             src="/images/no-image.jpg"
+                             class="card-img-top"
+                             alt="No image available">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${rp.tenSanPham}">Tên sản phẩm gợi ý</h5>
+                            <p class="card-text product-price"
+                               th:text="${rp.giaBan != null ? #numbers.formatDecimal(rp.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
                                 750,000đ</p>
                         </div>
                     </a>

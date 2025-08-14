@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/main}">
+<head>
+	<title>Yêu cầu trả hàng</title>
+	<link rel="stylesheet" th:href="@{/css/return-request.css}">
+	<style>
+		.rr-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+		.rr-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;}
+		.rr-items .item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed #eee}
+		.rr-actions{display:flex;gap:12px;justify-content:flex-end}
+		@media (max-width: 992px){.rr-grid{grid-template-columns:1fr}}
+	</style>
+	<meta name="_csrf_parameter" th:content="${_csrf?.parameterName}">
+	<meta name="_csrf" th:content="${_csrf?.token}">
+	<meta name="_csrf_header" th:content="${_csrf?.headerName}">
+</head>
+<body>
+<div layout:fragment="content" class="container py-4">
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+	<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+	<h1 class="mb-3">Yêu cầu trả hàng - <span th:text="${order.maHoaDon}">HD</span></h1>
+
+	<form class="rr-grid" th:action="@{'/don-hang/' + ${order.id} + '/return-request'}" method="post" enctype="multipart/form-data">
+		<div class="rr-card">
+			<h4>Chọn sản phẩm muốn trả</h4>
+			<div class="rr-items">
+				<div class="item" th:each="d : ${order.hoaDonChiTietList}">
+					<input class="form-check-input" type="checkbox" name="returnItems" th:value="${d.id}">
+					<div class="flex-grow-1">
+						<div><strong th:text="${d.tenSanPham}">Tên sp</strong></div>
+						<div class="text-muted">SL mua: <span th:text="${d.soLuong}">1</span></div>
+					</div>
+				</div>
+			</div>
+
+			<hr>
+			<div class="mb-3">
+				<label class="form-label">Loại yêu cầu</label>
+				<select name="returnType" class="form-select" required>
+					<option value="Trả hàng">Trả hàng</option>
+					<option value="Đổi hàng">Đổi hàng</option>
+				</select>
+			</div>
+
+			<div class="row g-3">
+				<div class="col-md-6">
+					<label class="form-label">Họ tên</label>
+					<input class="form-control" type="text" name="hoTen" th:value="${order.khachHang?.hoTenKhachHang}" required>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Số điện thoại</label>
+					<input class="form-control" type="tel" name="soDienThoai" th:value="${order.khachHang?.sdt}" required>
+				</div>
+			</div>
+
+			<div class="mb-3 mt-3">
+				<label class="form-label">Lý do</label>
+				<textarea class="form-control" name="lyDo" rows="4" minlength="10" placeholder="Mô tả vấn đề gặp phải" required></textarea>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Ghi chú (tuỳ chọn)</label>
+				<textarea class="form-control" name="ghiChu" rows="2"></textarea>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Ảnh sản phẩm (tối đa 5)</label>
+				<input class="form-control" type="file" name="images" accept="image/*" multiple>
+				<div class="form-text">Chỉ chấp nhận JPG, PNG, GIF, WEBP; mỗi ảnh <= 5MB</div>
+			</div>
+			<div class="rr-actions">
+				<a th:href="@{'/don-hang/chi-tiet/' + ${order.id}}" class="btn btn-outline-secondary">Hủy</a>
+				<button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+			</div>
+		</div>
+
+		<aside class="rr-card">
+			<h4>Thông tin đơn</h4>
+			<div class="d-flex justify-content-between"><span>Mã đơn:</span><strong th:text="${order.maHoaDon}">HD</strong></div>
+			<div class="d-flex justify-content-between"><span>Ngày đặt:</span><strong th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">-</strong></div>
+			<div class="d-flex justify-content-between"><span>Trạng thái:</span><strong th:text="${order.trangThaiText}">-</strong></div>
+		</aside>
+	</form>
+</div>
+
+<th:block layout:fragment="extra-js">
+	<script>
+	// Không cần điều chỉnh số lượng: mặc định trả toàn bộ dòng hàng đã mua
+	</script>
+</th:block>
+</body>
+</html>

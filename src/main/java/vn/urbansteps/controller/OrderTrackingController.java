@@ -13,6 +13,7 @@ import vn.urbansteps.model.TaiKhoan;
 import vn.urbansteps.repository.KhachHangRepository;
 import vn.urbansteps.repository.TaiKhoanRepository;
 import vn.urbansteps.service.HoaDonService;
+import vn.urbansteps.repository.ReturnRequestRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,9 @@ public class OrderTrackingController {
     
     @Autowired
     private KhachHangRepository khachHangRepository;
+
+    @Autowired
+    private ReturnRequestRepository returnRequestRepository;
 
     @GetMapping("/don-hang")
     public String donHang(Model model) {
@@ -67,19 +71,26 @@ public class OrderTrackingController {
     }
     
     @PostMapping("/don-hang/tra-cuu")
-    public String traCuuDonHangTheoSdt(@RequestParam String sdt,
-                                       Model model,
-                                       RedirectAttributes redirectAttributes) {
+    public String traCuuDonHangTheoMaVaSdt(@RequestParam String maHoaDon,
+                                           @RequestParam String sdt,
+                                           Model model,
+                                           RedirectAttributes redirectAttributes) {
         try {
-            List<HoaDon> orders = hoaDonService.getOrdersByPhone(sdt);
-            if (orders.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng nào cho số điện thoại này");
+            // Validate cả mã đơn hàng và số điện thoại để bảo mật
+            Optional<HoaDon> orderOpt = hoaDonService.findByMaHoaDonAndSdt(maHoaDon, sdt);
+            if (orderOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng với thông tin đã nhập. Vui lòng kiểm tra lại mã đơn hàng và số điện thoại!");
                 return "redirect:/don-hang";
             }
+            
+            HoaDon order = orderOpt.get();
+            List<HoaDon> orders = List.of(order); // Chỉ hiển thị đơn hàng được tìm thấy
+            
             model.addAttribute("orders", orders);
             model.addAttribute("lookupPhone", sdt);
+            model.addAttribute("lookupOrderCode", maHoaDon);
             model.addAttribute("isLoggedIn", false);
-            model.addAttribute("title", "Đơn hàng của số " + sdt);
+            model.addAttribute("title", "Đơn hàng " + maHoaDon);
             return "don-hang";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tra cứu đơn hàng!");
@@ -114,6 +125,10 @@ public class OrderTrackingController {
                     // Kiểm tra đơn hàng có thuộc về khách hàng này không
                     if (hoaDon != null && hoaDon.getKhachHang().getId().equals(khachHang.getId())) {
                         model.addAttribute("order", hoaDon);
+            // Flag: order has a pending/processing return request -> hide "return" button
+            long pendingCount = returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.NEW)
+                + returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+            model.addAttribute("hasPendingReturn", pendingCount > 0);
                         model.addAttribute("isLoggedIn", true);
                         model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
                         return "chi-tiet-don-hang";
@@ -126,6 +141,33 @@ public class OrderTrackingController {
             
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi xem chi tiết đơn hàng!");
+            return "redirect:/don-hang";
+        }
+    }
+
+    // Guest-friendly detail: verify by code and phone, then show details without login
+    @GetMapping("/don-hang/chi-tiet-ma/{ma}")
+    public String chiTietDonHangByCode(@PathVariable("ma") String maHoaDon,
+                                       @RequestParam("sdt") String sdt,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            Optional<HoaDon> opt = hoaDonService.findByMaHoaDonAndSdt(maHoaDon, sdt);
+            if (opt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng với thông tin đã nhập!");
+                return "redirect:/don-hang";
+            }
+            HoaDon hoaDon = opt.get();
+            model.addAttribute("order", hoaDon);
+        // Flag for pending return requests to control button visibility
+        long pendingCount = returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.NEW)
+            + returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+        model.addAttribute("hasPendingReturn", pendingCount > 0);
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
+            return "chi-tiet-don-hang";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tra cứu đơn hàng!");
             return "redirect:/don-hang";
         }
     }

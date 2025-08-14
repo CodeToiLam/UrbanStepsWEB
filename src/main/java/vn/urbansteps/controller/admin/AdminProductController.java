@@ -25,6 +25,7 @@ public class AdminProductController {
 
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
+    // Aspect-based logging in place; no direct service injection needed here
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
@@ -48,7 +49,7 @@ public class AdminProductController {
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi tải danh sách sản phẩm: " + e.getMessage());
         }
-        return "admin/product-list";
+    return "admin/product-list";
     }
 
     @GetMapping("/products/add")
@@ -63,6 +64,7 @@ public class AdminProductController {
     public String addProduct(@ModelAttribute SanPham sanPham, Model model) {
         try {
             sanPhamService.save(sanPham);
+            // log by aspect
             return "redirect:/admin/products";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
@@ -111,6 +113,7 @@ public class AdminProductController {
             }
             sanPham.setId(id);
             sanPhamService.save(sanPham);
+            // log by aspect
             return "redirect:/admin/products";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
@@ -124,6 +127,7 @@ public class AdminProductController {
     public String deleteProduct(@PathVariable Integer id, Model model) {
         try {
             sanPhamService.softDelete(id);
+            // log by aspect
             return "redirect:/admin/products";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi xóa sản phẩm: " + e.getMessage());

@@ -36,6 +36,18 @@ body {
 .cart-icon:hover{background:#fff;box-shadow:0 4px 14px -4px rgba(90,109,248,.35);border-color:#b8bdfd}
 .cart-count{position:absolute;top:-4px;right:-6px;background:#ff4757;color:#fff;border-radius:12px;min-width:22px;height:22px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;box-shadow:0 4px 10px -4px rgba(0,0,0,.35)}
 .logout-form{display:inline}
+/* Language switch dropdown & flags */
+.lang-switch .dropdown-menu{min-width:160px;padding:8px;border-radius:12px;border:1px solid #e6e8ec;box-shadow:0 12px 36px -12px rgba(0,0,0,.18)}
+.flag-icon{display:inline-block;width:18px;height:12px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.06) inset}
+.flag-vn{background:linear-gradient(0deg,#da251d 0 100%);position:relative}
+.flag-vn:after{content:"";position:absolute;left:6px;top:2px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid #ffdd00;transform:rotate(35deg)}
+.flag-en{background:linear-gradient(0deg,#012169 0 100%);position:relative;overflow:hidden}
+.flag-en:before{content:"";position:absolute;inset:0;background:
+  linear-gradient(0deg,transparent 44%,#fff 44%,#fff 56%,transparent 56%),
+  linear-gradient(90deg,transparent 44%,#fff 44%,#fff 56%,transparent 56%),
+  linear-gradient(0deg,transparent 47%,#c8102e 47%,#c8102e 53%,transparent 53%),
+  linear-gradient(90deg,transparent 47%,#c8102e 47%,#c8102e 53%,transparent 53%);
+}
 /* Search */
 .search-wrapper{position:relative;display:flex;align-items:center}
 /* Scoped header search (avoid conflict with search page) */

@@ -4,7 +4,7 @@
     var pending = 0, completed = 0, cancelled = 0;
     document.querySelectorAll('.status-badge').forEach(function(b){
       if (b.classList.contains('status-pending')) pending++;
-      else if (b.classList.contains('status-completed') || b.classList.contains('status-paid')) completed++;
+      else if (b.classList.contains('status-completed')) completed++;
       else if (b.classList.contains('status-cancelled')) cancelled++;
     });
     var p = document.getElementById('pendingCount'); if (p) p.textContent = pending;

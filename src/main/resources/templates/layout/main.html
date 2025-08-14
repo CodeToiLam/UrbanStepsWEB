@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
@@ -21,7 +21,7 @@
 </head>
 <body>
 
-<div class="header-top">Mua giày chính hãng tại UrbanSteps • FREESHIP đơn từ 500K • Đổi trả 7 ngày</div>
+<div class="header-top">[[#{header.notice}]]</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -30,18 +30,37 @@
         <img src="/images/Home/logo.jpg" alt="UrbanSteps" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
         <span class="brand-fallback">Urban<span>Steps</span></span>
       </a>
-      <nav class="primary-nav" aria-label="Danh mục chính">
+  <nav class="primary-nav" aria-label="Danh mục chính">
         <a href="/san-pham?thuongHieu=MLB">MLB</a>
         <a href="/san-pham?thuongHieu=Adidas">Adidas</a>
         <a href="/san-pham?thuongHieu=Converse">Converse</a>
-        <a href="/san-pham?sale=true" class="nav-label sale" aria-label="Sản phẩm giảm giá">SALE</a>
-        <a href="/san-pham?hot=true" class="nav-label hot" aria-label="Sản phẩm nổi bật">HOT</a>
+        <a href="/san-pham?sale=true" class="nav-label sale" aria-label="[[#{nav.products}]]">SALE</a>
+        <a href="/san-pham?hot=true" class="nav-label hot" aria-label="[[#{nav.products}]]">HOT</a>
       </nav>
     </div>
     <div class="header-right">
-      <div class="search-wrapper" data-search>
+      <div class="lang-switch dropdown me-2" th:with="cur=${#locale}">
+        <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:title="#{nav.language}">
+          <img class="flag-img" th:src="${cur.language}=='en' ? @{/images/en.jpg} : @{/images/vn.jpg}" alt="lang" width="20" height="14"/>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{?(lang='vi')}" th:classappend="${cur.language}=='vi' ? ' active' : ''" aria-current="true" data-lang="vi">
+              <img class="flag-img" src="/images/vn.jpg" alt="VI" width="20" height="14"/>
+              <span>[[#{lang.vi}]]</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{?(lang='en')}" th:classappend="${cur.language}=='en' ? ' active' : ''" aria-current="true" data-lang="en">
+              <img class="flag-img" src="/images/en.jpg" alt="EN" width="20" height="14"/>
+              <span>[[#{lang.en}]]</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    <div class="search-wrapper" data-search>
         <form action="/tim-kiem" method="get" class="header-search-form" role="search">
-          <input type="text" name="q" class="header-search-input" placeholder="Tìm kiếm giày..." aria-label="Tìm kiếm" />
+      <input type="text" name="q" class="header-search-input" th:placeholder="#{search.placeholder}" placeholder="Tìm kiếm giày..." aria-label="Tìm kiếm" />
           <button type="submit" class="icon-btn header-search-btn" aria-label="Tìm kiếm"><i class="bi bi-search"></i></button>
           <button type="button" class="icon-btn header-close-search" aria-label="Đóng tìm kiếm"><i class="bi bi-x"></i></button>
         </form>
@@ -75,48 +94,48 @@
 <div class="footer">
   <div class="footer-content">
     <div class="footer-section">
-      <h3>Thương hiệu nổi bật</h3>
+  <h3>[[#{footer.featuredBrands}]]</h3>
       <ul>
         <li><a href="/san-pham?thuongHieu=UrbanSteps">UrbanSteps</a></li>
-        <li><a href="/san-pham?thuongHieu=Nike">Giày Nike</a></li>
-        <li><a href="/san-pham?thuongHieu=Adidas">Giày Adidas</a></li>
-        <li><a href="/san-pham?thuongHieu=Converse">Giày Converse</a></li>
-        <li><a href="/san-pham?thuongHieu=Peak">Giày Peak</a></li>
+        <li><a href="/san-pham?thuongHieu=Nike">[[#{footer.brand.nike}]]</a></li>
+        <li><a href="/san-pham?thuongHieu=Adidas">[[#{footer.brand.adidas}]]</a></li>
+        <li><a href="/san-pham?thuongHieu=Converse">[[#{footer.brand.converse}]]</a></li>
+        <li><a href="/san-pham?thuongHieu=Peak">[[#{footer.brand.peak}]]</a></li>
       </ul>
     </div>
     <div class="footer-section">
-      <h3>Hỗ trợ khách hàng</h3>
+      <h3>[[#{footer.customerSupport}]]</h3>
       <ul>
-        <li><a href="/ho-tro">FAQs & Help</a></li>
-        <li><a href="/van-don">Vận đơn</a></li>
-        <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-        <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-        <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-        <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
+        <li><a href="/ho-tro">[[#{footer.faq}]]</a></li>
+        <li><a href="/van-don">[[#{footer.shipping}]]</a></li>
+        <li><a href="/huong-dan-tra-gop">[[#{footer.installmentGuide}]]</a></li>
+        <li><a href="/huong-dan-doi-tra">[[#{footer.returnGuide}]]</a></li>
+        <li><a href="/chinh-sach-doi-tra">[[#{footer.returnPolicy}]]</a></li>
+        <li><a href="/chinh-sach-bao-hanh">[[#{footer.warrantyPolicy}]]</a></li>
       </ul>
     </div>
     <div class="footer-section">
-      <h3>Về UrbanSteps</h3>
+      <h3>[[#{footer.about}]]</h3>
       <ul>
-        <li><a href="/gioi-thieu">Giới thiệu UrbanSteps</a></li>
-        <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
-        <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-        <li><a href="/dang-ky-ban-hang">Đăng ký bán hàng</a></li>
-        <li><a href="/lien-he">Liên hệ</a></li>
+        <li><a href="/gioi-thieu">[[#{footer.aboutUs}]]</a></li>
+        <li><a href="/cau-hoi-thuong-gap">[[#{footer.faqPage}]]</a></li>
+        <li><a href="/tuyen-dung">[[#{footer.careers}]]</a></li>
+        <li><a href="/dang-ky-ban-hang">[[#{footer.sellerRegister}]]</a></li>
+        <li><a href="/lien-he">[[#{footer.contact}]]</a></li>
       </ul>
     </div>
     <div class="footer-section">
-      <h3>Liên hệ</h3>
+      <h3>[[#{footer.contactTitle}]]</h3>
       <ul>
-        <li><a href="tel:+84287306552">CS1: 028 7306 5552</a></li>
-        <li><a href="tel:+84947104105">Giày: Hải (0947) 104-105</a></li>
-        <li><a href="mailto:cskh@urbanshoes.vn">cskh@urbanshoes.vn</a></li>
-        <li>Hà Nội, Việt Nam</li>
+        <li><a href="tel:+84287306552">[[#{footer.hotline1}]]</a></li>
+        <li><a href="tel:+84947104105">[[#{footer.hotline2}]]</a></li>
+        <li><a href="mailto:cskh@urbanshoes.vn">[[#{footer.email}]]</a></li>
+        <li>[[#{footer.location}]]</li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 UrbanSteps - Được bảo vệ bởi DMCA. Không sao chép nội dung mà không có sự cho phép!</p>
+    <p>[[#{footer.copyNotice}]]</p>
   </div>
 </div>
 
@@ -136,6 +155,26 @@
       closeBtn && closeBtn.addEventListener('click',()=>wrapper.classList.remove('active'));
     }
   })();
+  </script>
+
+  <script>
+  // Ensure the header flag matches the persisted cookie locale, even on pages not using this layout
+    (function(){
+      try{
+        const cookie = document.cookie.split('; ').find(x=>x.startsWith('LANG='));
+        if (!cookie) return;
+    const lang = decodeURIComponent(cookie.split('=')[1]||'').split(';')[0];
+    const isEn = (lang||'').toLowerCase().startsWith('en');
+    const img = document.querySelector('.lang-switch .flag-img');
+    if(img){ img.src = isEn ? '/images/en.jpg' : '/images/vn.jpg'; }
+        // highlight active in menu if exists
+        document.querySelectorAll('.lang-switch [data-lang]')
+          .forEach(a=>{
+            const active = a.getAttribute('data-lang') === (isEn? 'en':'vi');
+            a.classList.toggle('active', active);
+          });
+      }catch(e){/*noop*/}
+    })();
   </script>
 
 <th:block layout:fragment="extra-js"></th:block>

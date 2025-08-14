@@ -4,6 +4,8 @@
       layout:decorate="~{layout/main}">
 <head>
     <title th:text="${title}">Chi tiết đơn hàng</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <style>
         .order-detail-page {
             padding: 40px 0;
@@ -78,7 +80,8 @@
         .status-shipping { background-color: #d4edda; color: #155724; }
         .status-completed { background-color: #d1ecf1; color: #0c5460; }
         .status-cancelled { background-color: #f8d7da; color: #721c24; }
-        .status-paid { background-color: #d4edda; color: #155724; }
+    .status-paid { background-color: #d4edda; color: #155724; }
+    .status-returned { background-color: #ffe8e8; color: #721c24; }
         
         .order-timeline {
             background: white;
@@ -358,6 +361,72 @@
             box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
         
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        /* Action buttons styling */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons .btn {
+            min-width: 160px;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .action-buttons .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            color: #212529;
+            border-color: #ffc107;
+        }
+        
+        .action-buttons .btn-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%);
+            border-color: #ffb300;
+            color: #000;
+        }
+        
+        .action-buttons .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .action-buttons .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+            border-color: #c82333;
+        }
+        
+        .action-buttons .btn i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
         .alert {
             padding: 15px 20px;
             border-radius: 8px;
@@ -447,9 +516,25 @@
                                                 (${order.trangThai == 1} ? ' status-confirmed' :
                                                 (${order.trangThai == 2} ? ' status-shipping' :
                                                 (${order.trangThai == 3} ? ' status-completed' :
-                                                (${order.trangThai == 4} ? ' status-cancelled' : ' status-paid'))))">
+                                                (${order.trangThai == 4} ? ' status-cancelled' :
+                                                (${order.trangThai == 6} ? ' status-returned' : '')))))">
                                         Trạng thái
                                 </span>
+                                <div class="action-buttons">
+                                    <!-- Return request button (for completed orders only, and no pending return request) -->
+                                    <a th:if="${order.trangThai == 3} and ${order.trangThai != 6} and ${hasPendingReturn} == false"
+                                       th:href="@{/don-hang/{id}/return-request(id=${order.id})}"
+                                       class="btn btn-warning">
+                                        <i class="fas fa-undo"></i> Yêu cầu trả hàng
+                                    </a>
+                                    
+                                    <!-- Cancel order button (for pending and confirmed orders) -->
+                                    <button th:if="${order.trangThai == 0 || order.trangThai == 1}" 
+                                            class="btn btn-danger"
+                                            onclick="confirmCancelOrder()">
+                                        <i class="fas fa-times"></i> Hủy đơn hàng
+                                    </button>
+                                </div>
             </div>
             
             <!-- Timeline trạng thái -->
@@ -461,34 +546,36 @@
                 
                 <div class="timeline-steps">
                     <div class="timeline-line"></div>
-                    <div class="timeline-progress" th:style="'width: ' + (${order.trangThai >= 3} ? '100%' : ${order.trangThai >= 2} ? '75%' : ${order.trangThai >= 1} ? '50%' : '25%')"></div>
+                    <div class="timeline-progress"
+                         th:style="'width: ' + (${order.trangThai >= 3} ? '100%' : (${order.trangThai >= 2} ? '75%' : (${order.trangThai >= 1} ? '50%' : '25%')))"
+                    ></div>
                     
                     <div class="timeline-step">
-                        <div th:class="'step-circle ' + (${order.trangThai >= 0} ? 'active' : 'inactive')">
+                        <div th:class="${order.trangThai >= 0 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-clipboard-list"></i>
                         </div>
-                        <div th:class="'step-label ' + (${order.trangThai >= 0} ? 'active' : '')">Đã đặt hàng</div>
+                        <div th:class="${order.trangThai >= 0 ? 'step-label active' : 'step-label'}">Đã đặt hàng</div>
                     </div>
                     
                     <div class="timeline-step">
-                        <div th:class="'step-circle ' + (${order.trangThai >= 1} ? 'active' : 'inactive')">
+                        <div th:class="${order.trangThai >= 1 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-check"></i>
                         </div>
-                        <div th:class="'step-label ' + (${order.trangThai >= 1} ? 'active' : '')">Đã xác nhận</div>
+                        <div th:class="${order.trangThai >= 1 ? 'step-label active' : 'step-label'}">Đã xác nhận</div>
                     </div>
                     
                     <div class="timeline-step">
-                        <div th:class="'step-circle ' + (${order.trangThai >= 2} ? 'active' : 'inactive')">
+                        <div th:class="${order.trangThai >= 2 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-truck"></i>
                         </div>
-                        <div th:class="'step-label ' + (${order.trangThai >= 2} ? 'active' : '')">Đang giao hàng</div>
+                        <div th:class="${order.trangThai >= 2 ? 'step-label active' : 'step-label'}">Đang giao hàng</div>
                     </div>
                     
                     <div class="timeline-step">
-                        <div th:class="'step-circle ' + (${order.trangThai >= 3} ? 'active' : 'inactive')">
+                        <div th:class="${order.trangThai >= 3 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-star"></i>
                         </div>
-                        <div th:class="'step-label ' + (${order.trangThai >= 3} ? 'active' : '')">Hoàn thành</div>
+                        <div th:class="${order.trangThai >= 3 ? 'step-label active' : 'step-label'}">Hoàn thành</div>
                     </div>
                 </div>
             </div>
@@ -596,18 +683,19 @@
                 </div>
             </div>
             
-            <!-- Thao tác với đơn hàng -->
-            <div class="order-actions" th:if="${order.canCancel()}">
-                <h3 style="margin-bottom: 20px;"><i class="fas fa-cog"></i> Thao tác với đơn hàng</h3>
-                <p style="color: #6c757d; margin-bottom: 20px;">Bạn có thể hủy đơn hàng này nếu chưa được xác nhận hoặc chưa giao hàng.</p>
-                
-                <form th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post" style="display: inline;">
-                    <button type="submit" class="btn btn-danger" 
-                            onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.')">
-                        <i class="fas fa-times"></i> Hủy đơn hàng
-                    </button>
-                </form>
-            </div>
+            <!-- Form ẩn để hủy đơn hàng -->
+            <form id="cancelOrderForm" th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post" style="display: none;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            </form>
+
+                                        <script th:inline="javascript">
+                            // Cancel order functionality
+                            function confirmCancelOrder() {
+                                if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.')) {
+                                    document.getElementById('cancelOrderForm').submit();
+                                }
+                            }
+                            </script>
             
             <!-- Hỗ trợ khách hàng -->
             <div class="order-actions">

@@ -20,7 +20,14 @@ public interface HoaDonService {
                      Integer taiKhoanId, boolean laKhachVangLai, String appliedVoucherCode,
                      BigDecimal tongThanhToan);
     HoaDon getOrderById(Integer orderId);
+    HoaDon getOrderByIdWithDetails(Integer orderId);
     HoaDon save(HoaDon hoaDon);
     List<HoaDon> getOrdersByKhachHangId(Integer khachHangId);
     List<HoaDon> getOrdersByPhone(String sdt);
+
+    // Hoàn trả một phần: giảm số lượng item và cập nhật tổng tiền, hoàn hàng về kho
+    HoaDon refundOrderItem(Integer orderId, Integer orderItemId, Integer quantity, String note);
+
+    // Trả hàng toàn bộ các dòng: hoàn hết số lượng các dòng còn lại
+    HoaDon returnAllItems(Integer orderId, String note);
 }

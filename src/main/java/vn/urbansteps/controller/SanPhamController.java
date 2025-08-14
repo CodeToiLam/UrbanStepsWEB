@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import jakarta.servlet.http.HttpSession;
 import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.model.SanPhamChiTiet;
-import vn.urbansteps.service.HinhAnhService;
 import vn.urbansteps.service.ImageService;
 import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.service.SanPhamService;
@@ -25,8 +25,6 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
-    @Autowired
-    private HinhAnhService hinhAnhService;
     @Autowired
     private ImageService imageService;
 
@@ -58,7 +56,7 @@ public class SanPhamController {
     }
 
     @GetMapping("/san-pham/chi-tiet/{id}")
-    public String chiTiet(@PathVariable Integer id, Model model) {
+    public String chiTiet(@PathVariable Integer id, Model model, HttpSession session) {
         try {
             Optional<SanPham> product = sanPhamService.findById(id);
 
@@ -67,6 +65,50 @@ public class SanPhamController {
                 
                 // Xử lý ảnh đại diện
                 imageService.processProductImage(sanPham);
+
+                // Parse external marketplace URLs from description
+                // Supported formats:
+                //   - Lines starting with: "Shopee: <url>", "Lazada: <url>", "Facebook: <url>"
+                //   - Any pasted URLs that contain these domains
+                try {
+                    String desc = sanPham.getMoTa();
+                    if (desc != null) {
+                        // 1) Keyed lines
+                        String[] lines = desc.split("\n");
+                        for (String line : lines) {
+                            String l = line.trim();
+                            String lower = l.toLowerCase();
+                            if (lower.startsWith("shopee:")) {
+                                String url = l.substring(7).trim();
+                                if (!url.isEmpty()) sanPham.setShopeeUrl(url);
+                            } else if (lower.startsWith("lazada:")) {
+                                String url = l.substring(7).trim();
+                                if (!url.isEmpty()) sanPham.setLazadaUrl(url);
+                            } else if (lower.startsWith("facebook:")) {
+                                String url = l.substring(9).trim();
+                                if (!url.isEmpty()) sanPham.setFacebookShopUrl(url);
+                            }
+                        }
+
+                        // 2) Fallback: detect any URLs for known domains
+                        if (sanPham.getShopeeUrl() == null || sanPham.getLazadaUrl() == null || sanPham.getFacebookShopUrl() == null) {
+                            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                                    .compile("(https?://[^\\s]+)")
+                                    .matcher(desc);
+                            while (matcher.find()) {
+                                String url = matcher.group(1);
+                                String lowerUrl = url.toLowerCase();
+                                if (sanPham.getShopeeUrl() == null && (lowerUrl.contains("shopee.vn") || lowerUrl.contains("shopee.com"))) {
+                                    sanPham.setShopeeUrl(url);
+                                } else if (sanPham.getLazadaUrl() == null && lowerUrl.contains("lazada")) {
+                                    sanPham.setLazadaUrl(url);
+                                } else if (sanPham.getFacebookShopUrl() == null && (lowerUrl.contains("facebook.com") || lowerUrl.contains("fb.com"))) {
+                                    sanPham.setFacebookShopUrl(url);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception ignored) {}
                 
                 model.addAttribute("product", sanPham);
 
@@ -135,6 +177,31 @@ public class SanPhamController {
                     e.printStackTrace();
                     model.addAttribute("relatedProducts", new ArrayList<>());
                 }
+
+                // Track recently viewed in session (max 8)
+                try {
+                    @SuppressWarnings("unchecked")
+                    java.util.LinkedList<Integer> recent = (java.util.LinkedList<Integer>) session.getAttribute("recentlyViewed");
+                    if (recent == null) recent = new java.util.LinkedList<>();
+                    recent.remove(id);
+                    recent.addFirst(id);
+                    while (recent.size() > 8) recent.removeLast();
+                    session.setAttribute("recentlyViewed", recent);
+                } catch (Exception ignored) {}
+
+                // Provide simple recommendations based on recently viewed list
+                try {
+                    @SuppressWarnings("unchecked")
+                    java.util.LinkedList<Integer> recent = (java.util.LinkedList<Integer>) session.getAttribute("recentlyViewed");
+                    if (recent != null && !recent.isEmpty()) {
+                        List<SanPham> recs = sanPhamService.getAllProducts().stream()
+                                .filter(sp -> !sp.getId().equals(id) && recent.contains(sp.getId()))
+                                .limit(8)
+                                .collect(java.util.stream.Collectors.toList());
+                        imageService.processProductListImages(recs);
+                        model.addAttribute("recommendedProducts", recs);
+                    }
+                } catch (Exception ignored) {}
 
                 return "san-pham/chi-tiet";
             } else {

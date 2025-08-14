@@ -1,0 +1,253 @@
+.order-detail {
+    padding: 20px;
+}
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.order-header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.order-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.info-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.info-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    min-width: 120px;
+}
+
+.info-value {
+    color: #212529;
+    font-weight: 600;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-pending { background-color: #fff3cd; color: #856404; }
+.status-confirmed { background-color: #cce5ff; color: #004085; }
+.status-shipping { background-color: #d4edda; color: #155724; }
+.status-completed { background-color: #d1ecf1; color: #0c5460; }
+.status-cancelled { background-color: #f8d7da; color: #721c24; }
+.status-paid { background-color: #d4edda; color: #155724; }
+
+.order-items {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.section-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th,
+.items-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.items-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.product-details h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.product-attributes {
+    font-size: 12px;
+    color: #666;
+}
+
+.quantity {
+    text-align: center;
+    font-weight: 600;
+}
+
+.price {
+    text-align: right;
+    font-weight: 600;
+}
+
+.total-row {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.btn-primary { background-color: #007bff; color: white; }
+.btn-success { background-color: #28a745; color: white; }
+.btn-warning { background-color: #ffc107; color: #212529; }
+.btn-danger { background-color: #dc3545; color: white; }
+.btn-secondary { background-color: #6c757d; color: white; }
+
+.status-actions {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.status-actions h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.status-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    position: relative;
+}
+
+.timeline-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-dot.active {
+    background-color: #28a745;
+}
+
+.timeline-dot.inactive {
+    background-color: #dee2e6;
+    color: #6c757d;
+}
+
+.timeline-dot.cancelled {
+    background-color: #dc3545;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #dee2e6;
+    z-index: 1;
+}
+
+.timeline-label {
+    font-size: 12px;
+    color: #666;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}

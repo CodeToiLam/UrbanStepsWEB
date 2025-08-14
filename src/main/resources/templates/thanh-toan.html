@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <head>
-    <title layout:fragment="title">Thanh toán - UrbanSteps</title>
+    <title layout:fragment="title" th:text="#{checkout.title}">Thanh toán - UrbanSteps</title>
     <!-- Thêm: CSRF meta tag -->
     <meta name="_csrf" th:content="${_csrf.token}" />
     <th:block layout:fragment="extra-css">
@@ -15,60 +15,67 @@
 <body>
 <div layout:fragment="content">
     <div class="container py-4">
-        <h2 class="mb-4 fw-bold">Xác nhận đơn hàng</h2>
+        <h2 class="mb-4 fw-bold" th:text="#{checkout.confirm}">Xác nhận đơn hàng</h2>
 
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
     <form id="checkoutForm" class="needs-validation" novalidate>
             <!-- 1. Giỏ hàng -->
             <div class="card mb-4">
-                <div class="card-header bg-light fw-bold">1. Thông tin sản phẩm</div>
+                <div class="card-header bg-light fw-bold" th:text="#{checkout.cart.title}">1. Thông tin sản phẩm</div>
                 <div class="card-body p-0">
                     <div th:if="${gioHang != null and !gioHang.items.empty}">
                         <table class="table table-bordered m-0">
                             <thead class="table-light text-center">
                             <tr>
-                                <th>Sản phẩm</th>
-                                <th>Kích cỡ</th>
-                                <th>Màu sắc</th>
-                                <th>Số lượng</th>
-                                <th>Đơn giá</th>
-                                <th>Thành tiền</th>
+                                <th th:text="#{checkout.table.product}">Sản phẩm</th>
+                                <th th:text="#{product.size}">Kích cỡ</th>
+                                <th th:text="#{product.color}">Màu sắc</th>
+                                <th th:text="#{checkout.table.quantity}">Số lượng</th>
+                                <th th:text="#{checkout.table.unitPrice}">Đơn giá</th>
+                                <th th:text="#{checkout.table.lineTotal}">Thành tiền</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="item : ${gioHang.items}">
+                            <tr th:each="item : ${gioHang.items}" th:attr="data-item-id=${item.id}">
                                 <td th:text="${item.tenSanPham}">Tên sản phẩm</td>
                                 <td class="text-center" th:text="${item.kichCo}">40</td>
                                 <td class="text-center" th:text="${item.mauSac}">Đen</td>
                                 <td class="text-center" th:text="${item.soLuong}">1</td>
                                 <td class="text-end" th:text="${#numbers.formatDecimal(item.giaTaiThoidiem, 0, 0) + 'đ'}">1,000,000đ</td>
-                                <td class="text-end" th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">1,000,000đ</td>
+                                <td class="text-end">
+                                    <div class="item-total-cell">
+                                        <span class="item-line-total"
+                                              th:attr="data-item-id=${item.id}"
+                                              th:data-original-total="${item.tongGia}"
+                                              th:text="${#numbers.formatDecimal(item.tongGia, 0, 0) + 'đ'}">1,000,000đ</span>
+                                        <div class="item-line-discount text-success small" style="display:none;"
+                                             th:attr="data-item-id=${item.id}">
+                                            -0đ
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="p-3 text-end">
-                        <strong>Tổng tiền: </strong>
+                        <strong th:text="#{checkout.total} + ':'">Tổng tiền: </strong>
                         <span class="text-danger fs-5 fw-bold" th:text="${#numbers.formatDecimal(gioHang.tongTien,0,0)} + 'đ'">0đ</span>
                         <div class="mt-2">
-                            <strong>Giảm giá: </strong>
+                            <strong th:text="#{checkout.discount} + ':'">Giảm giá: </strong>
                             <span id="discountAmount" class="fs-5" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal,0,0) + 'đ') : '0đ'}"></span>
                         </div>
                         <div class="mt-2">
-                            <strong>Tổng thanh toán: </strong>
+                            <strong th:text="#{checkout.payable} + ':'">Tổng thanh toán: </strong>
                             <span id="finalTotal" class="text-danger fs-5 fw-bold" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal,0,0) + 'đ') : (#numbers.formatDecimal(gioHang.tongTien,0,0) + 'đ')}"></span>
                         </div>
                         <div class="mt-3">
-                            <label class="form-label">Mã khuyến mãi</label>
+                            <label class="form-label" th:text="#{checkout.promo.label}">Mã khuyến mãi</label>
                             <div class="input-group">
-                                <input type="text" name="maGiamGia" class="form-control" placeholder="Nhập mã giảm giá nếu có">
-                                <select id="voucherCode" class="form-select">
-                                    <option value="">Chọn mã khuyến mãi</option>
-                                    <option th:each="voucher : ${publicVouchers}" th:value="${voucher.maPhieuGiamGia}"
-                                            th:text="${voucher.maPhieuGiamGia} + ' - ' + ${voucher.moTa}"></option>
-                                </select>
-                                <button id="applyVoucherBtn" class="btn btn-secondary" type="button">Áp dụng</button>
+                                <input type="text" name="maGiamGia" class="form-control" th:placeholder="#{checkout.promo.placeholder}" placeholder="Nhập mã giảm giá nếu có">
+                                <button id="openVoucherModalBtn" class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#voucherModal" th:text="#{checkout.chooseVoucher}">Chọn mã</button>
+                                <button id="applyVoucherBtn" class="btn btn-secondary" type="button" data-exclusive="1" th:text="#{checkout.apply}">Áp dụng</button>
                             </div>
                             <div id="voucherMessage" class="text-success mt-2" style="display: none;"></div>
                             <div id="voucherError" class="text-danger mt-2" style="display: none;"></div>
@@ -80,90 +87,75 @@
             <!-- 2. Thông tin giao hàng -->
             <div class="card mb-4">
                 <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
-                    <span>2. Thông tin giao hàng</span>
-                    <a href="/tai-khoan#address" class="small text-decoration-none">Quản lý địa chỉ</a>
+                    <span th:text="#{checkout.shipping.title}">2. Thông tin giao hàng</span>
+                    <a href="/tai-khoan#address" class="small text-decoration-none" th:text="#{checkout.manageAddresses}">Quản lý địa chỉ</a>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="hoTen" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <label for="hoTen" class="form-label"><span th:text="#{checkout.fullName}">Họ và tên</span> <span class="text-danger">*</span></label>
                             <input type="text" id="hoTen" name="hoTen" class="form-control" required th:value="${accountFullName} ?: ''">
-                            <div class="invalid-feedback">Vui lòng nhập họ tên</div>
+                            <div class="invalid-feedback" th:text="#{validation.fullName}">Vui lòng nhập họ tên</div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <label for="sdt" class="form-label"><span th:text="#{checkout.phone}">Số điện thoại</span> <span class="text-danger">*</span></label>
                             <input type="tel" id="sdt" name="sdt" class="form-control" required pattern="[0-9+ ]{10,15}" th:value="${accountPhone} ?: ''">
-                            <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ (10-15 số)</div>
+                            <div class="invalid-feedback" th:text="#{validation.phone}">Vui lòng nhập số điện thoại hợp lệ (10-15 số)</div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email (không bắt buộc)</label>
+                        <label for="email" class="form-label" th:text="#{checkout.emailOptional}">Email (không bắt buộc)</label>
                         <input type="email" id="email" name="email" class="form-control" th:value="${accountEmail} ?: ''">
-                        <div class="invalid-feedback">Email không hợp lệ</div>
+                        <div class="invalid-feedback" th:text="#{validation.email}">Email không hợp lệ</div>
                     </div>
 
-                    <!-- Saved addresses -->
-                    <div th:if="${addresses != null && !addresses.isEmpty()}" class="saved-addresses">
-                        <h6>Địa chỉ đã lưu</h6>
-                        <div th:each="ad : ${addresses}" th:with="full=${ad.diaChiDayDu}" class="address-item" th:classappend="${ad.id} == ${defaultAddressId} ? ' active' : ''" th:data-id="${ad.id}" th:data-full="${full}">
-                            <div class="form-check mt-1">
-                                <input class="form-check-input" type="radio" name="addressChoice" th:value="${ad.id}" th:checked="${ad.id} == ${defaultAddressId}">
-                            </div>
-                            <div class="addr-meta">
-                                <div class="d-flex align-items-center gap-2 flex-wrap">
-                                    <strong th:text="${ad.tenNguoiNhan} + ' • ' + ${ad.sdtNguoiNhan}">Tên • SĐT</strong>
-                                    <span th:if="${ad.id} == ${defaultAddressId}" class="badge-default">Mặc định</span>
-                                </div>
-                                <div class="small text-muted" th:text="${full}">Địa chỉ</div>
-                            </div>
-                            <div class="address-actions text-nowrap">
-                                <a th:href="@{/tai-khoan/dia-chi/sua/{id}(id=${ad.id})}" class="text-decoration-none small">Sửa</a>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center mt-2">
-                            <button type="button" id="useSelectedAddress" class="btn btn-sm btn-outline-primary">Dùng địa chỉ đã chọn</button>
-                            <button type="button" id="toggleManualAddress" class="btn btn-sm btn-outline-secondary toggle-add-address" data-state="shown">Ẩn form nhập tay</button>
-                        </div>
-                        <input type="hidden" id="selectedAddressId" name="selectedAddressId" value="" />
+                    <!-- Container cho địa chỉ đã lưu -->
+                    <div id="savedAddressesContainer">
+                        <!-- Địa chỉ đã lưu sẽ được load bằng JavaScript -->
                     </div>
 
-                    <div id="manualAddressFields"><!-- manual form fields wrapper -->
+                    <!-- Hidden field lưu ID địa chỉ đã chọn -->
+                    <input type="hidden" id="selectedAddressId" name="selectedAddressId" value="" />
+
+                    <!-- Form nhập địa chỉ thủ công -->
+                    <div id="manualAddressFields" class="manual-address-section">
+                        <h6>Thông tin giao hàng</h6>
                         <div class="address-selector">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="province" class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                    <label for="province" class="form-label"><span th:text="#{checkout.province}">Tỉnh/Thành phố</span> <span class="text-danger">*</span></label>
                                     <select id="province" name="tinhThanh" class="form-select" required>
-                                        <option value="">Chọn tỉnh/thành phố</option>
+                                        <option value="" th:text="#{checkout.selectProvince}">Chọn tỉnh/thành phố</option>
                                     </select>
-                                    <div class="invalid-feedback">Vui lòng chọn tỉnh/thành phố</div>
+                                    <div class="invalid-feedback" th:text="#{validation.province}">Vui lòng chọn tỉnh/thành phố</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="district" class="form-label">Quận/Huyện <span class="text-danger">*</span></label>
+                                    <label for="district" class="form-label"><span th:text="#{checkout.district}">Quận/Huyện</span> <span class="text-danger">*</span></label>
                                     <select id="district" name="quanHuyen" class="form-select" required disabled>
-                                        <option value="">Chọn quận/huyện</option>
+                                        <option value="" th:text="#{checkout.selectDistrict}">Chọn quận/huyện</option>
                                     </select>
-                                    <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
+                                    <div class="invalid-feedback" th:text="#{validation.district}">Vui lòng chọn quận/huyện</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="ward" class="form-label">Phường/Xã <span class="text-danger">*</span></label>
+                                    <label for="ward" class="form-label"><span th:text="#{checkout.ward}">Phường/Xã</span> <span class="text-danger">*</span></label>
                                     <select id="ward" name="phuongXa" class="form-select" required disabled>
-                                        <option value="">Chọn phường/xã</option>
+                                        <option value="" th:text="#{checkout.selectWard}">Chọn phường/xã</option>
                                     </select>
-                                    <div class="invalid-feedback">Vui lòng chọn phường/xã</div>
+                                    <div class="invalid-feedback" th:text="#{validation.ward}">Vui lòng chọn phường/xã</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="diaChiGiaoHang" class="form-label">Địa chỉ cụ thể (số nhà, tên đường) <span class="text-danger">*</span></label>
+                            <label for="diaChiGiaoHang" class="form-label"><span th:text="#{checkout.addressDetail}">Địa chỉ cụ thể (số nhà, tên đường)</span> <span class="text-danger">*</span></label>
                             <textarea id="diaChiGiaoHang" name="diaChiGiaoHang" class="form-control" rows="2" required></textarea>
-                            <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể</div>
+                            <div class="invalid-feedback" th:text="#{validation.addressDetail}">Vui lòng nhập địa chỉ cụ thể</div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="ghiChu" class="form-label">Ghi chú (không bắt buộc)</label>
+                        <label for="ghiChu" class="form-label" th:text="#{checkout.noteOptional}">Ghi chú (không bắt buộc)</label>
                         <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2"></textarea>
                     </div>
                 </div>
@@ -171,29 +163,29 @@
 
             <!-- 3. Thanh toán -->
             <div class="card mb-4">
-                <div class="card-header bg-light fw-bold">3. Phương thức thanh toán</div>
+                <div class="card-header bg-light fw-bold" th:text="#{checkout.payment.title}">3. Phương thức thanh toán</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label">Chọn phương thức</label>
+                        <label class="form-label" th:text="#{checkout.chooseMethod}">Chọn phương thức</label>
                         <select name="phuongThucThanhToan" class="form-select" required>
-                            <option value="1">Thanh toán tiền mặt khi nhận hàng</option>
-                            <option value="2">Chuyển khoản qua QR ngân hàng</option>
+                            <option value="1" th:text="#{checkout.cod}">Thanh toán tiền mặt khi nhận hàng</option>
+                            <option value="2" th:text="#{checkout.bankTransfer}">Chuyển khoản qua QR ngân hàng</option>
                         </select>
                         <!-- QR Code chuyển khoản -->
                         <div class="mb-3" id="qr-section" style="display:none;">
-                            <label class="form-label">Quét mã QR để chuyển khoản Vietcombank</label>
+                            <label class="form-label" th:text="#{checkout.bank.qrLabel}">Quét mã QR để chuyển khoản Vietcombank</label>
                             <div class="d-flex flex-column align-items-center">
                                 <img id="qr-image" src="/images/qr-code.jpg" alt="QR chuyển khoản Vietcombank" style="width:200px;height:200px;object-fit:contain;" />
-                                <div class="mt-2">Số tài khoản: <strong>1042116409</strong></div>
-                                <div class="">Chủ tài khoản: <strong>PHAM NHU SON TUNG</strong></div>
-                                <div class="">Ngân hàng: Vietcombank - Trụ sở CN Chương Dương</div>
-                                <div class="text-muted">Nội dung chuyển khoản: <span id="qr-content">Thanh toán UrbanSteps</span></div>
+                                <div class="mt-2"><span th:text="#{checkout.bank.accountNumber}">Số tài khoản</span>: <strong>1042116409</strong></div>
+                                <div class=""><span th:text="#{checkout.bank.accountName}">Chủ tài khoản</span>: <strong>PHAM NHU SON TUNG</strong></div>
+                                <div class=""><span th:text="#{checkout.bank.bankName}">Ngân hàng</span>: Vietcombank - Trụ sở CN Chương Dương</div>
+                                <div class="text-muted"><span th:text="#{checkout.bank.transferContent}">Nội dung chuyển khoản</span>: <span id="qr-content">Thanh toán UrbanSteps</span></div>
                                 
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="ghiChu" class="form-label">Ghi chú (nếu có)</label>
+                        <label for="ghiChu" class="form-label" th:text="#{checkout.note}">Ghi chú (nếu có)</label>
                         <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2"></textarea>
                     </div>
                 </div>
@@ -201,12 +193,12 @@
 
             <!-- Submit -->
             <div class="d-flex justify-content-between align-items-center">
-                <a th:href="@{/gio-hang}" class="btn btn-outline-secondary">← Quay lại giỏ hàng</a>
+                <a th:href="@{/gio-hang}" class="btn btn-outline-secondary" th:text="#{checkout.backToCart}">← Quay lại giỏ hàng</a>
                 <div>
                     <input type="hidden" name="buyNow" th:value="${buyNow} ?: false" />
                     <input type="hidden" name="buyNowItemId" th:value="${buyNowItemId}" />
                     <input type="hidden" name="buyNowQuantity" th:value="${buyNowQuantity}" />
-                    <button type="submit" id="placeOrderBtn" class="btn btn-danger btn-lg">Đặt hàng ngay</button>
+                    <button type="submit" id="placeOrderBtn" class="btn btn-danger btn-lg" th:text="#{checkout.placeOrder}">Đặt hàng ngay</button>
                 </div>
             </div>
         </form>
@@ -215,8 +207,68 @@
 
 <th:block layout:fragment="extra-js">
     <script th:src="@{/js/checkout-core.js}"></script>
-    <script th:src="@{/js/checkout-address.js}"></script>
+    <script th:src="@{/js/checkout-address-new.js}"></script>
     <script th:src="@{/js/thanh-toan.js}"></script>
+        <script>
+            // Fallback mở modal voucher nếu vì lý do nào đó data-bs-toggle không hoạt động
+            document.addEventListener('DOMContentLoaded', function(){
+                const btn = document.getElementById('openVoucherModalBtn');
+                const modalEl = document.getElementById('voucherModal');
+                if(btn && modalEl && window.bootstrap && bootstrap.Modal){
+                    btn.addEventListener('click', function(){
+                        try{ const m = bootstrap.Modal.getOrCreateInstance(modalEl); m.show(); }catch(e){}
+                    });
+                }
+            });
+        </script>
 </th:block>
+
+<!-- Voucher Modal -->
+<div class="modal fade" id="voucherModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                                <h5 class="modal-title" th:text="#{checkout.modal.title}">Chọn mã khuyến mãi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                                <div th:if="${publicVouchers == null || publicVouchers.isEmpty()}" class="text-muted" th:text="#{checkout.modal.empty}">Hiện chưa có mã nào.</div>
+                <div class="list-group" th:if="${publicVouchers != null && !publicVouchers.isEmpty()}">
+                    <div class="list-group-item d-flex justify-content-between align-items-center" th:each="v : ${publicVouchers}">
+                        <div>
+                            <div class="fw-bold" th:text="${v.maPhieuGiamGia}">PGG</div>
+                            <div class="small text-muted" th:text="${v.moTa}">Mô tả</div>
+                            <div class="small">
+                                                                <span th:if="${v.giaTriDonToiThieu != null}"><span th:text="#{checkout.minOrder}">Đơn tối thiểu</span>: <span th:text="${#numbers.formatDecimal(v.giaTriDonToiThieu,0,0)} + 'đ'"></span></span>
+                                                                <span th:if="${v.giamToiDa != null}"> • <span th:text="#{checkout.maxDiscount}">Giảm tối đa</span>: <span th:text="${#numbers.formatDecimal(v.giamToiDa,0,0)} + 'đ'"></span></span>
+                                                                <span> • <span th:text="#{checkout.expiry}">HSD</span>: <span th:text="${#temporals.format(v.ngayKetThuc,'dd/MM/yyyy')}"></span></span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" th:attr="data-code=${v.maPhieuGiamGia}" onclick="navigator.clipboard.writeText(this.dataset.code)" th:text="#{common.copy}">Copy</button>
+                                                        <button type="button" class="btn btn-sm btn-primary" th:attr="data-code=${v.maPhieuGiamGia}" onclick="(function(btn){ const code=btn.dataset.code; const sel=document.querySelector('input[name=\'maGiamGia\']'); if(sel){sel.value=code;} document.getElementById('applyVoucherBtn')?.click(); const modalEl=document.getElementById('voucherModal'); const inst=bootstrap.Modal.getInstance(modalEl); inst&&inst.hide(); })(this)" th:text="#{checkout.useThis}">Dùng mã</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{checkout.close}">Đóng</button>
+            </div>
+        </div>
+    </div>
+    </div>
+        <!-- Page-scoped i18n for checkout JS -->
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.i18n = Object.assign({}, window.i18n || {}, {
+                voucher_selectPrompt: '[[#{voucher.selectPrompt}]]',
+                voucher_applySuccess: '[[#{voucher.applySuccess}]]',
+                voucher_invalid: '[[#{voucher.invalid}]]',
+                voucher_error: '[[#{voucher.error}]]',
+                network_error: '[[#{common.networkError}]]',
+                place_failed: '[[#{checkout.placeFailed}]]'
+            });
+            /*]]>*/
+        </script>
 </body>
 </html>

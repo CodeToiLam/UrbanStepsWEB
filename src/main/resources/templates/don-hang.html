@@ -4,39 +4,9 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/main}">
 <head>
-    <title th:text="${title}">Đơn hàng của tôi</title>
+    <title th:text="${title} ?: #{order.history}">Đơn hàng của tôi</title>
     <th:block layout:fragment="extra-css">
-        <style>
-            .orders-header h2{font-size:1.25rem;font-weight:600;}
-            #ordersList .order-card,.guest-orders .order-card{background:#fff;border:1px solid #e5e9f2;border-radius:18px;padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.85rem;box-shadow:0 2px 8px -2px rgba(0,0,0,.05);transition:.15s;}
-            #ordersList .order-card:hover,.guest-orders .order-card:hover{transform:translateY(-3px);box-shadow:0 8px 26px -6px rgba(0,0,0,.12);}            
-            #ordersList .order-meta .fw-semibold,.guest-orders .order-meta .fw-semibold{font-size:.95rem;}
-            #ordersList .order-meta .small,.guest-orders .order-meta .small{font-size:.72rem;}
-            #ordersList .order-actions .btn{border-radius:30px;font-size:.65rem;padding:.35rem .75rem;font-weight:500;}
-            .empty-state{background:#fff;border:1px dashed #c9d0dd;border-radius:16px;padding:2.2rem 1.2rem;text-align:center;margin-top:2rem;}
-            .empty-state i{font-size:2.5rem;color:#a3afc2;margin-bottom:.5rem;display:block;}
-            .status-filters .nav-link{padding:.45rem 1.05rem;border-radius:30px;font-weight:500;color:#555;background:#f4f6f9;margin-right:.4rem;transition:.15s;font-size:.75rem;letter-spacing:.5px;}
-            .status-filters .nav-link:hover{background:#e6ebf2;color:#222;}
-            .status-filters .nav-link.active{background:#1d5fd2;color:#fff;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);} 
-            .order-status-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .6rem;font-size:.55rem;font-weight:600;letter-spacing:.5px;border-radius:999px;background:#eef1f6;color:#445;text-transform:uppercase;}
-            .order-status-badge.status-0{background:#f0eefc;color:#563d7c;}
-            .order-status-badge.status-1{background:#e3f3ff;color:#055160;}
-            .order-status-badge.status-2{background:#fff3cd;color:#8a6d00;}
-            .order-status-badge.status-3{background:#e6f7ed;color:#13653f;}
-            .order-status-badge.status-4{background:#fdecea;color:#b02a37;}
-            .order-status-badge.status-5{background:#e0ebff;color:#0a53be;}
-            .orders-summary-count{font-size:.7rem;font-weight:600;color:#6c7685;border:1px solid #d5dbe4;padding:.35rem .7rem;border-radius:999px;background:#fff;}
-            /* Guest view */
-            .login-prompt{background:#fff;border:1px solid #e5e9f2;border-radius:18px;padding:1.4rem 1.3rem;margin-bottom:1.4rem;box-shadow:0 4px 16px -6px rgba(0,0,0,.08);} 
-            .login-prompt h2{font-size:1.35rem;font-weight:700;display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
-            .login-prompt a.btn-login{display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.85rem;background:#1d5fd2;color:#fff;padding:.55rem 1rem;border-radius:30px;text-decoration:none;font-weight:600;}
-            .search-section{background:#fff;border:1px solid #e5e9f2;border-radius:18px;padding:1.3rem 1.3rem;margin-bottom:1.5rem;box-shadow:0 4px 16px -6px rgba(0,0,0,.05);} 
-            .search-section h2{font-size:1.3rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
-            .search-form .form-control{border-radius:14px;padding:.9rem 1rem;font-size:.9rem;}
-            .search-form button.btn-primary{border:none;background:#0d62d9;border-radius:14px;padding:.75rem 1.25rem;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;}
-            .search-form button.btn-primary:hover{background:#0b56c1;}
-            @media (max-width: 768px){#ordersList .order-card{flex-direction:column;align-items:flex-start;}}
-        </style>
+        <link rel="stylesheet" th:href="@{/css/order.css}" />
     </th:block>
 </head>
 <body>
@@ -49,39 +19,43 @@
             <!-- Section cho user đã đăng nhập -->
             <div sec:authorize="isAuthenticated()">
                 <div class="welcome-section mb-3">
-                    <h1 class="h4 fw-bold mb-1">Đơn hàng của tôi</h1>
-                    <p class="text-muted mb-0" style="font-size:.85rem" th:text="${customerName != null && !#strings.isEmpty(customerName) ? 'Xin chào ' + customerName + '! Đây là danh sách các đơn hàng của bạn.' : 'Xin chào! Đây là danh sách các đơn hàng của bạn.'}">
-                        Xin chào! Đây là danh sách các đơn hàng của bạn.
-                    </p>
+                    <h1 class="h4 fw-bold mb-1" th:text="#{order.history}">Đơn hàng của tôi</h1>
+                    <p class="text-muted mb-0" style="font-size:.85rem" th:utext="${customerName != null && !#strings.isEmpty(customerName) ? 'Xin chào <strong>' + customerName + '</strong>! ' + ' ' + #messages.msgOrNull('order.history') : #messages.msgOrNull('order.history')}">Lịch sử đơn hàng</p>
                 </div>
                 
                 <div class="orders-section">
                     <div class="orders-header d-flex flex-wrap align-items-center gap-3 mb-3">
-                        <h2 class="mb-0"><i class="bi bi-box-seam"></i> Danh sách đơn hàng</h2>
+                        <h2 class="mb-0"><i class="bi bi-box-seam"></i> <span th:text="#{order.history}">Danh sách đơn hàng</span></h2>
                         <div class="status-filters nav nav-pills" role="tablist">
-                            <a class="nav-link active" href="#" data-status="all">Tất cả</a>
-                            <a class="nav-link" href="#" data-status="0">Chờ</a>
-                            <a class="nav-link" href="#" data-status="1">Xác nhận</a>
+                            <a class="nav-link active" href="#" data-status="all" th:text="#{filter.all.status}">Tất cả</a>
+                            <a class="nav-link" href="#" data-status="0">#{status.pending}</a>
+                            <a class="nav-link" href="#" data-status="1">#{status.processing}</a>
                             <a class="nav-link" href="#" data-status="2">Giao</a>
-                            <a class="nav-link" href="#" data-status="3">Hoàn thành</a>
-                            <a class="nav-link" href="#" data-status="4">Đã hủy</a>
+                            <a class="nav-link" href="#" data-status="3" th:text="#{order.status.completed}">Hoàn thành</a>
+                            <a class="nav-link" href="#" data-status="4" th:text="#{status.cancelled}">Đã hủy</a>
+                                <a class="nav-link" href="#" data-status="6">Trả hàng</a>
+                                <a class="nav-link" href="#" data-status="7">Xử lý trả hàng</a>
+                                <a class="nav-link" href="#" data-status="8">Trả hàng thất bại</a>
                         </div>
-                        <div id="ordersCount" class="orders-summary-count ms-auto" th:text="${orders != null}? ${orders.size()} + ' ĐƠN' : '0 ĐƠN'"></div>
+                        <div id="ordersCount" class="orders-summary-count ms-auto" th:text="${orders != null}? ${orders.size()} + ' ' + #{order.history} : '0'"></div>
                     </div>
 
                     <div th:if="${orders != null && !orders.isEmpty()}" class="orders-list" id="ordersList">
                         <div th:each="order : ${orders}" class="order-card" th:attr="data-status=${order.trangThai}">
                             <div class="order-meta">
                                 <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                    <a th:href="@{/don-hang/chi-tiet/{id}(id=${order.id})}" class="fw-semibold text-decoration-none" th:text="${order.maHoaDon}">HD001</a>
+                                                <a th:href="${isLoggedIn} ? @{/don-hang/chi-tiet/{id}(id=${order.id})} : @{/don-hang/chi-tiet-ma/{ma}(ma=${order.maHoaDon}, sdt=${lookupPhone})}"
+                                                    class="fw-semibold text-decoration-none" th:text="${order.maHoaDon}">HD001</a>
                                     <span class="order-status-badge" th:classappend="' status-' + ${order.trangThai}" th:text="${order.getTrangThaiText()}">Trạng thái</span>
                                 </div>
-                                <div class="small text-muted" th:text="'Ngày đặt: ' + ${order.createAt != null ? #temporals.format(order.createAt,'dd/MM/yyyy HH:mm') : ''}"></div>
-                                <div class="small" th:text="'Tổng: ' + ${#numbers.formatDecimal(order.tongThanhToan,0,0)} + 'đ'"></div>
+                                <div class="small text-muted"><span th:text="#{order.date}">Ngày đặt</span>: <span th:text="${order.createAt != null ? #temporals.format(order.createAt,'dd/MM/yyyy HH:mm') : ''}"></span></div>
+                                <div class="small"><span th:text="#{order.total}">Tổng</span>: <span th:text="${#numbers.formatDecimal(order.tongThanhToan,0,0)} + 'đ'"></span></div>
                             </div>
                             <div class="order-actions text-end">
-                                <a th:href="@{/don-hang/chi-tiet/{id}(id=${order.id})}" class="btn btn-sm btn-outline-secondary">Chi tiết</a>
+                                          <a th:href="${isLoggedIn} ? @{/don-hang/chi-tiet/{id}(id=${order.id})} : @{/don-hang/chi-tiet-ma/{ma}(ma=${order.maHoaDon}, sdt=${lookupPhone})}"
+                                              class="btn btn-sm btn-outline-secondary" th:text="#{order.view.detail}">Chi tiết</a>
                                 <form th:if="${order.trangThai == 0 || order.trangThai == 1}" th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i></button>
                                 </form>
                             </div>
@@ -90,10 +64,10 @@
                     
                     <div th:if="${orders == null || orders.isEmpty()}" class="empty-state">
                         <i class="bi bi-box-seam"></i>
-                        <h3 class="h5">Chưa có đơn hàng nào</h3>
-                        <p class="mb-3">Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
+                        <h3 class="h5" th:text="#{order.empty}">Chưa có đơn hàng nào</h3>
+                        <p class="mb-3"><span th:text="#{order.empty}"></span></p>
                         <a href="/san-pham" class="btn-login">
-                            Mua sắm ngay
+                            <span th:text="#{order.go.shopping}">Mua sắm ngay</span>
                         </a>
                     </div>
                 </div>
@@ -102,36 +76,54 @@
             <!-- Section cho user chưa đăng nhập -->
             <div sec:authorize="!isAuthenticated()">
                 <div class="login-prompt">
-                    <h2><i class="bi bi-person-check"></i> Đăng nhập để xem đơn hàng</h2>
-                    <p class="mb-2">Đăng nhập để xem danh sách đơn hàng của bạn hoặc tra cứu đơn hàng bằng mã đơn hàng và số điện thoại.</p>
+                    <h2><i class="bi bi-person-check"></i> <span th:text="#{order.view.detail}">Đăng nhập để xem đơn hàng</span></h2>
+                    <p class="mb-2" th:text="#{order.history}">Đăng nhập để xem danh sách đơn hàng của bạn hoặc tra cứu đơn hàng bằng mã đơn hàng và số điện thoại.</p>
                     <a href="/dang-nhap" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập ngay
+                        <i class="bi bi-box-arrow-in-right"></i> <span th:text="#{nav.login}">Đăng nhập ngay</span>
                     </a>
                 </div>
                 
                 <div class="search-section">
-                    <h2><i class="bi bi-search"></i> Tra cứu đơn hàng</h2>
+              <h2><i class="bi bi-search"></i> <span th:text="#{search.title}">Tra cứu đơn hàng</span></h2>
+              <p class="small text-muted mb-3" th:text="#{search.results}">Để bảo mật, vui lòng nhập cả mã đơn hàng và số điện thoại để tra cứu.</p>
                     <form th:action="@{/don-hang/tra-cuu}" method="post" class="search-form">
-                        <div class="form-group mb-2">
-                            <label for="soDienThoai" class="mb-1 small text-muted"><i class="bi bi-telephone me-1"></i> Số điện thoại đặt hàng:</label>
-                            <input type="tel" id="soDienThoai" name="sdt" class="form-control"
-                                   placeholder="Nhập số điện thoại (ví dụ: 09...)" required pattern="[0-9+ ]{9,15}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-2">
+                     <label for="maHoaDon" class="mb-1 small text-muted"><i class="bi bi-receipt me-1"></i> <span th:text="#{order.code}">Mã đơn hàng</span> *</label>
+                                    <input type="text" id="maHoaDon" name="maHoaDon" class="form-control"
+                         th:placeholder="#{order.code}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-2">
+                     <label for="soDienThoai" class="mb-1 small text-muted"><i class="bi bi-telephone me-1"></i> <span th:text="#{customer.phone}">Số điện thoại</span> *</label>
+                                    <input type="tel" id="soDienThoai" name="sdt" class="form-control"
+                         th:placeholder="#{customer.phone}" required pattern="[0-9+ ]{9,15}">
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn-primary"><i class="bi bi-search"></i> Xem đơn hàng</button>
+               <button type="submit" class="btn-primary"><i class="bi bi-search"></i> <span th:text="#{search.title}">Tra cứu đơn hàng</span></button>
                     </form>
                 </div>
                 
-                <div th:if="${orders != null && !orders.isEmpty()}" class="guest-orders">
-                    <div class="mb-2 fw-semibold" th:text="'Đơn hàng của số ' + ${lookupPhone}"></div>
+                     <div th:if="${orders != null && !orders.isEmpty()}" class="guest-orders">
+                    <div class="mb-2 fw-semibold"><span th:text="#{order.code}">Mã đơn hàng</span>: <span th:text="${lookupOrderCode}"></span></div>
                     <div th:each="order : ${orders}" class="order-card">
                         <div class="order-meta">
                             <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                <strong th:text="${order.maHoaDon}">HD001</strong>
+                                          <a class="fw-semibold text-decoration-none"
+                                              th:href="@{/don-hang/chi-tiet-ma/{ma}(ma=${order.maHoaDon}, sdt=${lookupPhone})}"
+                                              th:text="${order.maHoaDon}">HD001</a>
                                 <span class="order-status-badge" th:classappend="' status-' + ${order.trangThai}" th:text="${order.getTrangThaiText()}">Trạng thái</span>
                             </div>
-                            <div class="small text-muted" th:text="'Ngày đặt: ' + ${order.createAt != null ? #temporals.format(order.createAt,'dd/MM/yyyy HH:mm') : ''}"></div>
-                            <div class="small" th:text="'Tổng tiền: ' + ${#numbers.formatDecimal(order.tongThanhToan,0,0)} + 'đ'"></div>
+                            <div class="small text-muted"><span th:text="#{order.date}">Ngày đặt</span>: <span th:text="${order.createAt != null ? #temporals.format(order.createAt,'dd/MM/yyyy HH:mm') : ''}"></span></div>
+                            <div class="small"><span th:text="#{order.total}">Tổng tiền</span>: <span th:text="${#numbers.formatDecimal(order.tongThanhToan,0,0)} + 'đ'"></span></div>
                         </div>
+                                <div class="order-actions text-end">
+                                     <a class="btn btn-sm btn-outline-secondary"
+                                         th:href="@{/don-hang/chi-tiet-ma/{ma}(ma=${order.maHoaDon}, sdt=${lookupPhone})}" th:text="#{order.view.detail}">Chi tiết</a>
+                                </div>
                     </div>
                 </div>
             </div>
@@ -139,17 +131,6 @@
     </div>
 </body>
 <th:block layout:fragment="extra-js">
-<script>
- document.addEventListener('DOMContentLoaded',()=>{
-    const filterLinks=document.querySelectorAll('.status-filters .nav-link');
-    const list=document.getElementById('ordersList');
-    if(!list) return; // guest hoặc không có đơn
-    const cards=[...list.querySelectorAll('.order-card')];
-    const countEl=document.getElementById('ordersCount');
-    function updateCount(){const visible=cards.filter(c=>c.style.display!=="none").length; if(countEl) countEl.textContent=visible+" ĐƠN";}
-    filterLinks.forEach(l=>l.addEventListener('click',e=>{e.preventDefault();filterLinks.forEach(f=>f.classList.remove('active'));l.classList.add('active');const st=l.dataset.status;cards.forEach(c=>{c.style.display=(st==='all'|| c.dataset.status===st)?'flex':'none';});updateCount();}));
-    updateCount();
- });
-</script>
+    <script th:src="@{/js/order.js}"></script>
 </th:block>
 </html>

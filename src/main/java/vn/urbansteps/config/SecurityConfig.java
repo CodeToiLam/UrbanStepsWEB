@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import vn.urbansteps.security.LenientPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -14,8 +14,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Sử dụng NoOpPasswordEncoder cho demo với mật khẩu plain text
-        return NoOpPasswordEncoder.getInstance();
+        // Chấp nhận mật khẩu cũ (plain) và dùng bcrypt cho mật khẩu mới
+        return new LenientPasswordEncoder();
     }
 
     @Bean
@@ -25,6 +25,9 @@ public class SecurityConfig {
                         // Public endpoints - Không cần đăng nhập
                         .requestMatchers("/", "/home", "/trang-chu").permitAll()
                         .requestMatchers("/san-pham/**", "/product/**").permitAll()
+                        // New page-based return request endpoints
+                        .requestMatchers("/don-hang/*/return-request").permitAll()
+                        .requestMatchers("/don-hang/guest/*/cancel").permitAll()
                         // Footer info pages should be public
                         .requestMatchers(
                                 "/gioi-thieu", "/cau-hoi-thuong-gap", "/tuyen-dung",
@@ -53,6 +56,8 @@ public class SecurityConfig {
                         // User area - Cần đăng nhập
                         // Order tracking: allow basic tracking & lookup for guests, protect detail/huy
                         .requestMatchers("/don-hang/tra-cuu", "/don-hang", "/order/track", "/order/lookup").permitAll()
+                        // Guest-friendly detail by code+phone (handled in controller)
+                        .requestMatchers("/don-hang/chi-tiet-ma/**").permitAll()
                         .requestMatchers("/don-hang/chi-tiet/**", "/don-hang/huy/**", "/order/**").authenticated()
                         .requestMatchers("/tai-khoan/**", "/account/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
@@ -76,9 +81,11 @@ public class SecurityConfig {
                                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
                                 System.out.println("Debug: Redirecting admin to /admin/products");
                                 response.sendRedirect("/admin/products");
+                                return;
                             } else {
                                 System.out.println("Debug: Redirecting user to /");
                                 response.sendRedirect("/");
+                                return;
                             }
                         })
                         .failureUrl("/dang-nhap?error=true")
@@ -92,7 +99,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API
+                        .ignoringRequestMatchers("/api/**", "/orders/*/return-request") // Tắt CSRF cho API và endpoint trả hàng public
                 )
                 .sessionManagement(session -> session
                         .maximumSessions(1)

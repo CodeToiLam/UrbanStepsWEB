@@ -1,7 +1,4 @@
 package vn.urbansteps.controller;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +12,7 @@ import vn.urbansteps.model.KhachHang;
 import vn.urbansteps.model.DiaChiGiaoHang;
 import vn.urbansteps.repository.KhachHangRepository;
 import vn.urbansteps.service.DiaChiGiaoHangService;
+import vn.urbansteps.repository.ReturnRequestRepository;
 
 @Controller
 @RequestMapping("/tai-khoan")
@@ -25,11 +23,19 @@ public class TaiKhoanController {
     private KhachHangRepository khachHangRepository;
     @Autowired
     private DiaChiGiaoHangService diaChiGiaoHangService;
+    @Autowired
+    private vn.urbansteps.service.PhieuGiamGiaService phieuGiamGiaService;
+
+    @Autowired
+    private ReturnRequestRepository returnRequestRepository;
     @GetMapping
     public String taiKhoanPage(Model model) {
         // Lấy username từ session (Spring Security)
         org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if (username == null || "anonymousUser".equals(username)) {
+            return "redirect:/dang-nhap?redirectUrl=/tai-khoan";
+        }
         if (username != null && !"anonymousUser".equals(username)) {
             TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
             model.addAttribute("taiKhoan", taiKhoan);
@@ -42,16 +48,35 @@ public class TaiKhoanController {
             KhachHang khachHang = khachHangRepository.findByTaiKhoan(taiKhoan).orElse(null);
             if (khachHang != null) {
                 java.util.List<HoaDon> orders = hoaDonService.getOrdersByKhachHangId(khachHang.getId());
+                // Build a map of orderId -> hasPendingReturn for quick lookup in template
+                java.util.Map<Integer, Boolean> pendingMap = new java.util.HashMap<>();
+                for (HoaDon hd : orders) {
+                    long pendingCount = returnRequestRepository.countByOrderIdAndStatus(hd.getId(), vn.urbansteps.model.ReturnRequest.Status.NEW)
+                            + returnRequestRepository.countByOrderIdAndStatus(hd.getId(), vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+                    pendingMap.put(hd.getId(), pendingCount > 0);
+                }
                 model.addAttribute("orders", orders);
+                model.addAttribute("pendingReturns", pendingMap);
             }
             // Addresses
             java.util.List<DiaChiGiaoHang> addresses = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
             model.addAttribute("addresses", addresses);
+            // Voucher wallet: public vouchers (and later user-bound)
+            try { model.addAttribute("vouchers", phieuGiamGiaService.findPublicVouchers()); } catch (Exception ignored) {}
         }
         return "tai-khoan";
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(TaiKhoanController.class);
+    // API: lấy danh sách voucher khả dụng (tạm thời: public vouchers). Có thể mở rộng: voucher đã claim theo user
+    @GetMapping("/api/vouchers")
+    @ResponseBody
+    public java.util.List<vn.urbansteps.model.PhieuGiamGia> apiVouchers(){
+        try {
+            return phieuGiamGiaService.findPublicVouchers();
+        } catch (Exception e){
+            return java.util.List.of();
+        }
+    }
 
     @Autowired
     private TaiKhoanService taiKhoanService;

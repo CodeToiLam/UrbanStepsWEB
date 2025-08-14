@@ -18,6 +18,8 @@ import vn.urbansteps.repository.HoaDonRepository;
 import vn.urbansteps.repository.KhachHangRepository;
 import vn.urbansteps.repository.PhieuGiamGiaRepository;
 import vn.urbansteps.repository.TaiKhoanRepository;
+import vn.urbansteps.repository.SanPhamChiTietRepository;
+import vn.urbansteps.model.SanPhamChiTiet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +45,9 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private PhieuGiamGiaRepository phieuGiamGiaRepository;
+
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
 
     @Override
     public Page<HoaDon> searchOrders(String keyword, Byte status, Pageable pageable) {
@@ -88,7 +93,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setMaHoaDon(generateMaHoaDon());
         hoaDon.setPhuongThucThanhToan((byte) phuongThucThanhToan);
         hoaDon.setGhiChu(ghiChu);
-        hoaDon.setTrangThai((byte) HoaDon.TrangThai.DA_HOAN_THANH.getValue()); // Đã thanh toán
+    hoaDon.setTrangThai((byte) HoaDon.TrangThaiHoaDon.HOAN_THANH.getValue()); // Hoàn thành
         hoaDon.setCreateAt(LocalDateTime.now());
         hoaDon.setTienMat(tienMat != null ? tienMat : BigDecimal.ZERO);
         hoaDon.setTienChuyenKhoan(tienChuyenKhoan != null ? tienChuyenKhoan : BigDecimal.ZERO);
@@ -180,7 +185,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setPhuongThucThanhToan((byte) phuongThucThanhToan);
         hoaDon.setGhiChu(ghiChu);
         hoaDon.setDiaChiGiaoHang(diaChiGiaoHang);
-        hoaDon.setTrangThai((byte) HoaDon.TrangThai.CHO_XU_LY.getValue()); // Chờ xử lý
+    hoaDon.setTrangThai((byte) HoaDon.TrangThaiHoaDon.CHO_XU_LY.getValue()); // Chờ xử lý
         hoaDon.setCreateAt(LocalDateTime.now());
 
         // Gán phiếu giảm giá nếu có
@@ -232,6 +237,30 @@ public class HoaDonServiceImpl implements HoaDonService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public HoaDon getOrderByIdWithDetails(Integer orderId) {
+        HoaDon hoaDon = hoaDonRepository.findById(orderId).orElse(null);
+        if (hoaDon != null) {
+            // Force lazy loading of hoaDonChiTietList
+            hoaDon.getHoaDonChiTietList().size();
+            
+            // Force loading of sanPhamChiTiet relationships
+            for (var item : hoaDon.getHoaDonChiTietList()) {
+                if (item.getSanPhamChiTiet() != null) {
+                    item.getSanPhamChiTiet().getSanPham().getTenSanPham();
+                    if (item.getSanPhamChiTiet().getMauSac() != null) {
+                        item.getSanPhamChiTiet().getMauSac().getTenMauSac();
+                    }
+                    if (item.getSanPhamChiTiet().getKichCo() != null) {
+                        item.getSanPhamChiTiet().getKichCo().getTenKichCo();
+                    }
+                }
+            }
+        }
+        return hoaDon;
+    }
+
+    @Override
     @Transactional
     public HoaDon save(HoaDon hoaDon) {
         logger.info("Lưu hóa đơn: maHoaDon={}", hoaDon.getMaHoaDon());
@@ -249,6 +278,63 @@ public class HoaDonServiceImpl implements HoaDonService {
             return List.of();
         }
         return hoaDonRepository.findByKhachHang_SdtOrderByCreateAtDesc(sdt.trim());
+    }
+
+    @Override
+    @Transactional
+    public HoaDon refundOrderItem(Integer orderId, Integer orderItemId, Integer quantity, String note) {
+        HoaDon hoaDon = hoaDonRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        HoaDonChiTiet chiTiet = hoaDonChiTietRepository.findById(orderItemId).orElseThrow(() -> new RuntimeException("Không tìm thấy dòng hàng"));
+        if (!chiTiet.getHoaDon().getId().equals(orderId)) {
+            throw new RuntimeException("Dòng hàng không thuộc đơn này");
+        }
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("Số lượng hoàn không hợp lệ");
+        }
+        if (chiTiet.getSoLuong() < quantity) {
+            throw new RuntimeException("Số lượng hoàn vượt quá đã mua");
+        }
+        // Restock
+    SanPhamChiTiet spct = chiTiet.getSanPhamChiTiet();
+    spct.setSoLuong((spct.getSoLuong() == null ? 0 : spct.getSoLuong()) + quantity);
+    sanPhamChiTietRepository.save(spct);
+        // Update item quantity and totals
+        chiTiet.setSoLuong(chiTiet.getSoLuong() - quantity);
+        // preUpdate hook recalculates thanhTien
+        hoaDonChiTietRepository.save(chiTiet);
+
+        // Recompute order totals from details
+        var details = hoaDonChiTietRepository.findByHoaDon_Id(orderId);
+        java.math.BigDecimal tongTien = java.math.BigDecimal.ZERO;
+        for (HoaDonChiTiet d : details) {
+            if (d.getThanhTien() != null)
+                tongTien = tongTien.add(d.getThanhTien());
+        }
+        hoaDon.setTongTien(tongTien);
+        // Keep existing tienGiam, recalc payable
+        java.math.BigDecimal tienGiam = hoaDon.getTienGiam() == null ? java.math.BigDecimal.ZERO : hoaDon.getTienGiam();
+        hoaDon.setTongThanhToan(tongTien.subtract(tienGiam));
+
+        // Append note
+        String existing = hoaDon.getGhiChu();
+        String append = (note != null && !note.isBlank()) ? ("Hoàn trả: " + note) : "Hoàn trả một phần";
+        hoaDon.setGhiChu((existing == null || existing.isBlank()) ? append : (existing + " | " + append));
+
+        return hoaDonRepository.save(hoaDon);
+    }
+
+    @Override
+    @Transactional
+    public HoaDon returnAllItems(Integer orderId, String note) {
+        HoaDon hoaDon = hoaDonRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        var details = hoaDonChiTietRepository.findByHoaDon_Id(orderId);
+        for (HoaDonChiTiet ct : details) {
+            int qty = ct.getSoLuong() == null ? 0 : ct.getSoLuong();
+            if (qty > 0) {
+                refundOrderItem(orderId, ct.getId(), qty, note);
+            }
+        }
+        return hoaDonRepository.findById(orderId).orElse(hoaDon);
     }
 
     private String generateMaHoaDon() {

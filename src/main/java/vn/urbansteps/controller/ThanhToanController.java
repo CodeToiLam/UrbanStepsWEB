@@ -58,6 +58,13 @@ public class ThanhToanController {
     @Autowired
     private DiaChiGiaoHangService diaChiGiaoHangService;
 
+    @GetMapping("/success")
+    public String successPage(@RequestParam(name = "orderCode", required = false) String orderCode,
+                              Model model) {
+        model.addAttribute("orderCode", orderCode);
+        return "thanh-toan-thanh-cong";
+    }
+
     @GetMapping
     public String showCheckoutPage(
             @RequestParam(required = false) Boolean buyNow,
@@ -234,11 +241,11 @@ public class ThanhToanController {
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
                 logger.info("TaiKhoan found (apply-voucher-json): {}", taiKhoan != null ? taiKhoan.getId() : "null");
                 if (taiKhoan != null) {
-                    gioHang = gioHangService.getGioHangByUserId(taiKhoan.getId());
+                    gioHang = gioHangService.getGioHangWithItemsByUserId(taiKhoan.getId());
                 }
             } else {
                 String sessionId = session.getId();
-                gioHang = gioHangService.getGioHangBySessionId(sessionId);
+                gioHang = gioHangService.getGioHangWithItemsBySessionId(sessionId);
             }
 
             if (gioHang == null) {
@@ -248,14 +255,17 @@ public class ThanhToanController {
             }
 
             BigDecimal totalAmount = gioHang.getTongTien();
-            BigDecimal discountedAmount = phieuGiamGiaService.applyVoucher(voucherCode, totalAmount);
-            if (discountedAmount.compareTo(totalAmount) < 0) {
+            // New: allocate item-level discounts
+            PhieuGiamGiaService.AllocationResult alloc = phieuGiamGiaService.allocateDiscountAcrossItems(voucherCode, gioHang.getItems());
+            if (alloc != null && alloc.totalAfter.compareTo(totalAmount) < 0) {
                 session.setAttribute("appliedVoucherCode", voucherCode);
-                session.setAttribute("discountedTotal", discountedAmount);
+                session.setAttribute("discountedTotal", alloc.totalAfter);
                 response.put("success", true);
                 response.put("message", "Áp dụng mã khuyến mãi thành công");
-                response.put("totalAmount", totalAmount);
-                response.put("discountedTotal", discountedAmount);
+                response.put("totalAmount", alloc.totalBefore);
+                response.put("discountedTotal", alloc.totalAfter);
+                response.put("discountAmount", alloc.discountTotal);
+                response.put("perItemDiscount", alloc.perItemDiscount);
             } else {
                 session.removeAttribute("appliedVoucherCode");
                 session.removeAttribute("discountedTotal");
@@ -284,37 +294,78 @@ public class ThanhToanController {
             String hoTen = (String) orderData.getOrDefault("fullName", "");
             String sdt = (String) orderData.getOrDefault("phoneNumber", "");
             String email = (String) orderData.getOrDefault("email", "");
+            
+            // Xử lý địa chỉ - ưu tiên địa chỉ đã lưu
+            String selectedAddressIdStr = (String) orderData.getOrDefault("selectedAddressId", "");
+            Integer selectedAddressId = null;
+            String diaChiGiaoHang = "";
+            
+            // Khai báo các biến địa chỉ thủ công
             String province = (String) orderData.getOrDefault("province", "");
             String district = (String) orderData.getOrDefault("district", "");
             String ward = (String) orderData.getOrDefault("ward", "");
             String addressDetail = (String) orderData.getOrDefault("addressDetail", "");
-            final Integer[] selectedAddressIdHolder = new Integer[1];
-            try {
-                Object selObj = orderData.get("selectedAddressId");
-                if(selObj!=null){
-                    String tmp=String.valueOf(selObj);
-                    if(!"null".equals(tmp) && !tmp.isBlank()) selectedAddressIdHolder[0] = Integer.parseInt(tmp);
+            
+            if (selectedAddressIdStr != null && !selectedAddressIdStr.trim().isEmpty()) {
+                try {
+                    selectedAddressId = Integer.parseInt(selectedAddressIdStr);
+                    // Lấy địa chỉ đã lưu
+                    java.util.Optional<DiaChiGiaoHang> savedAddressOpt = diaChiGiaoHangService.findById(selectedAddressId);
+                    if (savedAddressOpt.isPresent()) {
+                        DiaChiGiaoHang savedAddress = savedAddressOpt.get();
+                        diaChiGiaoHang = savedAddress.getDiaChiDayDu();
+                        // Cập nhật thông tin từ địa chỉ đã lưu nếu cần
+                        if (hoTen.isEmpty() && savedAddress.getTenNguoiNhan() != null) {
+                            hoTen = savedAddress.getTenNguoiNhan();
+                        }
+                        if (sdt.isEmpty() && savedAddress.getSdtNguoiNhan() != null) {
+                            sdt = savedAddress.getSdtNguoiNhan();
+                        }
+                        logger.info("Sử dụng địa chỉ đã lưu: {}", diaChiGiaoHang);
+                    } else {
+                        response.put("success", false);
+                        response.put("message", "Địa chỉ đã chọn không tồn tại");
+                        return ResponseEntity.badRequest().body(response);
+                    }
+                } catch (NumberFormatException e) {
+                    logger.warn("ID địa chỉ không hợp lệ: {}", selectedAddressIdStr);
                 }
-            } catch (Exception ignored) {}
+            }
+            
+            // Nếu không có địa chỉ đã lưu, sử dụng địa chỉ thủ công
+            if (diaChiGiaoHang.isEmpty()) {
+                if (addressDetail.isEmpty() || province.isEmpty() || district.isEmpty() || ward.isEmpty()) {
+                    response.put("success", false);
+                    response.put("message", "Vui lòng điền đầy đủ thông tin địa chỉ giao hàng");
+                    return ResponseEntity.badRequest().body(response);
+                }
+                
+                diaChiGiaoHang = addressDetail + ", " + ward + ", " + district + ", " + province;
+                logger.info("Sử dụng địa chỉ thủ công: {}", diaChiGiaoHang);
+            }
+            
             String ghiChu = (String) orderData.getOrDefault("note", "");
-            // Parse payment method robustly (could come as number or string)
+            
+            // Parse payment method
             Object pmObj = orderData.get("paymentMethod");
             int phuongThucThanhToan = 1;
             if(pmObj!=null){
                 try { phuongThucThanhToan = Integer.parseInt(String.valueOf(pmObj)); } catch (NumberFormatException ignored) {}
             }
             // Basic validation
-            if(hoTen.isBlank() || sdt.isBlank() || (addressDetail.isBlank() && selectedAddressIdHolder[0]==null)){
+            if(hoTen.isBlank() || sdt.isBlank()){
                 response.put("success", false);
-                response.put("message", "Thiếu thông tin bắt buộc (họ tên / SĐT / địa chỉ)");
+                response.put("message", "Thiếu thông tin bắt buộc (họ tên / SĐT)");
                 return ResponseEntity.badRequest().body(response);
             }
-            // Build full address only with non-empty components (avoid 'null')
-            StringBuilder fullAddr = new StringBuilder(addressDetail.trim());
-            if(!ward.isBlank()) fullAddr.append(", ").append(ward.trim());
-            if(!district.isBlank()) fullAddr.append(", ").append(district.trim());
-            if(!province.isBlank()) fullAddr.append(", ").append(province.trim());
-            String diaChiGiaoHang = fullAddr.toString();
+            
+            // Kiểm tra địa chỉ giao hàng đã được xử lý ở trên
+            if (diaChiGiaoHang.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Vui lòng chọn địa chỉ giao hàng hoặc nhập địa chỉ mới");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             String appliedVoucherCode = (String) orderData.get("promoCode");
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -362,11 +413,11 @@ public class ThanhToanController {
                 }
 
                 // If selectedAddressId provided and user logged in, override address with saved one
-        if(selectedAddressIdHolder[0]!=null && taiKhoan!=null){
+                if(selectedAddressId != null && taiKhoan != null){
                     try {
                         List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
-            final Integer selId = selectedAddressIdHolder[0];
-            DiaChiGiaoHang match = existing.stream().filter(a->a.getId().equals(selId)).findFirst().orElse(null);
+                        final Integer selId = selectedAddressId;
+                        DiaChiGiaoHang match = existing.stream().filter(a->a.getId().equals(selId)).findFirst().orElse(null);
                         if(match!=null){
                             diaChiGiaoHang = match.getDiaChiDayDu();
                         }
@@ -379,7 +430,7 @@ public class ThanhToanController {
                         appliedVoucherCode, tongThanhToan);
 
                 // Persist address if user logged in and have at least detail + province/district/ward optional
-                if (!laKhachVangLai && taiKhoan != null && selectedAddressIdHolder[0]==null && !addressDetail.isBlank()) {
+                if (!laKhachVangLai && taiKhoan != null && selectedAddressId == null && !addressDetail.isBlank()) {
                     try {
                         List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
                         String normalized = diaChiGiaoHang.trim().toLowerCase();
@@ -446,11 +497,7 @@ public class ThanhToanController {
         }
     }
 
-    @GetMapping("/success")
-    public String showSuccessPage(@RequestParam(value = "orderCode", required = false) String orderCode, Model model) {
-        if(orderCode!=null && !orderCode.isBlank()) model.addAttribute("orderCode", orderCode);
-        return "thanh-toan-thanh-cong";
-    }
+    
 
     @GetMapping("/addresses")
     @ResponseBody

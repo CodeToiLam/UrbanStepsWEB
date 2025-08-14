@@ -2,22 +2,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const form = document.getElementById('checkoutForm');
     const voucherBtn = document.getElementById('applyVoucherBtn');
+    const I18N = (typeof window !== 'undefined' && window.i18n) ? window.i18n : {};
+    const t = (k, fb) => (I18N && I18N[k]) ? I18N[k] : fb;
     // Voucher apply
     function applyVoucher(){
-        const code = document.getElementById('voucherCode')?.value.trim();
-        if(!code){ toast?toast('Vui lòng chọn mã','error'):alert('Vui lòng chọn mã'); return; }
+        const codeInput = document.querySelector('input[name="maGiamGia"]');
+        const codeSelect = document.getElementById('voucherCode');
+        const code = (codeInput?.value || codeSelect?.value || '').trim();
+        if(!code){ toast?toast(t('voucher_selectPrompt','Vui lòng chọn mã'),'error'):alert(t('voucher_selectPrompt','Vui lòng chọn mã')); return; }
         fetch('/checkout/api/apply-voucher-json',{
             method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken},body:JSON.stringify({voucherCode:code})
         }).then(r=>r.json()).then(d=>{
             if(d.success){
-                document.getElementById('discountAmount').textContent = formatCurrency(d.totalAmount - d.discountedTotal);
-                document.getElementById('finalTotal').textContent = formatCurrency(d.discountedTotal);
-                toast?toast('Áp dụng mã thành công','success'):alert('Áp dụng thành công');
-            }else{toast?toast(d.message||'Mã không hợp lệ','error'):alert(d.message||'Mã không hợp lệ');}
-        }).catch(()=>{toast?toast('Lỗi áp dụng mã','error'):alert('Lỗi áp dụng mã');});
+                // Update totals
+                const discount = (Number(d.totalAmount)||0) - (Number(d.discountedTotal)||0);
+                const finalTotal = Number(d.discountedTotal)||0;
+                const discountEl = document.getElementById('discountAmount');
+                const finalTotalEl = document.getElementById('finalTotal');
+                if(discountEl) discountEl.textContent = formatCurrency(discount);
+                if(finalTotalEl) finalTotalEl.textContent = formatCurrency(finalTotal);
+
+                // Render per-item discount if provided
+                if(d.perItemDiscount && typeof d.perItemDiscount === 'object'){
+                    // Hide all first
+                    document.querySelectorAll('.item-line-discount').forEach(el=>{el.style.display='none'; el.textContent='';});
+                    Object.entries(d.perItemDiscount).forEach(([id,amount])=>{
+                        const disc = Number(amount)||0;
+                        const cell = document.querySelector(`.item-line-discount[data-item-id="${id}"]`);
+                        if(cell && disc>0){
+                            cell.textContent = '-' + formatCurrency(disc);
+                            cell.style.display = 'block';
+                        }
+                    });
+                }
+                toast?toast(t('voucher_applySuccess','Áp dụng mã thành công'),'success'):alert(t('voucher_applySuccess','Áp dụng mã thành công'));
+            }else{const msg = d.message||t('voucher_invalid','Mã không hợp lệ'); toast?toast(msg,'error'):alert(msg);}
+        }).catch(()=>{const msg=t('voucher_error','Lỗi áp dụng mã'); toast?toast(msg,'error'):alert(msg);});
     }
-    voucherBtn?.addEventListener('click',applyVoucher);
-    document.getElementById('voucherCode')?.addEventListener('change',applyVoucher);
+    // Prevent double-binding with generic handler: only bind if our button has data-exclusive
+    if(voucherBtn && voucherBtn.dataset.exclusive==='1'){
+        voucherBtn.addEventListener('click',applyVoucher);
+        document.getElementById('voucherCode')?.addEventListener('change',applyVoucher);
+        document.querySelector('input[name="maGiamGia"]')?.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); applyVoucher(); }});
+    }
 
     // Address cascading selects
     const provinceSelect=document.getElementById('province');
@@ -39,7 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    function formatCurrency(n){return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND',minimumFractionDigits:0}).format(n);}
+    function formatCurrency(n){
+        try{
+            return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND',minimumFractionDigits:0}).format(n||0);
+        }catch(e){
+            const num = Math.round(Number(n)||0).toLocaleString('vi-VN');
+            return `${num} ₫`;
+        }
+    }
 
     // Form submit
     form?.addEventListener('submit',function(e){
@@ -67,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedAddressId: selectedAddressId||null
         };
         fetch('/checkout/place-order',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken},body:JSON.stringify(payload)})
-            .then(r=>r.json()).then(d=>{ if(d.success){ const code = encodeURIComponent(d.orderCode||''); window.location.href = '/checkout/success' + (code?`?orderCode=${code}`:''); } else { toast?toast(d.message||'Đặt hàng thất bại','error'):alert(d.message||'Thất bại'); } })
-            .catch(()=>{toast?toast('Lỗi kết nối máy chủ','error'):alert('Lỗi kết nối');});
+            .then(r=>r.json()).then(d=>{ if(d.success){ const code = encodeURIComponent(d.orderCode||''); window.location.href = '/checkout/success' + (code?`?orderCode=${code}`:''); } else { const msg=d.message||t('place_failed','Đặt hàng thất bại'); toast?toast(msg,'error'):alert(msg); } })
+            .catch(()=>{const msg=t('network_error','Lỗi kết nối'); toast?toast(msg,'error'):alert(msg);});
     });
 });

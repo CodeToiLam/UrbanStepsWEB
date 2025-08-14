@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.service.HoaDonService;
+import vn.urbansteps.repository.ReturnRequestRepository;
 import vn.urbansteps.service.EmailService;
 
 @Controller
@@ -22,6 +23,7 @@ public class AdminOrderController {
 
     @Autowired(required = false)
     private EmailService emailService;
+    // Aspect-based logging will capture mutations; no direct logging here
 
     @GetMapping("/order-management")
     public String orderManagement(
@@ -29,7 +31,8 @@ public class AdminOrderController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "") String search,
             @RequestParam(required = false) Byte status,
-            Model model) {
+            Model model,
+            ReturnRequestRepository returnRequestRepository) {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
         Page<HoaDon> orders;
@@ -41,12 +44,20 @@ public class AdminOrderController {
             orders = hoaDonService.getAllOrders(pageable);
         }
         
-        model.addAttribute("orders", orders);
+    model.addAttribute("orders", orders);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orders.getTotalPages());
         model.addAttribute("search", search);
         model.addAttribute("status", status);
         model.addAttribute("title", "Quản lý đơn hàng");
+        // Map orderId -> count NEW return requests for inline badge
+        java.util.Map<Integer, Long> returnCounts = new java.util.HashMap<>();
+        for (HoaDon hd : orders.getContent()) {
+            long c = 0L;
+            try { c = returnRequestRepository.countByOrderIdAndStatus(hd.getId(), vn.urbansteps.model.ReturnRequest.Status.NEW); } catch (Exception ignore) {}
+            returnCounts.put(hd.getId(), c);
+        }
+        model.addAttribute("returnCounts", returnCounts);
         
         return "admin/order-management";
     }
@@ -69,6 +80,7 @@ public class AdminOrderController {
             }
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            // log by aspect
             // Email notify on any status change
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             ra.addFlashAttribute("success", "Cập nhật trạng thái thành công. Đã gửi email thông báo (hoặc mô phỏng nếu chưa cấu hình SMTP).");
@@ -107,6 +119,7 @@ public class AdminOrderController {
             
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            // log by aspect
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             
             return "success:Cập nhật trạng thái thành công";
@@ -124,21 +137,54 @@ public class AdminOrderController {
                 return "redirect:/admin/order-management";
             }
             
-            if (!hoaDon.canCancel()) {
-                redirectAttributes.addFlashAttribute("error", "Không thể hủy đơn hàng này");
+            // Admin có thể hủy bất kỳ đơn hàng nào (trừ đã hủy)
+            if (hoaDon.getTrangThai() == 4) {
+                redirectAttributes.addFlashAttribute("error", "Đơn hàng đã được hủy trước đó");
                 return "redirect:/admin/order-detail/" + id;
             }
             
             hoaDon.setTrangThai((byte) 4); // 4: Đã hủy
             hoaDonService.save(hoaDon);
+            // log by aspect
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             
-            redirectAttributes.addFlashAttribute("success", "Hủy đơn hàng thành công");
+            redirectAttributes.addFlashAttribute("success", "Đã hủy đơn hàng thành công");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
         
         return "redirect:/admin/order-detail/" + id;
+    }
+    
+    @PostMapping("/order/refund-item")
+    public String refundItem(@RequestParam Integer orderId,
+                             @RequestParam Integer orderItemId,
+                             @RequestParam Integer quantity,
+                             @RequestParam(required = false) String note,
+                             @RequestParam(name = "redirect", required = false, defaultValue = "/admin/order-detail/{orderId}") String redirect,
+                             RedirectAttributes ra) {
+        try {
+            hoaDonService.refundOrderItem(orderId, orderItemId, quantity, note);
+            // log by aspect
+            ra.addFlashAttribute("success", "Hoàn trả thành công");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/order-detail/" + orderId;
+    }
+
+    // Optional: mark entire order as returned (all items), if business supports it
+    @PostMapping("/order/return-all")
+    public String returnAll(@RequestParam Integer orderId,
+                            @RequestParam(required = false) String note,
+                            RedirectAttributes ra) {
+        try {
+            hoaDonService.returnAllItems(orderId, note);
+            ra.addFlashAttribute("success", "Đã đánh dấu trả hàng toàn bộ");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/order-detail/" + orderId;
     }
     
     private boolean isValidStatusTransition(Byte currentStatus, Byte newStatus) {
@@ -147,17 +193,15 @@ public class AdminOrderController {
         // Nới lỏng cho demo: cho phép đặt thẳng các trạng thái chính hợp lý
         int cur = currentStatus.intValue();
         int nxt = newStatus.intValue();
-        if (cur == 4 || cur == 3) { // Đã hủy hoặc Hoàn thành thì khóa
+    if (cur == 4 || cur == 3) { // Đã hủy hoặc Hoàn thành thì khóa
             return false;
         }
-        // Cho phép: Pending(0) -> Confirmed(1), Shipping(2), Completed(3), Cancelled(4), Paid(5)
-        // Confirmed(1) -> Shipping(2), Completed(3), Cancelled(4), Paid(5)
-        // Shipping(2) -> Completed(3), Paid(5)
-        if (cur == 0) return nxt == 1 || nxt == 2 || nxt == 3 || nxt == 4 || nxt == 5;
-        if (cur == 1) return nxt == 2 || nxt == 3 || nxt == 4 || nxt == 5;
-        if (cur == 2) return nxt == 3 || nxt == 5;
-        // Paid(5) treated as final like completed
-        if (cur == 5) return false;
+    // Cho phép các trạng thái trả hàng: 7 (xử lý trả hàng), 6 (trả hàng), 8 (trả hàng thất bại)
+    if (nxt == 7 || nxt == 6 || nxt == 8) return true;
+    // Chỉ cho phép: 0->1/2/4; 1->2/4/3; 2->3; 3/4 khóa
+    if (cur == 0) return nxt == 1 || nxt == 2 || nxt == 4;
+    if (cur == 1) return nxt == 2 || nxt == 3 || nxt == 4;
+    if (cur == 2) return nxt == 3;
         return false;
     }
 }

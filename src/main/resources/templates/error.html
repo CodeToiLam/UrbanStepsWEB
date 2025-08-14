@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Lỗi - UrbanSteps</title>
+    <style>
+        .error-page {
+            text-align: center;
+            padding: 60px 20px;
+            min-height: 400px;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .error-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-home:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+            color: white;
+        }
+        .btn-back {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+            transform: translateY(-2px);
+            color: white;
+        }
+        .error-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error-details h5 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .error-details p {
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content" class="error-page">
+        <div class="container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <div class="error-title">
+                <span th:if="${status == 404}">Trang không tìm thấy</span>
+                <span th:if="${status == 500}">Lỗi hệ thống</span>
+                <span th:if="${status == 403}">Không có quyền truy cập</span>
+                <span th:if="${status != 404 && status != 500 && status != 403}">Có lỗi xảy ra</span>
+            </div>
+            
+            <div class="error-message">
+                <span th:if="${status == 404}">
+                    Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.<br>
+                    Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ.
+                </span>
+                <span th:if="${status == 500}">
+                    Đã xảy ra lỗi không mong muốn trong hệ thống.<br>
+                    Chúng tôi đang xử lý vấn đề này. Vui lòng thử lại sau.
+                </span>
+                <span th:if="${status == 403}">
+                    Bạn không có quyền truy cập vào trang này.<br>
+                    Vui lòng đăng nhập hoặc liên hệ quản trị viên.
+                </span>
+                <span th:if="${status != 404 && status != 500 && status != 403}">
+                    Đã xảy ra lỗi không xác định.<br>
+                    Vui lòng thử lại hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn.
+                </span>
+            </div>
+            
+            <div class="error-actions">
+                <a href="/" class="btn-home">
+                    <i class="fas fa-home me-2"></i>Về trang chủ
+                </a>
+                <a href="javascript:history.back()" class="btn-back">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+            
+            <!-- Error details for development -->
+            <div th:if="${originalMessage != null or error != null or trace != null}" class="error-details">
+                <h5><i class="fas fa-info-circle me-2"></i>Chi tiết lỗi (chỉ hiển thị cho admin)</h5>
+                <p th:if="${status}"><strong>Mã lỗi:</strong> <span th:text="${status}">500</span></p>
+                <p th:if="${error}"><strong>Loại lỗi:</strong> <span th:text="${error}">Internal Server Error</span></p>
+                <p th:if="${originalMessage}"><strong>Thông báo:</strong> <span th:text="${originalMessage}">Unexpected error</span></p>
+                <p th:if="${path}"><strong>Đường dẫn:</strong> <span th:text="${path}">/error</span></p>
+                <p th:if="${timestamp}"><strong>Thời gian:</strong> <span th:text="${timestamp}">2025-08-13</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

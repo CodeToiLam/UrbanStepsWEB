@@ -1,13 +1,86 @@
 /* Checkout extracted styles */
-.saved-addresses,.saved-addresses-dynamic{background:#f8f9fb;border:1px solid #e5e9f2;border-radius:14px;padding:1rem;margin-bottom:1rem;}
-.saved-addresses h6{font-weight:600;font-size:.9rem;letter-spacing:.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;}
-.address-item{position:relative;border:1px solid #dfe3eb;border-radius:12px;padding:.75rem .9rem;margin-bottom:.6rem;display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;transition:.15s;background:#fff;}
-.address-item:hover{border-color:#1d5fd2;}
-.address-item.active{border-color:#1d5fd2;box-shadow:0 0 0 2px rgba(29,95,210,.15);}        
-.address-item .addr-meta{flex:1;}
-.address-item .badge-default{background:#1d5fd2;color:#fff;font-size:.65rem;border-radius:20px;padding:.25rem .55rem;letter-spacing:.5px;}
-#manualAddressFields.collapsed{display:none;}
-.toggle-add-address{font-size:.8rem;}
+.saved-addresses-section {
+    background: #f8f9fb;
+    border: 1px solid #e5e9f2;
+    border-radius: 14px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.saved-addresses-section h5 {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.address-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.address-option {
+    background: #fff;
+    border: 2px solid #e5e9f2;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.address-option:hover {
+    border-color: #1d5fd2;
+    box-shadow: 0 2px 8px rgba(29, 95, 210, 0.1);
+}
+
+.address-option.default-address {
+    border-color: #28a745;
+    background: #f8fff9;
+}
+
+.address-option .form-check {
+    margin: 0;
+}
+
+.address-option .form-check-input {
+    margin-top: 0.2rem;
+}
+
+.address-info {
+    margin-left: 1.5rem;
+}
+
+.address-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.address-detail {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.manual-address-section {
+    background: #fff;
+    border: 1px solid #e5e9f2;
+    border-radius: 14px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.manual-address-section h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
 #qr-section {background: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);border-radius:18px;box-shadow:0 8px 32px rgba(52,152,219,.08);padding:32px 24px 24px;margin:18px auto;max-width:420px;text-align:center;}
 #qr-section label{font-size:1.15rem;font-weight:600;color:#1976d2;margin-bottom:12px;display:block;}
 #qr-image{border-radius:12px;box-shadow:0 4px 24px rgba(52,152,219,.12);border:2px solid #1976d2;margin-bottom:12px;}

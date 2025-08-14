@@ -22,6 +22,7 @@ public class AdminDiscountController {
 
     @Autowired
     private PhieuGiamGiaService phieuGiamGiaService;
+    // Aspect-based logging will capture create/update/delete actions
 
     @GetMapping("/discount-management")
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,6 +76,7 @@ public class AdminDiscountController {
             if (phieuGiamGia.getId() != null) {
                 phieuGiamGiaService.incrementUsageCount(phieuGiamGia.getId());
             }
+            // log by aspect
             return "redirect:/admin/discount-management";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi lưu phiếu giảm giá: " + e.getMessage());
@@ -105,6 +107,7 @@ public class AdminDiscountController {
             Optional<PhieuGiamGia> discount = phieuGiamGiaService.findById(id);
             if (discount.isPresent()) {
                 phieuGiamGiaService.deactivate(id);
+                // log by aspect
                 return "redirect:/admin/discount-management?success=true";
             } else {
                 return "redirect:/admin/discount-management?error=true";

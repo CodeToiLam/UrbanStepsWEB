@@ -96,6 +96,16 @@ public class SanPham {
     @Column(name = "delete_at")
     private LocalDateTime deleteAt;
 
+    // Optional external marketplace URLs (transient until DB migration is added)
+    @Transient
+    private String shopeeUrl;
+
+    @Transient
+    private String lazadaUrl;
+
+    @Transient
+    private String facebookShopUrl;
+
     // Utility methods
     public BigDecimal getGiaSauGiam() {
         if (phanTramGiam == null || phanTramGiam.compareTo(BigDecimal.ZERO) == 0) {

@@ -52,7 +52,7 @@ public class HoaDon {
     private Byte phuongThucThanhToan; // 1: Tiền mặt, 2: Chuyển khoản, 3: Cả hai
 
     @Column(name = "trang_thai")
-    private Byte trangThai = (byte) 0; // 0: Chờ xử lý, 1: Đã xác nhận, 2: Đang giao, 3: Hoàn thành, 4: Đã hủy, 5: Đã thanh toán
+    private Byte trangThai = (byte) 0; // 0: Chờ xử lý, 1: Đã xác nhận, 2: Đang giao, 3: Hoàn thành, 4: Đã hủy, 5: Đã thanh toán, 6: Trả hàng, 7: Xử lý trả hàng
 
     @Column(name = "ghi_chu", length = 500)
     private String ghiChu;
@@ -94,7 +94,10 @@ public class HoaDon {
         DANG_GIAO(2, "Đang giao"),
         HOAN_THANH(3, "Hoàn thành"),
         DA_HUY(4, "Đã hủy"),
-        DA_THANH_TOAN(5, "Đã thanh toán");
+        DA_THANH_TOAN(5, "Đã thanh toán"),
+        TRA_HANG(6, "Trả hàng"),
+        XU_LY_TRA_HANG(7, "Xử lý trả hàng"),
+        TRA_HANG_THAT_BAI(8, "Trả hàng thất bại");
 
         private final int value;
         private final String description;
@@ -156,6 +159,9 @@ public class HoaDon {
     public Boolean isCompleted() {
         return trangThai != null && trangThai == 3;
     }
+    public Boolean isReturned() {
+        return trangThai != null && trangThai == 6;
+    }
 
     public Boolean isCancelled() {
         return trangThai != null && trangThai == 4;
@@ -164,31 +170,5 @@ public class HoaDon {
     public Boolean canCancel() {
         return trangThai != null && trangThai <= 1; // Chỉ có thể hủy khi chờ xử lý hoặc đã xác nhận
     }
-    public enum TrangThai {
-        CHO_XU_LY(0),
-        DA_XAC_NHAN(1),
-        DANG_GIAO(2),
-        DA_GIAO(3),
-        DA_HOAN_THANH(5),
-        DA_HUY(4);
-
-        private final int value;
-
-        TrangThai(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static TrangThai fromValue(int value) {
-            for (TrangThai trangThai : TrangThai.values()) {
-                if (trangThai.value == value) {
-                    return trangThai;
-                }
-            }
-            throw new IllegalArgumentException("Invalid TrangThai value: " + value);
-        }
-    }
+    // Deprecated inner enum removed to avoid conflicting values (kept only TrangThaiHoaDon above)
 }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout-admin}">
+<head>
+  <title>Nhật ký hoạt động Admin</title>
+  <th:block layout:fragment="head">
+    <style>
+      .logs-table { width: 100%; border-collapse: collapse; }
+      .logs-table th, .logs-table td { border: 1px solid #eee; padding: 10px 12px; vertical-align: top; }
+      .logs-table td:nth-child(4){ font-size: 12.5px; color:#384150; white-space: pre-wrap; }
+      .logs-table th { background: #f8f9fa; text-align: left; }
+      .logs-wrap { background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 24px rgba(18,38,63,.06); }
+      .logs-title { margin:0 0 12px; }
+      .label {display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef2ff;color:#273c75}
+    </style>
+  </th:block>
+  </head>
+<div layout:fragment="content">
+  <div class="logs-wrap">
+    <h2 class="logs-title">Nhật ký hoạt động Admin</h2>
+    <div class="mb-2" style="display:flex; gap:8px; align-items:center;">
+  <input id="q" class="form-control" style="max-width:320px" placeholder="Lọc hành động, IP, user..." />
+      <button class="btn btn-sm btn-outline-secondary" onclick="render(rows)">Refresh</button>
+    </div>
+    <table class="logs-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Admin ID</th>
+        <th>Hành động</th>
+        <th>Mô tả</th>
+        <th>Thời gian</th>
+      </tr>
+      </thead>
+      <tbody id="logsBody">
+      <tr><td colspan="5">Đang tải...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    let rows = [];
+    function fmtTime(t){ try { return (t||'').replace('T',' ').substring(0,19); } catch(e){ return t||''; } }
+    function prettify(r){
+      const map = {
+        'updateOrderStatusForm': 'Cập nhật trạng thái đơn hàng',
+        'cancelOrder': 'Hủy đơn hàng',
+        'refundItem': 'Hoàn trả một phần',
+        'returnAll': 'Trả hàng toàn bộ',
+        'createReturnRequest': 'Khách gửi yêu cầu trả hàng'
+      };
+      const short = (r.hanhDong && map[r.hanhDong]) ? map[r.hanhDong] : (r.hanhDong||'Hoạt động');
+      // r.moTa may contain query-like text; pull user, method, path, ip
+      const m = (r.moTa||'');
+      const user = (m.match(/user=([^,]+)/)||[])[1]||'';
+      const method = (m.match(/method=([^,]+)/)||[])[1]||'';
+      const path = (m.match(/path=([^,]+)/)||[])[1]||'';
+      const ip = (m.match(/ip=([^,]+)/)||[])[1]||'';
+      const more = (path?(`• ${method} ${path}\n`):'') + (user?(`• user: ${user}  `):'') + (ip?(`• ip: ${ip}`):'');
+      return { ...r, hanhDong: short, moTaFmt: more.trim() };
+    }
+    function render(src){
+      const body = document.getElementById('logsBody');
+      const q = document.getElementById('q').value?.toLowerCase()||'';
+      const list = (src||rows).map(prettify).filter(x=>{
+        if(!q) return true;
+        return (x.hanhDong||'').toLowerCase().includes(q) || (x.moTa||'').toLowerCase().includes(q) || (x.moTaFmt||'').toLowerCase().includes(q);
+      });
+      body.innerHTML = '';
+      if (list.length === 0) {
+        body.innerHTML = '<tr><td colspan="5">Không có dữ liệu</td></tr>';
+        return;
+      }
+      list.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.id ?? ''}</td>
+                        <td>${r.adminId ?? ''}</td>
+                        <td><span class="label">${r.hanhDong ?? ''}</span></td>
+                        <td>${(r.moTaFmt||r.moTa||'').replaceAll('\n','<br/>')}</td>
+                        <td>${fmtTime(r.thoiGian)}</td>`;
+        body.appendChild(tr);
+      });
+    }
+    fetch('/admin/logs').then(r=>r.json()).then(data=>{ rows = data||[]; render(rows); }).catch(()=>{ document.getElementById('logsBody').innerHTML = '<tr><td colspan="5">Lỗi tải log</td></tr>'; });
+  </script>
+</div>
+</html>
