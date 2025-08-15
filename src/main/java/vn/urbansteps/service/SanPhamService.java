@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.repository.SanPhamRepository;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,17 +42,17 @@ public class SanPhamService {
     }
 
     public List<SanPham> getFlashDealProducts() {
-        List<SanPham> allProducts = getActiveProductsWithCache();
-        System.out.println("Flash Deal Products count: " + allProducts.size());
-        return allProducts;
+        // Flash Deal = các sản phẩm đang sale (giảm giá cao trước)
+        List<SanPham> saleProducts = sanPhamRepository.findSaleProducts(Boolean.TRUE);
+        System.out.println("Flash Deal (sale) Products count: " + saleProducts.size());
+        return saleProducts;
     }
 
     public List<SanPham> getTopPopularProducts() {
-        List<SanPham> allProducts = getActiveProductsWithCache();
-        List<SanPham> reversedProducts = new java.util.ArrayList<>(allProducts);
-        java.util.Collections.reverse(reversedProducts);
-        System.out.println("Top Popular Products count: " + reversedProducts.size());
-        return reversedProducts;
+        // Popular/Hot = sản phẩm bán chạy (ưu tiên theo lượt bán)
+        List<SanPham> bestSelling = sanPhamRepository.findBestSellingProducts(Boolean.TRUE);
+        System.out.println("Top Popular (best-selling) Products count: " + bestSelling.size());
+        return bestSelling;
     }
 
     public List<SanPham> getAllProducts() {
@@ -89,11 +88,13 @@ public class SanPhamService {
     }
 
     public List<SanPham> getSaleProducts() {
-        return sanPhamRepository.findByTrangThaiAndGiaBanLessThanOrderByGiaBanAsc(Boolean.TRUE, new BigDecimal("2000000"));
+        // Dùng đúng định nghĩa SALE: có cờ laSale và phanTramGiam > 0
+        return sanPhamRepository.findSaleProducts(Boolean.TRUE);
     }
 
     public List<SanPham> getHotProducts() {
-        return sanPhamRepository.findTop10ByTrangThaiOrderByGiaBanDesc(Boolean.TRUE);
+    // HOT: hiển thị TẤT CẢ sản phẩm active, sắp xếp theo lượt bán giảm dần (lượt xem phụ trợ)
+    return sanPhamRepository.findBestSellingProducts(Boolean.TRUE);
     }
 
     public Optional<SanPham> findById(Integer id) {

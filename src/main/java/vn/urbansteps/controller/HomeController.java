@@ -32,8 +32,8 @@ public class HomeController {
             List<String> bannerImages = homeImageService.getBannerImages();
             model.addAttribute("bannerImages", bannerImages);
             
-            // Lấy sản phẩm Flash Deal (sản phẩm giá thấp)
-            List<SanPham> flashDealProducts = sanPhamService.getFlashDealProducts();
+            // Lấy sản phẩm Flash Deal (đúng: sản phẩm SALE)
+            List<SanPham> flashDealProducts = sanPhamService.getSaleProducts();
             // Giới hạn số lượng hiển thị
             if (flashDealProducts.size() > 8) {
                 flashDealProducts = flashDealProducts.subList(0, 8);
@@ -44,8 +44,8 @@ public class HomeController {
             
             model.addAttribute("flashDealProducts", flashDealProducts);
             
-            // Lấy sản phẩm Top Popular (sản phẩm giá cao)
-            List<SanPham> topPopularProducts = sanPhamService.getTopPopularProducts();
+            // Lấy sản phẩm Top Popular (đúng: HOT/bán chạy)
+            List<SanPham> topPopularProducts = sanPhamService.getHotProducts();
             // Giới hạn số lượng hiển thị
             if (topPopularProducts.size() > 8) {
                 topPopularProducts = topPopularProducts.subList(0, 8);

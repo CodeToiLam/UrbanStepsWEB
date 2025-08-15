@@ -31,8 +31,22 @@
                style="max-height:180px;object-fit:cover;background:#f8f8f8;"
                onerror="this.onerror=null;this.src='/images/no-image.svg';">
         </a>
-        <h3 class="product-title mb-1" th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-        <p class="product-price fw-bold text-danger mb-0" th:text="${#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">Giá sản phẩm</p>
+    <h3 class="product-title mb-1" th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+    <div class="mb-1">
+      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
+        class="badge rounded-pill bg-danger me-1">SALE -<span th:text="${#numbers.formatDecimal(product.phanTramGiam,0,0)}"></span>%</span>
+          <span th:if="${product.luotBan != null and product.luotBan > 0}"
+        class="badge rounded-pill bg-warning text-dark">HOT</span>
+    </div>
+    <div class="product-price-group">
+      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
+        class="text-muted text-decoration-line-through me-2"
+        th:text="${#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">0đ</span>
+      <span class="product-price fw-bold text-danger mb-0"
+        th:text="${(product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0) ?
+          #numbers.formatDecimal(product.giaSauGiam, 0, 0) + 'đ' :
+          #numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">Giá</span>
+    </div>
       </div>
     </div>
 

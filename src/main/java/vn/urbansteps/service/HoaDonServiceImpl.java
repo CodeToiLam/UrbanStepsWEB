@@ -49,6 +49,9 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
 
+    @Autowired
+    private vn.urbansteps.repository.SanPhamRepository sanPhamRepository;
+
     @Override
     public Page<HoaDon> searchOrders(String keyword, Byte status, Pageable pageable) {
         if (keyword != null && !keyword.isEmpty()) {
@@ -135,6 +138,28 @@ public class HoaDonServiceImpl implements HoaDonService {
             chiTiet.setCreateAt(LocalDateTime.now());
             hoaDonChiTietRepository.save(chiTiet);
             logger.info("Lưu chi tiết hóa đơn: maHoaDonChiTiet={}", chiTiet.getMaHoaDonChiTiet());
+
+            // Cập nhật lượt bán cho sản phẩm
+            try {
+                vn.urbansteps.repository.SanPhamRepository sanPhamRepo =
+                        org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext()
+                                .getBean(vn.urbansteps.repository.SanPhamRepository.class);
+                Integer spId = item.getSanPhamChiTiet() != null && item.getSanPhamChiTiet().getSanPham() != null
+                        ? item.getSanPhamChiTiet().getSanPham().getId() : null;
+                if (spId != null && item.getSoLuong() != null && item.getSoLuong() > 0) {
+                    sanPhamRepo.incrementLuotBan(spId, item.getSoLuong());
+                }
+            } catch (Exception ignore) {}
+
+            // Cộng lượt bán cho sản phẩm cha (POS là hoàn thành ngay)
+            try {
+                SanPhamChiTiet spct = item.getSanPhamChiTiet();
+                if (spct != null && spct.getSanPham() != null) {
+                    Integer spId = spct.getSanPham().getId();
+                    Integer qty = item.getSoLuong();
+                    if (spId != null && qty != null && qty > 0) sanPhamRepository.incrementLuotBan(spId, qty);
+                }
+            } catch (Exception ignore) {}
         }
 
         logger.info("Tạo hóa đơn POS thành công: maHoaDon={}", hoaDon.getMaHoaDon());

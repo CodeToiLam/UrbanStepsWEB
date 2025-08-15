@@ -5,318 +5,187 @@
 <head>
     <title th:text="#{admin.return.request.detail.title}">Chi tiết yêu cầu trả hàng</title>
     <link rel="stylesheet" th:href="@{/css/admin-return-request.css}">
+    <meta name="_csrf_parameter" th:content="${_csrf?.parameterName}">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
 </head>
 <body>
-    <div layout:fragment="content" class="return-request-detail">
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <div class="breadcrumb">
-                        <a th:href="@{/admin/return-requests}" th:text="#{admin.return.requests.title}">Quản lý yêu cầu trả hàng</a>
-                        <span class="separator">/</span>
-                        <span th:text="'#' + ${request.id}">Chi tiết yêu cầu</span>
-                    </div>
-                    <h1 class="page-title">
-                        <span th:text="#{admin.return.request.detail.title}">Chi tiết yêu cầu trả hàng</span>
-                        <span class="request-id" th:text="'#' + ${request.id}">#1</span>
-                    </h1>
+<div layout:fragment="content" class="return-request-detail">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="breadcrumb">
+                    <a th:href="@{/admin/quan-ly-yeu-cau-tra-hang}" th:text="#{admin.return.requests.title}">Quản lý yêu cầu trả hàng</a>
+                    <span class="separator">/</span>
+                    <span th:text="'#' + ${request.id}">#1</span>
                 </div>
-                <div class="col-auto">
-                    <div class="btn-list">
-                        <a th:href="@{/admin/return-requests}" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> <span th:text="#{button.back}">Quay lại</span>
+                <h1 class="page-title">
+                    <span th:text="#{admin.return.request.detail.title}">Chi tiết yêu cầu trả hàng</span>
+                    <span class="request-id" th:text="'#' + ${request.id}">#1</span>
+                </h1>
+            </div>
+            <div class="col-auto">
+                <a th:href="@{/admin/quan-ly-yeu-cau-tra-hang}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{button.back}">Quay lại</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="rrd-grid">
+        <!-- Left: Request content -->
+        <div>
+            <!-- Requested items -->
+            <div class="card rrd-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">Sản phẩm yêu cầu trả</h3>
+                    <span class="text-muted" th:text="${#lists.size(request.items)} + ' mục'">0 mục</span>
+                </div>
+                <div class="card-body rrd-items">
+                    <div class="ri" th:each="it : ${request.items}">
+                        <th:block th:each="d : ${order.hoaDonChiTietList}" th:if="${d.id} == ${it.orderItemId}">
+                       <img class="thumb"
+                           th:src="${d.sanPhamChiTiet != null and d.sanPhamChiTiet.sanPham != null and d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null and d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan != null} ?
+                                  ${d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan} :
+                                  @{/images/no-image.jpg}"
+                           alt="thumb">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2">
+                                    <strong th:text="${d.tenSanPham}">Sản phẩm</strong>
+                                    <span class="badge bg-light text-dark" th:if="${d.sanPhamChiTiet != null && d.sanPhamChiTiet.mauSac != null}" th:text="'Màu: ' + ${d.sanPhamChiTiet.mauSac.tenMauSac}"></span>
+                                    <span class="badge bg-light text-dark" th:if="${d.sanPhamChiTiet != null && d.sanPhamChiTiet.kichCo != null}" th:text="'Size: ' + ${d.sanPhamChiTiet.kichCo.tenKichCo}"></span>
+                                </div>
+                                <div class="text-muted small">
+                                    <span>SL mua: <b th:text="${d.soLuong}">1</b></span>
+                                    <span class="ms-2">SL trả: <b th:text="${it.qty}">1</b></span>
+                                </div>
+                                <div class="small">
+                                    <span>Đơn giá: <b th:text="${#numbers.formatDecimal(unitPriceById[d.id] != null ? unitPriceById[d.id] : T(java.math.BigDecimal).ZERO, 0, 'COMMA', 0, 'POINT') + ' ₫'}">0 ₫</b></span>
+                                    <span class="ms-3 text-success">Tạm hoàn:
+                                        <b th:text="${#numbers.formatDecimal(refundById[d.id] != null ? refundById[d.id] : T(java.math.BigDecimal).ZERO, 0, 'COMMA', 0, 'POINT') + ' ₫'}">0 ₫</b>
+                                    </span>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <span class="text-muted">Tổng tạm hoàn</span>
+                    <strong th:text="${#numbers.formatDecimal(totalRefund, 0, 'COMMA', 0, 'POINT') + ' ₫'}">0 ₫</strong>
+                </div>
+            </div>
+
+            <!-- Reason & attachments -->
+            <div class="card rrd-card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Thông tin yêu cầu</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2"><span class="text-muted">Lý do: </span><span th:text="${request.reason}">-</span></div>
+                    <div th:if="${request.imageUrls != null and !request.imageUrls.isEmpty()}">
+                        <div class="text-muted mb-1">Hình ảnh đính kèm</div>
+                        <div class="gallery">
+                            <img th:each="img : ${request.imageUrls}" th:src="@{${img}}" alt="evidence" onclick="openImageModal(this.src)">
+                        </div>
+                    </div>
+                    <div class="mt-3" th:if="${request.adminNote}">
+                        <div class="text-muted">Ghi chú của admin</div>
+                        <div class="p-2 rounded border" th:text="${request.adminNote}">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card rrd-card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Lịch sử</h3>
+                </div>
+                <div class="card-body">
+                    <div class="timeline-compact">
+                        <div class="timeline-item">
+                            <div class="timeline-time" th:text="${#temporals.format(request.createdAt, 'dd/MM HH:mm')}">--</div>
+                            <div class="timeline-content">Tạo yêu cầu</div>
+                        </div>
+                        <div class="timeline-item" th:if="${request.updatedAt}">
+                            <div class="timeline-time" th:text="${#temporals.format(request.updatedAt, 'dd/MM HH:mm')}">--</div>
+                            <div class="timeline-content">Cập nhật trạng thái: <b th:text="${request.statusText}">-</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Sidebar and actions -->
+        <aside>
+            <div class="card rrd-card">
+                <div class="card-body">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted">Trạng thái</div>
+                        <span class="status-chip"
+                              th:classappend="${#strings.toLowerCase(request.status)}"
+                              th:text="${request.statusText}">Chờ xử lý</span>
+                    </div>
+                    <!-- Actions under status -->
+                    <div th:if="${request.status.name() == 'NEW' or request.status.name() == 'PROCESSING'}" class="mb-3">
+                        <div class="mb-2">
+                            <label class="form-label">Ghi chú (không bắt buộc)</label>
+                            <textarea class="form-control" id="adminNote" rows="2" placeholder="Nội dung gửi kèm khi duyệt"></textarea>
+                        </div>
+                        <form id="approveForm" th:action="@{/admin/yeu-cau-tra-hang/{id}/approve(id=${request.id})}" method="post" class="mb-2">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="adminNote" id="approveAdminNote" />
+                            <button type="button" class="btn btn-success w-100" data-approve-btn><i class="bi bi-check-circle"></i> Phê duyệt</button>
+                        </form>
+                        <form th:action="@{/admin/yeu-cau-tra-hang/{id}/reject(id=${request.id})}" method="post" class="mb-2">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <label class="form-label">Lý do từ chối (bắt buộc)</label>
+                            <textarea name="reason" class="form-control mb-2" rows="3" required th:text="${reason}"></textarea>
+                            <button type="submit" class="btn btn-danger w-100"><i class="bi bi-x-circle"></i> Từ chối</button>
+                        </form>
+                    </div>
+                    <div class="meta-grid">
+                        <div><div class="text-muted">Mã yêu cầu</div><strong th:text="'#' + ${request.id}">#</strong></div>
+                        <div><div class="text-muted">Ngày tạo</div><strong th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy HH:mm')}">--</strong></div>
+                        <div><div class="text-muted">Mã đơn</div><strong th:text="${request.orderCode}">HD</strong></div>
+                        <div><div class="text-muted">Khách hàng</div><strong th:text="${request.customerName}">-</strong></div>
+                        <div th:if="${request.returnMethodText != null}"><div class="text-muted">Phương thức hoàn trả</div><strong th:text="${request.returnMethodText}">-</strong></div>
+                        <div th:if="${request.pickupAddress != null}"><div class="text-muted">Địa chỉ lấy hàng</div><strong th:text="${request.pickupAddress}">-</strong></div>
+                        <div th:if="${request.refundMethodText != null}"><div class="text-muted">Phương thức hoàn tiền</div><strong th:text="${request.refundMethodText}">-</strong></div>
+                        <div th:if="${request.bankName != null}"><div class="text-muted">Ngân hàng</div><strong th:text="${request.bankName}">-</strong></div>
+                        <div th:if="${request.bankAccount != null}"><div class="text-muted">Số tài khoản</div><strong th:text="${request.bankAccount}">-</strong></div>
+                        <div th:if="${request.bankHolder != null}"><div class="text-muted">Chủ tài khoản</div><strong th:text="${request.bankHolder}">-</strong></div>
+                    </div>
+                    <div class="mt-2">
+                        <a th:href="@{'/admin/order-detail/' + ${order.id} + '?back=' + ${#urls.urlEncode(#httpServletRequest.getRequestURI() + (#httpServletRequest.getQueryString() != null ? ('?' + #httpServletRequest.getQueryString()) : ''))}}" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-eye"></i> Xem đơn hàng
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <!-- Main Content -->
-            <div class="col-lg-8">
-                <!-- Action Panel -->
-                <div class="card" th:if="${request.status.name() == 'NEW' or request.status.name() == 'PROCESSING'}">
-                    <div class="card-header">
-                        <h3 class="card-title" th:text="#{{card.actions.title}}">Thao tác</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- Mark as Processing -->
-                        <form th:if="${request.status.name() == 'NEW'}"
-                              th:action="@{/admin/return-request/{id}/processing(id=${request.id})}"
-                              method="post" class="mb-3">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="btn btn-warning w-100">
-                                <i class="bi bi-gear"></i> <span th:text="#{{button.mark.processing}}">Đánh dấu đang xử lý</span>
-                            </button>
-                        </form>
+            
+        </aside>
+    </div>
+</div>
 
-                        <!-- Approve with admin note -->
-                        <form th:action="@{/admin/return-request/{id}/approve(id=${request.id})}"
-                              method="post" class="mb-3">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <div class="mb-3">
-                                <label for="adminNote" class="form-label" th:text="#{{label.admin.note}}">Ghi chú:</label>
-                                <textarea class="form-control" id="adminNote" name="adminNote" rows="3" th:placeholder="#{{placeholder.admin.note}}"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Xác nhận phê duyệt?');">
-                                <i class="bi bi-check-circle"></i> <span th:text="#{{button.approve}}">Phê duyệt</span>
-                            </button>
-                        </form>
-
-                        <!-- Reject flow: open modal to collect reason, then submit POST -->
-                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                            <i class="bi bi-x-circle"></i> <span th:text="#{{button.reject}}">Từ chối</span>
-                        </button>
-                    </div>
-                </div>
-                                <div class="timeline-icon" th:classappend="${request.status.name() == 'APPROVED'} ? 'success' : 'danger'">
-                                    <i th:class="${request.status.name() == 'APPROVED'} ? 'bi bi-check-circle' : 'bi bi-x-circle'"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <h4 th:text="${request.statusText}">Hoàn thành</h4>
-                                    <p th:if="${request.updatedAt}" th:text="${#temporals.format(request.updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="current-status mt-4">
-                            <span class="status-label" th:text="#{current.status}">Trạng thái hiện tại:</span>
-                            <span class="status-badge large" 
-                                  th:classappend="'status-' + ${#strings.toLowerCase(request.status)}"
-                                  th:text="${request.statusText}">Chờ xử lý</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Request Details Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title" th:text="#{card.request.details.title}">Chi tiết yêu cầu</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="detail-row">
-                            <label th:text="#{label.reason}">Lý do trả hàng:</label>
-                            <div class="detail-value">
-                                <p th:text="${request.reason}">Sản phẩm bị lỗi, không đúng mô tả</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <label th:text="#{label.reason.detail}">Mô tả chi tiết:</label>
-                            <div class="detail-value">
-                                <p th:text="${request.reason}">Sản phẩm có vết xước ở mặt trước, không giống như hình ảnh mô tả trên website...</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-row" th:if="${request.images}">
-                            <label th:text="#{label.images}">Hình ảnh đính kèm:</label>
-                            <div class="detail-value">
-                                <div class="image-gallery">
-                                    <div th:each="image : ${#strings.arraySplit(request.images, ',')}" class="image-item">
-                                        <img th:src="@{${image}}" alt="Return request image" onclick="openImageModal(this.src)">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="detail-row" th:if="${request.adminNote}">
-                            <label th:text="#{label.admin.note}">Ghi chú từ admin:</label>
-                            <div class="detail-value admin-note">
-                                <p th:text="${request.adminNote}">Yêu cầu đã được xem xét và phê duyệt...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Order Information Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title" th:text="#{card.order.info.title}">Thông tin đơn hàng</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="order-summary">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="detail-row">
-                                        <label th:text="#{label.order.code}">Mã đơn hàng:</label>
-                                        <div class="detail-value">
-                                            <strong th:text="${request.orderCode}">HD001</strong>
-                                            <a th:href="@{/admin/order-detail/{id}(id=${order.id})}"
-                                               class="btn btn-sm btn-outline-primary ms-2">
-                                                <i class="bi bi-eye"></i> <span th:text="#{button.view.order}">Xem đơn hàng</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="detail-row">
-                                        <label th:text="#{label.order.date}">Ngày đặt hàng:</label>
-                                        <div class="detail-value" th:if="${order}">
-                                            <span th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy')}">01/01/2024</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Image Modal -->
+<div id="imageModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xem hình ảnh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-                <!-- Action Panel -->
-                <div class="card" th:if="${request.status.name() == 'NEW' or request.status.name() == 'PROCESSING'}">
-                    <div class="card-header">
-                        <h3 class="card-title" th:text="#{card.actions.title}">Thao tác</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- Processing: simple POST form -->
-                        <form id="processingForm" th:action="@{/admin/return-request/{id}/processing(id=${request.id})}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        </form>
-                        <div class="mb-3" th:if="${request.status.name() == 'NEW'}">
-                            <button type="submit" class="btn btn-warning w-100 mb-2" form="processingForm">
-                                <i class="bi bi-gear"></i> <span th:text="#{button.mark.processing}">Đánh dấu đang xử lý</span>
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="adminNote" class="form-label" th:text="#{label.admin.note}">Ghi chú:</label>
-                            <textarea class="form-control" id="adminNote" rows="4" 
-                                      th:placeholder="#{placeholder.admin.note}"></textarea>
-                        </div>
-
-                        <!-- Approve: hidden form we submit via JS to include adminNote -->
-                        <form id="approveForm" th:action="@{/admin/return-request/{id}/approve(id=${request.id})}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <input type="hidden" name="adminNote" id="approveAdminNote" />
-                        </form>
-
-                        <div class="action-buttons">
-                            <button type="button" class="btn btn-success w-100 mb-2" id="approveBtn">
-                                <i class="bi bi-check-circle"></i> <span th:text="#{button.approve}">Phê duyệt</span>
-                            </button>
-                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                                <i class="bi bi-x-circle"></i> <span th:text="#{button.reject}">Từ chối</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                    <div class="card-body">
-                        <form id="actionForm" th:action="@{/admin/return-request/{id}/processing(id=${request.id})}" method="post">
-                            <div class="mb-3" th:if="${request.status.name() == 'NEW'}">
-                                <button type="button" class="btn btn-warning w-100 mb-2" onclick="markAsProcessing()">
-                                    <i class="bi bi-gear"></i> <span th:text="#{button.mark.processing}">Đánh dấu đang xử lý</span>
-                                </button>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="adminNote" class="form-label" th:text="#{label.admin.note}">Ghi chú:</label>
-                                <textarea class="form-control" id="adminNote" name="adminNote" rows="4" 
-                                          th:placeholder="#{placeholder.admin.note}"></textarea>
-                            </div>
-
-                            <div class="action-buttons">
-                                <button type="button" class="btn btn-success w-100 mb-2" onclick="approveRequest()">
-                                    <i class="bi bi-check-circle"></i> <span th:text="#{button.approve}">Phê duyệt</span>
-                                </button>
-                                <button type="button" class="btn btn-danger w-100" onclick="rejectRequest()">
-                                    <i class="bi bi-x-circle"></i> <span th:text="#{button.reject}">Từ chối</span>
-                                </button>
-                            </div>
-                            
-                            <input type="hidden" id="action" name="action" value="">
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Request Timeline -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title" th:text="#{card.timeline.title}">Lịch sử yêu cầu</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="timeline-compact">
-                            <div class="timeline-item">
-                                <div class="timeline-time" th:text="${#temporals.format(request.createdAt, 'dd/MM HH:mm')}">01/01 10:30</div>
-                                <div class="timeline-content">
-                                    <span th:text="#{timeline.created}">Yêu cầu được tạo</span>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item" th:if="${request.updatedAt}">
-                                <div class="timeline-time" th:text="${#temporals.format(request.updatedAt, 'dd/MM HH:mm')}">01/01 11:00</div>
-                                <div class="timeline-content">
-                                    <span th:text="#{timeline.status.updated}">Cập nhật trạng thái</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Return request image" class="img-fluid">
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" th:text="#{modal.image.title}">Xem hình ảnh</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img id="modalImage" src="" alt="Return request image" class="img-fluid">
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Reject Modal removed: actions are inline under status -->
 
-    <!-- Reject Reason Modal -->
-    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectModalLabel" th:text="#{{button.reject}}">Từ chối</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form th:action="@{/admin/return-request/{id}/reject(id=${request.id})}" method="post">
-                    <div class="modal-body">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <div class="mb-3">
-                            <label for="rejectReason" class="form-label" th:text="#{{label.reason}}">Lý do từ chối</label>
-                            <textarea id="rejectReason" name="reason" class="form-control" rows="4" required
-                                      th:placeholder="#{{label.reason}}"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{{button.cancel}}">Hủy</button>
-                        <button type="submit" class="btn btn-danger" th:text="#{{button.reject}}">Từ chối</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-        <script layout:fragment="scripts" th:src="@{/js/admin-return-request.js}"></script>
-        <script layout:fragment="scripts">
-                // Submit approve with current adminNote
-                (function(){
-                    const btn = document.getElementById('approveBtn');
-                    if(btn){
-                        btn.addEventListener('click', function(){
-                            if(!confirm('[[#{confirm.approve}]]')) return;
-                            const noteEl = document.getElementById('adminNote');
-                            const hidden = document.getElementById('approveAdminNote');
-                            if(hidden){ hidden.value = noteEl ? noteEl.value : ''; }
-                            const form = document.getElementById('approveForm');
-                            if(form){ form.submit(); }
-                        });
-                    }
-                })();
-
-                function openImageModal(src) {
-                        document.getElementById('modalImage').src = src;
-                        new bootstrap.Modal(document.getElementById('imageModal')).show();
-                }
-        </script>
+<script layout:fragment="scripts" th:src="@{/js/admin-return-request-detail.js}"></script>
 </body>
 </html>

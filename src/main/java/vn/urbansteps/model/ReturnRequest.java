@@ -86,4 +86,49 @@ public class ReturnRequest {
     public String getImages() { // comma separated for legacy template usage
         return String.join(",", getImageUrls());
     }
+
+    // --- Transient helpers: extract structured details from reason suffix "|| META:{...json...}"
+    @Transient
+    public java.util.Map<String, String> getMeta() {
+        try {
+            if (reason == null) return java.util.Map.of();
+            int idx = reason.indexOf("|| META:");
+            if (idx < 0) return java.util.Map.of();
+            String json = reason.substring(idx + 8).trim();
+            if (json.isEmpty()) return java.util.Map.of();
+            ObjectMapper mapper = new ObjectMapper();
+            java.util.Map<String, String> map = mapper.readValue(json, new TypeReference<java.util.Map<String,String>>(){});
+            return map != null ? map : java.util.Map.of();
+        } catch (Exception e) {
+            return java.util.Map.of();
+        }
+    }
+
+    @Transient
+    public String getReturnMethodText() {
+        String m = getMeta().getOrDefault("returnMethod", "");
+        if ("PICKUP".equalsIgnoreCase(m)) return "Hẹn nhân viên đến lấy";
+        if ("DROP_OFF".equalsIgnoreCase(m)) return "Gửi tại bưu cục";
+        return null;
+    }
+
+    @Transient
+    public String getPickupAddress() {
+        return getMeta().get("pickupAddress");
+    }
+
+    @Transient
+    public String getRefundMethodText() {
+        String m = getMeta().getOrDefault("refundMethod", "");
+        if ("BANK".equalsIgnoreCase(m)) return "Chuyển khoản ngân hàng";
+        if ("ORIGINAL".equalsIgnoreCase(m)) return "Về phương thức thanh toán ban đầu";
+        return null;
+    }
+
+    @Transient
+    public String getBankName() { return getMeta().get("bankName"); }
+    @Transient
+    public String getBankAccount() { return getMeta().get("bankAccount"); }
+    @Transient
+    public String getBankHolder() { return getMeta().get("bankHolder"); }
 }

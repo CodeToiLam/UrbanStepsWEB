@@ -2,244 +2,229 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-admin}">
-<head>
-    <title th:text="#{admin.return.requests.title}">Quản lý yêu cầu trả hàng</title>
+<th:block layout:fragment="head">
     <link rel="stylesheet" th:href="@{/css/admin-return-request.css}">
-</head>
+</th:block>
 <body>
-    <div layout:fragment="content" class="return-request-management">
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h1 class="page-title" th:text="#{admin.return.requests.title}">Quản lý yêu cầu trả hàng</h1>
-                    <p class="page-subtitle" th:text="#{admin.return.requests.subtitle}">Quản lý và xử lý các yêu cầu trả hàng từ khách hàng</p>
-                </div>
-                <div class="col-auto">
-                    <div class="btn-list">
-                        <a href="#" class="btn btn-primary" onclick="exportReturnRequests()">
-                            <i class="bi bi-download"></i> <span th:text="#{button.export}">Xuất báo cáo</span>
-                        </a>
+<div layout:fragment="content" class="return-request-management">
+
+    <!-- Page header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 page-header">
+        <h1 class="h3" th:text="#{admin.return.requests.title}">Quản lý yêu cầu trả hàng</h1>
+        <a href="#" class="btn btn-primary" onclick="exportReturnRequests()">
+            <i class="bi bi-download"></i>
+            <span th:text="#{button.export}">Xuất báo cáo</span>
+        </a>
+    </div>
+
+    <script>
+        function exportReturnRequests(){
+            const table = document.querySelector('.return-request-management table');
+            if(!table){ alert('Không có dữ liệu để xuất'); return; }
+            const rows = [...table.querySelectorAll('tr')];
+            const csv = rows.map(tr => [...tr.children]
+                .map(td => `"${(td.innerText||'').replaceAll('"','""').trim()}"`).join(',')
+            ).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'return-requests.csv'; a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card stats-card stats-new">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon me-3"><i class="bi bi-clock"></i></div>
+                    <div class="stats-info">
+                        <h3 th:text="${newCount}">0</h3>
+                        <p th:text="#{status.new}">Chờ xử lý</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card stats-card stats-new">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="icon">
-                                <i class="bi bi-clock"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3 th:text="${newCount}">0</h3>
-                                <p th:text="#{status.new}">Chờ xử lý</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card stats-card stats-processing">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="icon">
-                                <i class="bi bi-gear"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3 th:text="${processingCount}">0</h3>
-                                <p th:text="#{status.processing}">Đang xử lý</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card stats-card stats-approved">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="icon">
-                                <i class="bi bi-check-circle"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3 th:text="${approvedCount}">0</h3>
-                                <p th:text="#{status.approved}">Đã phê duyệt</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card stats-card stats-rejected">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="icon">
-                                <i class="bi bi-x-circle"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3 th:text="${rejectedCount}">0</h3>
-                                <p th:text="#{status.rejected}">Đã từ chối</p>
-                            </div>
-                        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stats-card stats-processing">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon me-3"><i class="bi bi-gear"></i></div>
+                    <div class="stats-info">
+                        <h3 th:text="${processingCount}">0</h3>
+                        <p th:text="#{status.processing}">Đang xử lý</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Filters -->
-        <div class="card filters-card">
-            <div class="card-body">
-                <form method="get" class="filters-form">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="search" 
-                                   th:value="${search}" 
-                                   th:placeholder="#{search.placeholder}"
-                                   placeholder="Tìm theo mã đơn hàng, tên khách hàng, SĐT...">
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" name="status">
-                                <option value="" th:text="#{filter.all.status}">Tất cả trạng thái</option>
-                                <option value="NEW" th:selected="${status == 'NEW'}" th:text="#{status.new}">Chờ xử lý</option>
-                                <option value="PROCESSING" th:selected="${status == 'PROCESSING'}" th:text="#{status.processing}">Đang xử lý</option>
-                                <option value="APPROVED" th:selected="${status == 'APPROVED'}" th:text="#{status.approved}">Đã phê duyệt</option>
-                                <option value="REJECTED" th:selected="${status == 'REJECTED'}" th:text="#{status.rejected}">Đã từ chối</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search"></i> <span th:text="#{button.search}">Tìm kiếm</span>
-                            </button>
-                            <a th:href="@{/admin/return-requests}" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise"></i> <span th:text="#{button.reset}">Đặt lại</span>
-                            </a>
-                        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stats-card stats-approved">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon me-3"><i class="bi bi-check2-circle"></i></div>
+                    <div class="stats-info">
+                        <h3 th:text="${approvedCount}">0</h3>
+                        <p th:text="#{status.approved}">Đã phê duyệt</p>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-
-        <!-- Return Requests Table -->
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th th:text="#{table.id}">ID</th>
-                                <th th:text="#{table.order.code}">Mã đơn hàng</th>
-                                <th th:text="#{table.customer}">Khách hàng</th>
-                                <th th:text="#{table.reason}">Lý do</th>
-                                <th th:text="#{table.status}">Trạng thái</th>
-                                <th th:text="#{table.created.date}">Ngày tạo</th>
-                                <th th:text="#{table.actions}">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="request : ${requests.content}" th:id="'request-' + ${request.id}">
-                                <td>
-                                    <strong th:text="'#' + ${request.id}">#1</strong>
-                                </td>
-                                <td>
-                                    <a th:href="@{/admin/return-request/{id}(id=${request.id})}" 
-                                       class="order-link"
-                                       th:text="${request.orderCode}">HD001</a>
-                                </td>
-                                <td>
-                                    <div class="customer-info">
-                                        <div class="customer-name" th:text="${request.customerName}">Nguyễn Văn A</div>
-                                        <div class="customer-phone" th:text="${request.customerPhone}">0901234567</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="reason-text" th:text="${#strings.abbreviate(request.reason, 50)}">Sản phẩm bị lỗi...</div>
-                                </td>
-                                <td>
-                                    <span class="status-badge" 
-                                          th:classappend="'status-' + ${#strings.toLowerCase(request.status)}"
-                                          th:text="${request.statusText}">Chờ xử lý</span>
-                                </td>
-                                <td>
-                                    <div class="date-info">
-                                        <div th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy')}">01/01/2024</div>
-                                        <small th:text="${#temporals.format(request.createdAt, 'HH:mm')}">10:30</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a th:href="@{/admin/return-request/{id}(id=${request.id})}" 
-                                           class="btn btn-sm btn-outline-primary"
-                                           th:title="#{button.view.detail}">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        
-                                        <div class="btn-group" th:if="${request.status.name() == 'NEW'}">
-                                            <button class="btn btn-sm btn-success" 
-                                                    th:onclick="'approveRequest(' + ${request.id} + ')'"
-                                                    th:title="#{button.approve}">
-                                                <i class="bi bi-check"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" 
-                                                    th:onclick="'rejectRequest(' + ${request.id} + ')'"
-                                                    th:title="#{button.reject}">
-                                                <i class="bi bi-x"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        <button th:if="${request.status.name() == 'NEW'}"
-                                                class="btn btn-sm btn-warning" 
-                                                th:onclick="'markAsProcessing(' + ${request.id} + ')'"
-                                                th:title="#{button.mark.processing}">
-                                            <i class="bi bi-gear"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <nav th:if="${requests.totalPages > 1}" class="pagination-nav">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${!requests.hasPrevious()} ? 'disabled'">
-                            <a class="page-link" 
-                               th:href="@{/admin/return-requests(page=${currentPage - 1}, search=${search}, status=${status})}">
-                                <i class="bi bi-chevron-left"></i>
-                            </a>
-                        </li>
-                        
-                        <li th:each="pageNum : ${#numbers.sequence(0, requests.totalPages - 1)}" 
-                            class="page-item" 
-                            th:classappend="${pageNum == currentPage} ? 'active'">
-                            <a class="page-link" 
-                               th:href="@{/admin/return-requests(page=${pageNum}, search=${search}, status=${status})}"
-                               th:text="${pageNum + 1}">1</a>
-                        </li>
-                        
-                        <li class="page-item" th:classappend="${!requests.hasNext()} ? 'disabled'">
-                            <a class="page-link" 
-                               th:href="@{/admin/return-requests(page=${currentPage + 1}, search=${search}, status=${status})}">
-                                <i class="bi bi-chevron-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                <!-- Empty State -->
-                <div th:if="${requests.content.isEmpty()}" class="empty-state">
-                    <div class="empty-icon">
-                        <i class="bi bi-inbox"></i>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stats-card stats-rejected">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon me-3"><i class="bi bi-x-circle"></i></div>
+                    <div class="stats-info">
+                        <h3 th:text="${rejectedCount}">0</h3>
+                        <p th:text="#{status.rejected}">Đã từ chối</p>
                     </div>
-                    <h3 th:text="#{empty.no.requests}">Không có yêu cầu trả hàng nào</h3>
-                    <p th:text="#{empty.no.requests.desc}">Chưa có yêu cầu trả hàng nào phù hợp với bộ lọc hiện tại.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script layout:fragment="scripts" th:src="@{/js/admin-return-request.js}"></script>
+    <!-- Filters -->
+    <div class="card filters-card mb-3">
+        <div class="card-body">
+            <form method="get" class="filters-form">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search"
+                               th:value="${search}"
+                               th:placeholder="#{search.placeholder}"
+                               placeholder="Tìm theo mã đơn hàng, tên khách hàng, SĐT...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="status">
+                            <option value="" th:text="#{filter.all.status}">Tất cả trạng thái</option>
+                            <option value="NEW" th:selected="${status == 'NEW'}" th:text="#{status.new}">Chờ xử lý</option>
+                            <option value="PROCESSING" th:selected="${status == 'PROCESSING'}" th:text="#{status.processing}">Đang xử lý</option>
+                            <option value="APPROVED" th:selected="${status == 'APPROVED'}" th:text="#{status.approved}">Đã phê duyệt</option>
+                            <option value="REJECTED" th:selected="${status == 'REJECTED'}" th:text="#{status.rejected}">Đã từ chối</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> <span th:text="#{button.search}">Tìm kiếm</span>
+                            </button>
+                            <a th:href="@{/admin/quan-ly-yeu-cau-tra-hang}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise"></i> <span th:text="#{button.reset}">Đặt lại</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Return Requests Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th th:text="#{table.id}">ID</th>
+                        <th th:text="#{table.order.code}">Mã đơn hàng</th>
+                        <th th:text="#{table.customer}">Khách hàng</th>
+                        <th th:text="#{table.reason}">Lý do</th>
+                        <th th:text="#{table.status}">Trạng thái</th>
+                        <th th:text="#{table.created.date}">Ngày tạo</th>
+                        <th class="actions-col" th:text="#{table.actions}">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${requests == null or requests.content == null or requests.content.isEmpty()}">
+                        <td colspan="7" class="text-center text-muted py-4">Chưa có yêu cầu trả hàng</td>
+                    </tr>
+                    <tr th:each="request : ${requests.content}" th:id="'request-' + ${request.id}">
+                        <td><strong th:text="'#' + ${request.id}">#1</strong></td>
+                        <td>
+                            <a th:href="@{/admin/yeu-cau-tra-hang/{id}(id=${request.id})}"
+                               class="order-link"
+                               th:text="${request.orderCode}">HD001</a>
+                        </td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="customer-name" th:text="${request.customerName}">Nguyễn Văn A</div>
+                                <div class="customer-phone" th:text="${request.customerPhone}">0901234567</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="reason-text" th:text="${#strings.abbreviate(request.reason, 50)}">Sản phẩm bị lỗi...</div>
+                        </td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="'status-' + ${#strings.toLowerCase(request.status)}"
+                                  th:text="${request.statusText}">Chờ xử lý</span>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <div th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy')}">01/01/2024</div>
+                                <small th:text="${#temporals.format(request.createdAt, 'HH:mm')}">10:30</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-buttons d-flex gap-1">
+                                <a th:href="@{/admin/yeu-cau-tra-hang/{id}(id=${request.id})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   th:title="#{button.view.detail}">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <div class="btn-group" th:if="${request.status.name() == 'NEW' or request.status.name() == 'PROCESSING'}">
+                                    <button class="btn btn-sm btn-success"
+                                            th:onclick="'approveRequest(' + ${request.id} + ')'"
+                                            th:title="#{button.approve}">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger"
+                                            th:onclick="'rejectRequest(' + ${request.id} + ')'"
+                                            th:title="#{button.reject}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                <!-- Removed extra gear button to avoid duplicate action entry on detail page -->
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${requests.totalPages > 1}" class="pagination-nav">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${!requests.hasPrevious()} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/quan-ly-yeu-cau-tra-hang(page=${currentPage - 1}, search=${search}, status=${status})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(0, requests.totalPages - 1)}"
+                        class="page-item" th:classappend="${pageNum == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/quan-ly-yeu-cau-tra-hang(page=${pageNum}, search=${search}, status=${status})}"
+                           th:text="${pageNum + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${!requests.hasNext()} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/quan-ly-yeu-cau-tra-hang(page=${currentPage + 1}, search=${search}, status=${status})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Empty State -->
+            <div th:if="${requests.content.isEmpty()}" class="empty-state text-center py-5">
+                <div class="empty-icon mb-2"><i class="bi bi-inbox"></i></div>
+                <h3 th:text="#{empty.no.requests}">Không có yêu cầu trả hàng nào</h3>
+                <p th:text="#{empty.no.requests.desc}">Chưa có yêu cầu trả hàng nào phù hợp với bộ lọc hiện tại.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script layout:fragment="scripts" th:src="@{/js/admin-return-request.js}"></script>
 </body>
 </html>
