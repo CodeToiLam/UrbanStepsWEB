@@ -190,10 +190,21 @@
                 <span th:text="${product.maSanPham}" class="code">SP001</span>
             </div>
 
-            <div class="product-price mb-4">
-                <span class="current-price"
-                      th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">1,200,000đ</span>
+        <div class="product-price mb-4">
+            <div class="mb-2">
+              <span th:if="${product.phanTramGiam != null and product.phanTramGiam > 0}"
+                  class="badge rounded-pill bg-danger me-1">SALE -<span th:text="${#numbers.formatDecimal(product.phanTramGiam,0,0)}"></span>%</span>
+              <span th:if="${product.luotBan != null and product.luotBan > 0}"
+                  class="badge rounded-pill bg-warning text-dark">HOT</span>
             </div>
+            <span th:if="${product.phanTramGiam != null and product.phanTramGiam > 0}"
+                class="text-muted text-decoration-line-through me-2"
+                th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+            <span class="current-price"
+                th:text="${(product.phanTramGiam != null and product.phanTramGiam > 0) ?
+                         #numbers.formatDecimal(product.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ' :
+                         (product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ')}">1,200,000đ</span>
+        </div>
 
             <!-- Chọn kích cỡ -->
             <div class="product-size mb-3" th:if="${!kichCos.empty}">
@@ -302,9 +313,14 @@
                              alt="No image available">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${relatedProduct.tenSanPham}">Tên sản phẩm liên quan</h5>
-                            <p class="card-text product-price"
-                               th:text="${relatedProduct.giaBan != null ? #numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                750,000đ</p>
+                    <div class="card-text product-price">
+                      <span th:if="${relatedProduct.phanTramGiam != null and relatedProduct.phanTramGiam > 0}"
+                          class="text-muted text-decoration-line-through me-2"
+                          th:text="${#numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                      <span th:text="${(relatedProduct.phanTramGiam != null and relatedProduct.phanTramGiam > 0) ?
+                                  #numbers.formatDecimal(relatedProduct.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ' :
+                                  (relatedProduct.giaBan != null ? #numbers.formatDecimal(relatedProduct.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ')}">Giá</span>
+                    </div>
                         </div>
                     </a>
                 </div>
@@ -330,9 +346,14 @@
                              alt="No image available">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${rp.tenSanPham}">Tên sản phẩm gợi ý</h5>
-                            <p class="card-text product-price"
-                               th:text="${rp.giaBan != null ? #numbers.formatDecimal(rp.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                750,000đ</p>
+                    <div class="card-text product-price">
+                      <span th:if="${rp.phanTramGiam != null and rp.phanTramGiam > 0}"
+                          class="text-muted text-decoration-line-through me-2"
+                          th:text="${#numbers.formatDecimal(rp.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                      <span th:text="${(rp.phanTramGiam != null and rp.phanTramGiam > 0) ?
+                                  #numbers.formatDecimal(rp.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ' :
+                                  (rp.giaBan != null ? #numbers.formatDecimal(rp.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ')}">Giá</span>
+                    </div>
                         </div>
                     </a>
                 </div>

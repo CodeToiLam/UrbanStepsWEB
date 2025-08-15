@@ -15,7 +15,7 @@ public class AdminReturnController {
     @GetMapping("/returns")
     public String list(Model model){
     // Legacy endpoint: redirect to new management page
-    return "redirect:/admin/return-requests";
+    return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
     }
 
     @PostMapping("/returns/{id}/approve")

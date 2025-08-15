@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import vn.urbansteps.repository.SanPhamRepository;
+import vn.urbansteps.service.ImageService;
 import vn.urbansteps.model.HoaDon;
 import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.repository.ReturnRequestRepository;
@@ -17,6 +19,12 @@ import vn.urbansteps.service.EmailService;
 @Controller
 @RequestMapping("/admin")
 public class AdminOrderController {
+    
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private HoaDonService hoaDonService;
@@ -33,18 +41,17 @@ public class AdminOrderController {
             @RequestParam(required = false) Byte status,
             Model model,
             ReturnRequestRepository returnRequestRepository) {
-        
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
         Page<HoaDon> orders;
-        
+
         // Tìm kiếm và lọc theo trạng thái
         if (!search.isEmpty() || status != null) {
             orders = hoaDonService.searchOrders(search, status, pageable);
         } else {
             orders = hoaDonService.getAllOrders(pageable);
         }
-        
-    model.addAttribute("orders", orders);
+
+        model.addAttribute("orders", orders);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orders.getTotalPages());
         model.addAttribute("search", search);
@@ -58,7 +65,7 @@ public class AdminOrderController {
             returnCounts.put(hd.getId(), c);
         }
         model.addAttribute("returnCounts", returnCounts);
-        
+
         return "admin/order-management";
     }
 
@@ -78,8 +85,23 @@ public class AdminOrderController {
                 ra.addFlashAttribute("error", "Không thể chuyển trạng thái này");
                 return "redirect:" + redirect;
             }
+            byte prevStatus = hoaDon.getTrangThai();
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            // Nếu chuyển sang Hoàn thành (3) từ trạng thái khác, cộng lượt bán cho từng dòng
+            if (prevStatus != 3 && newStatus == 3) {
+                try {
+                    var saved = hoaDonService.getOrderByIdWithDetails(hoaDon.getId());
+            if (saved != null && saved.getHoaDonChiTietList() != null) {
+                        for (var ct : saved.getHoaDonChiTietList()) {
+                            var sp = ct.getSanPhamChiTiet() != null ? ct.getSanPhamChiTiet().getSanPham() : null;
+                            Integer spId = (sp != null ? sp.getId() : null);
+                            Integer qty = (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                if (spId != null && qty > 0) sanPhamRepository.incrementLuotBan(spId, qty);
+                        }
+                    }
+                } catch (Exception ignore) {}
+            }
             // log by aspect
             // Email notify on any status change
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
@@ -96,6 +118,18 @@ public class AdminOrderController {
         if (hoaDon == null) {
             return "redirect:/admin/order-management";
         }
+        // Chuẩn hóa ảnh sản phẩm trong chi tiết đơn để tránh lỗi hiển thị
+        try {
+            if (hoaDon.getHoaDonChiTietList() != null) {
+                for (var ct : hoaDon.getHoaDonChiTietList()) {
+                    var sp = ct.getSanPhamChiTiet() != null ? ct.getSanPhamChiTiet().getSanPham() : null;
+                    if (sp != null && sp.getIdHinhAnhDaiDien() != null && sp.getIdHinhAnhDaiDien().getDuongDan() != null) {
+                        String normalized = imageService.normalizeImagePath(sp.getIdHinhAnhDaiDien().getDuongDan());
+                        sp.getIdHinhAnhDaiDien().setDuongDan(normalized);
+                    }
+                }
+            }
+        } catch (Exception ignore) {}
         
         model.addAttribute("order", hoaDon);
         model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
@@ -117,8 +151,22 @@ public class AdminOrderController {
                 return "error:Không thể chuyển trạng thái này";
             }
             
+            byte prevStatus = hoaDon.getTrangThai();
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            if (prevStatus != 3 && newStatus == 3) {
+                try {
+                    var saved = hoaDonService.getOrderByIdWithDetails(hoaDon.getId());
+            if (saved != null && saved.getHoaDonChiTietList() != null) {
+                        for (var ct : saved.getHoaDonChiTietList()) {
+                            var sp = ct.getSanPhamChiTiet() != null ? ct.getSanPhamChiTiet().getSanPham() : null;
+                            Integer spId = (sp != null ? sp.getId() : null);
+                            Integer qty = (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                if (spId != null && qty > 0) sanPhamRepository.incrementLuotBan(spId, qty);
+                        }
+                    }
+                } catch (Exception ignore) {}
+            }
             // log by aspect
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
             

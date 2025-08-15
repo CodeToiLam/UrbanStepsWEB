@@ -95,7 +95,8 @@ public class ReturnRequestController {
             @RequestParam(value = "returnItems", required = false) List<Integer> returnItemIds,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
             RedirectAttributes redirectAttributes,
-            Locale locale) {
+            Locale locale,
+            @RequestParam java.util.Map<String, String> allParams) {
         
         try {
             HoaDon order = hoaDonService.getOrderById(orderId);
@@ -201,7 +202,14 @@ public class ReturnRequestController {
                 }
                 
                 int maxQty = d.getSoLuong() != null ? d.getSoLuong() : 0;
-                int qty = maxQty; // trả toàn bộ
+                int qty = maxQty; // mặc định trả toàn bộ
+                try {
+                    String key = "qty_" + itemId;
+                    if (allParams != null && allParams.containsKey(key)) {
+                        int requested = Integer.parseInt(allParams.get(key));
+                        if (requested > 0 && requested <= maxQty) qty = requested;
+                    }
+                } catch (Exception ignore) {}
 
                 ReturnRequestItem returnItem = new ReturnRequestItem();
                 returnItem.setOrderItemId(itemId);
@@ -209,11 +217,33 @@ public class ReturnRequestController {
                 returnItems.add(returnItem);
             }
             
-                            // Tạo lý do đầy đủ
-            String fullReason = returnType + ": " + lyDo;
-            if (ghiChu != null && !ghiChu.trim().isEmpty()) {
-                fullReason += " - " + ghiChu;
-            }
+                            // Tạo lý do đầy đủ + đính kèm metadata (returnMethod/refundMethod/bank/pickup) dưới dạng JSON để tránh đổi schema DB
+                            String fullReason = returnType + ": " + lyDo;
+                            if (ghiChu != null && !ghiChu.trim().isEmpty()) {
+                                fullReason += " - " + ghiChu;
+                            }
+                            try {
+                                java.util.Map<String,String> meta = new java.util.HashMap<>();
+                                String returnMethod = allParams.getOrDefault("returnMethod", "");
+                                String refundMethod = allParams.getOrDefault("refundMethod", "");
+                                if (!returnMethod.isBlank()) meta.put("returnMethod", returnMethod);
+                                if (!refundMethod.isBlank()) meta.put("refundMethod", refundMethod);
+                                String pickupAddress = allParams.getOrDefault("pickupAddress", "");
+                                if (!pickupAddress.isBlank()) meta.put("pickupAddress", pickupAddress);
+                                if ("BANK".equalsIgnoreCase(refundMethod)) {
+                                    String bankName = allParams.getOrDefault("bankName", "");
+                                    String bankAccount = allParams.getOrDefault("bankAccount", "");
+                                    String bankHolder = allParams.getOrDefault("bankHolder", "");
+                                    if (!bankName.isBlank()) meta.put("bankName", bankName);
+                                    if (!bankAccount.isBlank()) meta.put("bankAccount", bankAccount);
+                                    if (!bankHolder.isBlank()) meta.put("bankHolder", bankHolder);
+                                }
+                                if (!meta.isEmpty()) {
+                                    com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+                                    String json = om.writeValueAsString(meta);
+                                    fullReason += " || META:" + json;
+                                }
+                            } catch (Exception ignore) {}
             
             // Lấy email từ đơn hàng
             String customerEmail = "";
@@ -399,12 +429,13 @@ public class ReturnRequestController {
             @RequestParam(required = false) String ghiChu,
             @RequestParam(value = "returnItems", required = false) List<Integer> returnItemIds,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            RedirectAttributes redirectAttributes,
-            Locale locale) {
+        RedirectAttributes redirectAttributes,
+        Locale locale,
+        @RequestParam java.util.Map<String, String> allParams) {
         
         // Reuse the same logic as the original method
     return submitReturnRequest(orderId, hoTen, soDienThoai, returnType, lyDo, ghiChu, 
-                  returnItemIds, images, redirectAttributes, locale);
+          returnItemIds, images, redirectAttributes, locale, allParams);
     }
     
     // Xử lý submit form yêu cầu trả hàng từ template sửa lỗi
@@ -418,11 +449,12 @@ public class ReturnRequestController {
             @RequestParam(required = false) String ghiChu,
             @RequestParam(value = "returnItems", required = false) List<Integer> returnItemIds,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            RedirectAttributes redirectAttributes,
-            Locale locale) {
+        RedirectAttributes redirectAttributes,
+        Locale locale,
+        @RequestParam java.util.Map<String, String> allParams) {
         
         // Reuse the same logic as the original method
     return submitReturnRequest(orderId, hoTen, soDienThoai, returnType, lyDo, ghiChu, 
-                  returnItemIds, images, redirectAttributes, locale);
+          returnItemIds, images, redirectAttributes, locale, allParams);
     }
 }

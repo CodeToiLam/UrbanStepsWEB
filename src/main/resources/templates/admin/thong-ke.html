@@ -522,11 +522,11 @@
                 return;
             }
             
-            tbody.innerHTML = products.slice(0, 5).map(product => `
+                        tbody.innerHTML = products.slice(0, 5).map(product => `
                 <tr>
                     <td>
                         <div class="product-info">
-                            <img src="/images/no-image.svg" alt="Product" class="product-image">
+                                                        <img src="${product.imageUrl || '/images/no-image.jpg'}" alt="Product" class="product-image">
                             <div class="product-name">${product.tenSanPham || 'Sản phẩm'}</div>
                         </div>
                     </td>
@@ -535,8 +535,8 @@
                     </td>
                     <td>
                         <span class="revenue-amount">
-                            ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
-                              .format(product.doanhThu || 0)}
+                                                        ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                                                            .format(product.doanhThu || 0)}
                         </span>
                     </td>
                 </tr>

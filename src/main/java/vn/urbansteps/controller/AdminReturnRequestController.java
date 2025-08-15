@@ -10,11 +10,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.urbansteps.model.ReturnRequest;
+import vn.urbansteps.model.HoaDonChiTiet;
 import vn.urbansteps.repository.ReturnRequestRepository;
 import vn.urbansteps.service.ReturnRequestService;
 import vn.urbansteps.service.EmailService;
 import vn.urbansteps.service.HoaDonService;
 import vn.urbansteps.service.AdminActionLogService;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -36,7 +42,7 @@ public class AdminReturnRequestController {
     private AdminActionLogService adminActionLogService;
 
     // Quản lý yêu cầu trả hàng
-    @GetMapping("/return-requests")
+    @GetMapping({"/return-requests", "/quan-ly-yeu-cau-tra-hang"})
     public String returnRequestManagement(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -85,32 +91,60 @@ public class AdminReturnRequestController {
     }
 
     // Chi tiết yêu cầu trả hàng
-    @GetMapping("/return-request/{id}")
+    @GetMapping({"/return-request/{id}", "/yeu-cau-tra-hang/{id}"})
     public String returnRequestDetail(@PathVariable Long id, Model model, RedirectAttributes ra) {
         try {
             // Load with items via @EntityGraph to avoid LazyInitializationException when iterating in view
             ReturnRequest request = returnRequestRepository.findByIdWithItems(id).orElse(null);
             if (request == null) {
                 ra.addFlashAttribute("error", "Không tìm thấy yêu cầu trả hàng!");
-                return "redirect:/admin/return-requests";
+                return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
             }
             
-            // Lấy thông tin đơn hàng
-            var order = hoaDonService.getOrderById(request.getOrderId());
+            // Lấy thông tin đơn hàng kèm chi tiết để dùng trong view
+            var order = hoaDonService.getOrderByIdWithDetails(request.getOrderId());
             
             model.addAttribute("request", request);
             model.addAttribute("order", order);
             model.addAttribute("title", "Chi tiết yêu cầu trả hàng #" + request.getId());
+
+        // Tính tổng tạm hoàn và map đơn giá/tạm hoàn theo id dòng (tránh Thymeleaf expression phức tạp)
+            try {
+                BigDecimal totalRefund = BigDecimal.ZERO;
+        java.util.Map<Integer, BigDecimal> unitPriceById = new java.util.HashMap<>();
+        java.util.Map<Integer, BigDecimal> refundById = new java.util.HashMap<>();
+                if (order != null && order.getHoaDonChiTietList() != null && request.getItems() != null) {
+                    Map<Integer, HoaDonChiTiet> byId = order.getHoaDonChiTietList()
+                            .stream()
+                            .collect(Collectors.toMap(HoaDonChiTiet::getId, Function.identity(), (a,b)->a));
+                    for (var it : request.getItems()) {
+                        if (it == null || it.getOrderItemId() == null || it.getQty() == null) continue;
+                        HoaDonChiTiet d = byId.get(it.getOrderItemId());
+                        if (d == null) continue;
+                        // Đơn giá là giá bán từng đơn vị
+                        BigDecimal unitPrice = d.getGiaBan() != null ? d.getGiaBan() : BigDecimal.ZERO;
+            unitPriceById.put(d.getId(), unitPrice);
+            BigDecimal lineRefund = unitPrice.multiply(BigDecimal.valueOf(it.getQty().longValue()));
+            refundById.put(d.getId(), lineRefund);
+                        totalRefund = totalRefund.add(lineRefund);
+                    }
+                }
+                model.addAttribute("totalRefund", totalRefund);
+        model.addAttribute("unitPriceById", unitPriceById);
+        model.addAttribute("refundById", refundById);
+            } catch (Exception ignored) {
+                model.addAttribute("totalRefund", BigDecimal.ZERO);
+            }
             
             return "admin/return-request-detail";
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            return "redirect:/admin/return-requests";
+            return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
         }
     }
 
     // Phê duyệt yêu cầu trả hàng
-    @PostMapping("/return-request/{id}/approve")
+    @PostMapping({"/return-request/{id}/approve", "/yeu-cau-tra-hang/{id}/approve"})
     public String approveReturnRequest(@PathVariable Long id, 
                                      @RequestParam(name = "adminNote", required = false) String adminNote,
                                      RedirectAttributes ra) {
@@ -119,7 +153,7 @@ public class AdminReturnRequestController {
             ReturnRequest request = returnRequestRepository.findByIdWithItems(id).orElse(null);
             if (request == null) {
                 ra.addFlashAttribute("error", "Không tìm thấy yêu cầu trả hàng!");
-                return "redirect:/admin/return-requests";
+                return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
             }
 
             // Cập nhật trạng thái yêu cầu
@@ -178,15 +212,17 @@ public class AdminReturnRequestController {
             }
 
             ra.addFlashAttribute("success", "Đã phê duyệt yêu cầu trả hàng thành công!");
-            return "redirect:/admin/return-request/" + id;
+            // Redirect to Vietnamese-friendly detail URL
+            return "redirect:/admin/yeu-cau-tra-hang/" + id;
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            return "redirect:/admin/return-requests";
+            // Redirect to Vietnamese-friendly list URL
+            return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
         }
     }
 
     // Từ chối yêu cầu trả hàng
-    @PostMapping("/return-request/{id}/reject")
+    @PostMapping({"/return-request/{id}/reject", "/yeu-cau-tra-hang/{id}/reject"})
     public String rejectReturnRequest(@PathVariable Long id, 
                                     @RequestParam String reason,
                                     RedirectAttributes ra) {
@@ -194,12 +230,14 @@ public class AdminReturnRequestController {
             ReturnRequest request = returnRequestRepository.findByIdWithItems(id).orElse(null);
             if (request == null) {
                 ra.addFlashAttribute("error", "Không tìm thấy yêu cầu trả hàng!");
-                return "redirect:/admin/return-requests";
+                return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
             }
 
             if (reason == null || reason.trim().isEmpty()) {
                 ra.addFlashAttribute("error", "Vui lòng nhập lý do từ chối!");
-                return "redirect:/admin/return-request/" + id;
+                // put form value back if needed
+                ra.addFlashAttribute("reason", reason);
+                return "redirect:/admin/yeu-cau-tra-hang/" + id;
             }
             // Log admin action
             if (adminActionLogService != null) {
@@ -248,21 +286,21 @@ public class AdminReturnRequestController {
             }
 
             ra.addFlashAttribute("success", "Đã từ chối yêu cầu trả hàng!");
-            return "redirect:/admin/return-request/" + id;
+            return "redirect:/admin/yeu-cau-tra-hang/" + id;
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            return "redirect:/admin/return-requests";
+            return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
         }
     }
 
     // Đánh dấu đang xử lý
-    @PostMapping("/return-request/{id}/processing")
+    @PostMapping({"/return-request/{id}/processing", "/yeu-cau-tra-hang/{id}/processing"})
     public String markAsProcessing(@PathVariable Long id, RedirectAttributes ra) {
         try {
             ReturnRequest request = returnRequestRepository.findByIdWithItems(id).orElse(null);
             if (request == null) {
                 ra.addFlashAttribute("error", "Không tìm thấy yêu cầu trả hàng!");
-                return "redirect:/admin/return-requests";
+                return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
             }
 
             request.setStatus(ReturnRequest.Status.PROCESSING);
@@ -284,10 +322,10 @@ public class AdminReturnRequestController {
             }
 
             ra.addFlashAttribute("success", "Đã đánh dấu đang xử lý!");
-            return "redirect:/admin/return-request/" + id;
+            return "redirect:/admin/yeu-cau-tra-hang/" + id;
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            return "redirect:/admin/return-requests";
+            return "redirect:/admin/quan-ly-yeu-cau-tra-hang";
         }
     }
 

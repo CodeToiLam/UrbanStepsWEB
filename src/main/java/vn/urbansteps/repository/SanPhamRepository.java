@@ -2,6 +2,8 @@ package vn.urbansteps.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.urbansteps.model.SanPham;
@@ -96,15 +98,21 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<SanPham> findNewProducts(@Param("trangThai") Boolean trangThai);
 
     // Cập nhật lượt xem
-    @Query("UPDATE SanPham sp SET sp.luotXem = sp.luotXem + 1, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
+   @Modifying
+   @Transactional
+   @Query("UPDATE SanPham sp SET sp.luotXem = sp.luotXem + 1, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
     void incrementLuotXem(@Param("id") Integer id);
 
     // Cập nhật lượt bán
-    @Query("UPDATE SanPham sp SET sp.luotBan = sp.luotBan + :quantity, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
+   @Modifying
+   @Transactional
+   @Query("UPDATE SanPham sp SET sp.luotBan = sp.luotBan + :quantity, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
     void incrementLuotBan(@Param("id") Integer id, @Param("quantity") Integer quantity);
 
     // Cập nhật điểm đánh giá
-    @Query("UPDATE SanPham sp SET sp.diemDanhGia = :newRating, sp.soLuongDanhGia = :totalReviews, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
+   @Modifying
+   @Transactional
+   @Query("UPDATE SanPham sp SET sp.diemDanhGia = :newRating, sp.soLuongDanhGia = :totalReviews, sp.updateAt = CURRENT_TIMESTAMP WHERE sp.id = :id")
     void updateRating(@Param("id") Integer id, @Param("newRating") BigDecimal newRating, @Param("totalReviews") Integer totalReviews);
 
     // Tìm kiếm nâng cao với nhiều bộ lọc

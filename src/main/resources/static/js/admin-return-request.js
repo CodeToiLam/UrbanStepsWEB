@@ -32,7 +32,18 @@
     form.submit();
   }
 
-  window.markAsProcessing = function(id){ if(id){ post('/admin/return-request/' + id + '/processing'); } };
-  window.approveRequest = function(id){ if(id){ const noteEl = document.getElementById('adminNote'); const adminNote = noteEl ? noteEl.value : ''; post('/admin/return-request/' + id + '/approve', { adminNote }); } };
-  window.rejectRequest = function(id){ if(!id) return; const reason = prompt('Nhập lý do từ chối (bắt buộc):'); if(reason && reason.trim().length>0){ post('/admin/return-request/' + id + '/reject', { reason: reason.trim() }); } };
+  // Use Vietnamese-friendly endpoints (controller supports both EN and VI mappings)
+  window.markAsProcessing = function(id){ if(id){ post('/admin/yeu-cau-tra-hang/' + id + '/processing'); } };
+  window.approveRequest = function(id){ if(id){ const noteEl = document.getElementById('adminNote'); const adminNote = noteEl ? noteEl.value : ''; post('/admin/yeu-cau-tra-hang/' + id + '/approve', { adminNote }); } };
+  window.rejectRequest = function(id){
+    if(!id) return;
+    let reason = '';
+    while(true){
+      reason = prompt('Nhập lý do từ chối (bắt buộc):');
+      if(reason === null) return; // user cancelled
+      if(reason && reason.trim().length>0) break;
+      alert('Vui lòng nhập lý do từ chối.');
+    }
+    post('/admin/yeu-cau-tra-hang/' + id + '/reject', { reason: reason.trim() });
+  };
 })();

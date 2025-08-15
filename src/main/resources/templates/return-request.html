@@ -8,6 +8,9 @@
 		.rr-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;}
 		.rr-items .item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed #eee}
 		.rr-actions{display:flex;gap:12px;justify-content:flex-end}
+		.rr-section{margin-top:16px}
+		.small-muted{font-size:12px;color:#6c757d}
+		.disabled{opacity:.6;pointer-events:none}
 		@media (max-width: 992px){.rr-grid{grid-template-columns:1fr}}
 	</style>
 	<meta name="_csrf_parameter" th:content="${_csrf?.parameterName}">
@@ -25,11 +28,72 @@
 		<div class="rr-card">
 			<h4>Chọn sản phẩm muốn trả</h4>
 			<div class="rr-items">
-				<div class="item" th:each="d : ${order.hoaDonChiTietList}">
-					<input class="form-check-input" type="checkbox" name="returnItems" th:value="${d.id}">
+				<div class="item" th:each="d : ${order.hoaDonChiTietList}" th:attr="data-qty=${d.soLuong},data-line=${d.thanhTien}">
+					<input class="form-check-input rr-item-check" type="checkbox" name="returnItems" th:value="${d.id}">
+					<img style="width:56px;height:56px;object-fit:cover;border:1px solid #eee;border-radius:6px;"
+						 th:src="${d.sanPhamChiTiet != null && d.sanPhamChiTiet.sanPham != null && d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null && d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan != null} ? ${d.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan} : @{/images/no-image.jpg}"
+						 alt="Ảnh">
 					<div class="flex-grow-1">
 						<div><strong th:text="${d.tenSanPham}">Tên sp</strong></div>
+						<div class="text-muted">
+							<span th:if="${d.sanPhamChiTiet != null && d.sanPhamChiTiet.mauSac != null}">Màu: <strong th:text="${d.sanPhamChiTiet.mauSac.tenMauSac}">-</strong></span>
+							<span th:if="${d.sanPhamChiTiet != null && d.sanPhamChiTiet.kichCo != null}"> • Size: <strong th:text="${d.sanPhamChiTiet.kichCo.tenKichCo}">-</strong></span>
+						</div>
 						<div class="text-muted">SL mua: <span th:text="${d.soLuong}">1</span></div>
+						<div class="small-muted rr-eligibility">Đủ điều kiện trả trong 7 ngày từ khi đơn hoàn thành</div>
+					</div>
+					<div style="display:flex;align-items:center;gap:8px;">
+						<label class="form-label" style="margin:0;">SL trả</label>
+						<input class="form-control rr-qty" style="width:100px;" type="number" min="1" th:attr="max=${d.soLuong}" name="qty_${'__'}" th:attrappend="name=${'qty_'} + ${d.id}" th:value="${d.soLuong}" disabled>
+					</div>
+				</div>
+			</div>
+
+			<div class="rr-section">
+				<div class="d-flex justify-content-between align-items-center">
+					<h5 class="mb-1">Phương thức hoàn trả</h5>
+					<span class="small-muted">Chọn cách gửi hàng về kho</span>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="returnMethod" id="rmDropOff" value="DROP_OFF" checked>
+					<label class="form-check-label" for="rmDropOff">Gửi tại bưu cục</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="returnMethod" id="rmPickup" value="PICKUP">
+					<label class="form-check-label" for="rmPickup">Hẹn nhân viên đến lấy</label>
+				</div>
+				<div id="pickupFields" class="mt-2" style="display:none;">
+					<label class="form-label">Địa chỉ lấy hàng</label>
+					<textarea name="pickupAddress" class="form-control" rows="2" placeholder="Địa chỉ chi tiết" th:text="${order.diaChiGiaoHang}"></textarea>
+					<div class="small-muted">Lưu ý: Vui lòng chuẩn bị hàng và giữ máy liên lạc.</div>
+				</div>
+			</div>
+
+			<div class="rr-section">
+				<div class="d-flex justify-content-between align-items-center">
+					<h5 class="mb-1">Phương thức hoàn tiền</h5>
+					<span class="small-muted">Chọn cách nhận tiền hoàn</span>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="refundMethod" id="rfOriginal" value="ORIGINAL" checked>
+					<label class="form-check-label" for="rfOriginal">Về phương thức thanh toán ban đầu</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="refundMethod" id="rfBank" value="BANK">
+					<label class="form-check-label" for="rfBank">Chuyển khoản ngân hàng</label>
+				</div>
+				<div id="bankFields" class="row g-3 mt-1" style="display:none;">
+					<div class="col-md-4">
+						<label class="form-label">Ngân hàng</label>
+						<input type="text" name="bankName" class="form-control" placeholder="VD: Vietcombank">
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Số tài khoản</label>
+						<input type="text" name="bankAccount" class="form-control" placeholder="Chỉ số">
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Chủ tài khoản</label>
+						<input type="text" name="bankHolder" class="form-control" placeholder="Họ tên">
 					</div>
 				</div>
 			</div>
@@ -64,8 +128,9 @@
 			</div>
 			<div class="mb-3">
 				<label class="form-label">Ảnh sản phẩm (tối đa 5)</label>
-				<input class="form-control" type="file" name="images" accept="image/*" multiple>
+				<input id="imagesInput" class="form-control" type="file" name="images" accept="image/*" multiple>
 				<div class="form-text">Chỉ chấp nhận JPG, PNG, GIF, WEBP; mỗi ảnh <= 5MB</div>
+				<div id="imagesPreview" class="d-flex gap-2 mt-2" style="flex-wrap:wrap;"></div>
 			</div>
 			<div class="rr-actions">
 				<a th:href="@{'/don-hang/chi-tiet/' + ${order.id}}" class="btn btn-outline-secondary">Hủy</a>
@@ -78,13 +143,71 @@
 			<div class="d-flex justify-content-between"><span>Mã đơn:</span><strong th:text="${order.maHoaDon}">HD</strong></div>
 			<div class="d-flex justify-content-between"><span>Ngày đặt:</span><strong th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">-</strong></div>
 			<div class="d-flex justify-content-between"><span>Trạng thái:</span><strong th:text="${order.trangThaiText}">-</strong></div>
+			<hr>
+			<h5 class="mb-2">Tạm tính hoàn tiền</h5>
+			<div id="refundSummary" class="small-muted">Chưa chọn sản phẩm</div>
 		</aside>
 	</form>
 </div>
 
 <th:block layout:fragment="extra-js">
 	<script>
-	// Không cần điều chỉnh số lượng: mặc định trả toàn bộ dòng hàng đã mua
+	(function(){
+		const checks = document.querySelectorAll('.rr-item-check');
+		const qtyInputs = document.querySelectorAll('.rr-qty');
+		const refundBox = document.getElementById('refundSummary');
+		function formatVND(n){return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0)}
+		function recalc(){
+			let total=0, count=0;
+			document.querySelectorAll('.rr-items .item').forEach(row=>{
+				const chk=row.querySelector('.rr-item-check');
+				const qtyEl=row.querySelector('.rr-qty');
+				const max=parseInt(row.getAttribute('data-qty')||'0',10);
+				const line=parseFloat(row.getAttribute('data-line')||'0');
+				if(chk && chk.checked){
+					const unit = max>0 ? (line/max) : 0;
+					const q = Math.min(Math.max(parseInt(qtyEl.value||'1',10),1),max);
+					total += unit * q; count+=q;
+				}
+			});
+			refundBox.textContent = count>0? (formatVND(total) + ' cho ' + count + ' sản phẩm'): 'Chưa chọn sản phẩm';
+		}
+		checks.forEach((c,i)=>{
+			c.addEventListener('change',()=>{qtyInputs[i].disabled=!c.checked;recalc();});
+		});
+		qtyInputs.forEach(q=>q.addEventListener('input',recalc));
+		recalc();
+
+		// Toggle extra fields
+		const rmDrop=document.getElementById('rmDropOff');
+		const rmPick=document.getElementById('rmPickup');
+		const pickup=document.getElementById('pickupFields');
+		[rmDrop,rmPick].forEach(r=>r.addEventListener('change',()=>{pickup.style.display=rmPick.checked?'block':'none'}));
+
+		const rfOrig=document.getElementById('rfOriginal');
+		const rfBank=document.getElementById('rfBank');
+		const bank=document.getElementById('bankFields');
+		[rfOrig,rfBank].forEach(r=>r.addEventListener('change',()=>{bank.style.display=rfBank.checked?'flex':'none'}));
+
+		// Images preview and limit 5
+		const imgInput=document.getElementById('imagesInput');
+		const preview=document.getElementById('imagesPreview');
+		if(imgInput){
+			imgInput.addEventListener('change',()=>{
+				const files=Array.from(imgInput.files||[]).slice(0,5);
+				if(imgInput.files && imgInput.files.length>5){
+					alert('Chỉ có thể chọn tối đa 5 hình ảnh. Các ảnh vượt quá sẽ bị bỏ qua.');
+				}
+				preview.innerHTML='';
+				files.forEach(f=>{
+					const url=URL.createObjectURL(f);
+					const img=document.createElement('img');
+					img.src=url; img.style.width='64px'; img.style.height='64px'; img.style.objectFit='cover'; img.style.border='1px solid #eee'; img.style.borderRadius='6px';
+					preview.appendChild(img);
+				});
+			});
+		}
+	})();
 	</script>
 </th:block>
 </body>
