@@ -17,8 +17,8 @@
             <div class="col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Giỏ hàng</li>
+                        <li class="breadcrumb-item"><a th:href="@{/}" th:text="#{cart.homelink}"></a></li>
+                        <li class="breadcrumb-item active" th:text="#{cart.name}">Giỏ hàng</li>
                     </ol>
                 </nav>
             </div>
@@ -28,7 +28,7 @@
             <div class="col-12">
                 <h1 class="cart-title">
                     <i class="fas fa-shopping-cart"></i>
-                    Giỏ hàng của bạn
+                    <span th:text="#{cart.yourcart}"></span>
                 </h1>
             </div>
         </div>
@@ -37,13 +37,15 @@
         <div th:if="${gioHang == null or gioHang.items.empty}" class="empty-cart">
             <div class="text-center py-5">
                 <i class="fas fa-shopping-cart empty-cart-icon"></i>
-                <h3>Giỏ hàng của bạn đang trống</h3>
-                <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
+                <h3 th:text="#{cart.yourcart.empty}"></h3>
+                <p class="text-muted" th:text="#{cart.empty.message}"></p>
                 <a th:href="@{/}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                    <i class="fas fa-arrow-left"></i>
+                    <span th:text="#{cart.Continueshopping}"></span>
                 </a>
             </div>
         </div>
+
 
         <!-- Giỏ hàng có sản phẩm -->
         <div th:if="${gioHang != null and !gioHang.items.empty}" class="cart-content">
@@ -53,14 +55,14 @@
                     <div class="cart-items">
                         <div class="cart-header">
                             <div class="row">
-                                <div class="col-md-6">Sản phẩm</div>
-                                <div class="col-md-2 text-center">Giá</div>
-                                <div class="col-md-2 text-center">Số lượng</div>
-                                <div class="col-md-2 text-center">Thành tiền</div>
+                                <div class="col-md-6" th:text="#{cart.product}"></div>
+                                <div class="col-md-2 text-center" th:text="#{cart.price}"></div>
+                                <div class="col-md-2 text-center" th:text="#{cart.quantity}"></div>
+                                <div class="col-md-2 text-center" th:text="#{cart.total}"></div>
                             </div>
                         </div>
 
-                        <div class="cart-item" th:each="item : ${gioHang.items}" 
+                        <div class="cart-item" th:each="item : ${gioHang.items}"
                              th:data-item-id="${item.id}"
                              th:data-max-stock="${item.soLuongTon}">
                             <div class="row align-items-center">
@@ -77,15 +79,19 @@
                                             <h5 class="product-name" th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.tenSanPham : 'Sản phẩm'}">Tên sản phẩm</h5>
                                             <div class="product-variants">
                                                 <span class="variant-item">
-                                                    <strong>Kích cỡ:</strong> <span th:text="${item.kichCo != null ? item.kichCo : 'N/A'}">40</span>
+                                                    <strong th:text="#{cart.size}"></strong> <span th:text="${item.kichCo != null ? item.kichCo : 'N/A'}">40</span>
                                                 </span>
                                                 <span class="variant-item">
-                                                    <strong>Màu sắc:</strong> <span th:text="${item.mauSac != null ? item.mauSac : 'N/A'}">Đen</span>
+                                                    <strong th:text="#{cart.color}"></strong> <span th:text="${item.mauSac != null ? item.mauSac : 'N/A'}">Đen</span>
                                                 </span>
                                             </div>
                                             <div class="product-sku">
-                                                <small class="text-muted">Mã SP: <span th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.maSanPham : 'N/A'}">ABC123</span></small>
+                                                <small class="text-muted">
+                                                    <span th:text="#{cart.code}"></span>
+                                                    <span th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.maSanPham : 'N/A'}">ABC123</span>
+                                                </small>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -104,8 +110,8 @@
                                         </button>
                                         <div class="quantity-display">
                                             <input type="hidden" th:data-item-id="${item.id}" th:value="${item.soLuong}">
-                                            <input type="number" 
-                                                   class="quantity-input" 
+                                            <input type="number"
+                                                   class="quantity-input"
                                                    th:data-item-id="${item.id}"
                                                    th:value="${item.soLuong}"
                                                    min="1" max="999"
@@ -126,7 +132,8 @@
                                                 th:onclick="'removeItem(' + ${item.id} + ')'"
                                                 th:data-item-id="${item.id}"
                                                 title="Xóa sản phẩm khỏi giỏ hàng">
-                                            <i class="fas fa-trash-alt"></i> Xóa
+                                            <i class="fas fa-trash-alt"></i>
+                                            <span th:text="#{cart.clear}"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -138,32 +145,32 @@
                 <!-- Tổng kết đơn hàng -->
                 <div class="col-lg-4">
                     <div class="cart-summary">
-                        <h4>Tổng kết đơn hàng</h4>
+                        <h4 th:text="#{cart.OrderSummary}"></h4>
 
                         <div class="summary-row">
-                            <span>Tạm tính:</span>
+                            <span th:text="#{cart.Provisional}"></span>
                             <span th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">10,500,000đ</span>
                         </div>
 
                         <div class="summary-row">
-                            <span>Phí vận chuyển:</span>
-                            <span class="text-success">Miễn phí</span>
+                            <span th:text="#{cart.Shippingfee}"></span>
+                            <span class="text-success" th:text="#{cart.Shippingfee.free}"></span>
                         </div>
 
                         <div class="summary-row">
-                            <span>Giảm giá:</span>
+                            <span th:text="#{cart.Discount}"></span>
                             <span id="discountAmount" th:text="${discountedTotal != null ? (#numbers.formatDecimal(gioHang.tongTien - discountedTotal, 0, 'COMMA', 0, 'POINT') + 'đ') : '0đ'}"></span>
                         </div>
                         <div class="summary-row total-row">
                             <strong>
-                                <span>Tổng thanh toán:</span>
+                                <span th:text="#{cart.Totalpayment}"></span>
                                 <span id="finalTotal" th:text="${discountedTotal != null ? (#numbers.formatDecimal(discountedTotal, 0, 'COMMA', 0, 'POINT') + 'đ') : (#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ')}">10,500,000đ</span>
                             </strong>
                         </div>
 
                         <div class="summary-row total-row">
                             <strong>
-                                <span>Tổng cộng:</span>
+                                <span th:text="#{cart.Totalpayment.total}"></span>
                                 <span id="cart-total" th:text="${#numbers.formatDecimal(gioHang.tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">10,500,000đ</span>
                             </strong>
                         </div>
@@ -171,11 +178,13 @@
                         <div class="cart-actions">
                             <a th:href="@{/checkout}">
                                 <button class="btn btn-primary btn-lg btn-block checkout-btn">
-                                    <i class="fas fa-credit-card"></i> Thanh toán
+                                    <i class="fas fa-credit-card"></i>
+                                    <span th:text="#{cart.pay}"></span>
                                 </button>
                             </a>
                             <a th:href="@{/}" class="btn btn-outline-primary btn-lg btn-block">
-                                <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                                <i class="fas fa-arrow-left"></i>
+                                <span th:text="#{cart.Continueshopping}"> </span>
                             </a>
                         </div>
                     </div>

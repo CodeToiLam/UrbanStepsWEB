@@ -20,7 +20,7 @@
             transition: all 0.2s ease;
             border-width: 1.5px;
         }
-        
+
         .btn-outline-danger:hover {
             background-color: #dc3545;
             border-color: #dc3545;
@@ -28,7 +28,7 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
         }
-        
+
         .btn-outline-warning:hover {
             background-color: #ffc107;
             border-color: #ffc107;
@@ -36,7 +36,7 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
         }
-        
+
         .btn-outline-primary:hover {
             background-color: #007bff;
             border-color: #007bff;
@@ -44,49 +44,69 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
         }
-        
+
         /* Table action buttons styling */
         td .btn-sm {
             margin: 2px;
             min-width: 70px;
             font-size: 0.8rem;
         }
-        
+
         /* Badge improvements */
         .badge {
             font-size: 0.75rem;
             font-weight: 600;
             padding: 6px 10px;
         }
-        
-        .badge.bg-secondary { background-color: #6c757d !important; }
-        .badge.bg-info { background-color: #0dcaf0 !important; }
-        .badge.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
-        .badge.bg-success { background-color: #198754 !important; }
-        .badge.bg-danger { background-color: #dc3545 !important; }
+
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+
+        .badge.bg-info {
+            background-color: #0dcaf0 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #dc3545 !important;
+        }
     </style>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container py-4">
-    <h2 class="mb-4 fw-bold" th:text="#{account.title}">Tài khoản của tôi</h2>
-    <div th:if="${success}" class="alert alert-success py-2" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
+        <h2 class="mb-4 fw-bold" th:text="#{account.title}">Tài khoản của tôi</h2>
+        <div th:if="${success}" class="alert alert-success py-2" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
         <ul class="nav nav-tabs mb-3" id="accountTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" th:text="#{account.profile}">Thông tin cá nhân</a>
+                <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab"
+                   th:text="#{account.profile}">Thông tin cá nhân</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" th:text="#{account.addresses}">Địa chỉ giao hàng</a>
+                <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab"
+                   th:text="#{account.addresses}">Địa chỉ giao hàng</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" th:text="#{order.history}">Lịch sử đơn hàng</a>
+                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab"
+                   th:text="#{order.history}">Lịch sử đơn hàng</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="vouchers-tab" data-bs-toggle="tab" href="#vouchers" role="tab" th:text="#{voucher.my.vouchers}">Kho voucher</a>
+                <a class="nav-link" id="vouchers-tab" data-bs-toggle="tab" href="#vouchers" role="tab"
+                   th:text="#{voucher.my.vouchers}">Kho voucher</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="security-tab" data-bs-toggle="tab" href="#security" role="tab" th:text="#{account.change.password}">Bảo mật</a>
+                <a class="nav-link" id="security-tab" data-bs-toggle="tab" href="#security" role="tab"
+                   th:text="#{account.change.password}">Bảo mật</a>
             </li>
         </ul>
         <div class="tab-content" id="accountTabContent">
@@ -119,7 +139,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" th:text="#{account.save}">Cập nhật thông tin</button>
+                            <button type="submit" class="btn btn-primary" th:text="#{account.save}">Cập nhật thông tin
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -138,7 +159,7 @@
                         <div th:if="${addresses == null || addresses.empty}" class="empty-state">
                             <i class="fas fa-map-marker-alt"></i>
                             <h5 th:text="#{order.empty}">Chưa có địa chỉ nào</h5>
-                            <p>Thêm địa chỉ đầu tiên để thuận tiện cho việc đặt hàng</p>
+                            <p th:text="#{account.address}"></p>
                             <a href="/tai-khoan/dia-chi/them" class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>
                                 <span th:text="#{address.add}">Thêm địa chỉ</span>
@@ -148,22 +169,25 @@
                             <div class="col-md-6 mb-3" th:each="addr : ${addresses}">
                                 <div class="address-card">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="address-name" th:text="${addr.tenNguoiNhan} + ' • ' + ${addr.sdtNguoiNhan}"></div>
-                                        <span th:if="${addr.default}" class="badge bg-success" th:text="#{address.default}">Mặc định</span>
+                                        <div class="address-name"
+                                             th:text="${addr.tenNguoiNhan} + ' • ' + ${addr.sdtNguoiNhan}"></div>
+                                        <span th:if="${addr.default}" class="badge bg-success"
+                                              th:text="#{address.default}">Mặc định</span>
                                     </div>
                                     <div class="address-details mb-3" th:text="${addr.diaChiDayDu}"></div>
                                     <div class="d-flex gap-2 flex-wrap">
-                                        <a th:href="@{/tai-khoan/dia-chi/sua/{id}(id=${addr.id})}" class="btn btn-sm btn-outline-primary">
+                                        <a th:href="@{/tai-khoan/dia-chi/sua/{id}(id=${addr.id})}"
+                                           class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit me-1"></i>
                                             <span th:text="#{address.edit}">Sửa</span>
                                         </a>
-                                        <button th:if="${!addr.default}" 
-                                                class="btn btn-sm btn-outline-success set-default-address" 
+                                        <button th:if="${!addr.default}"
+                                                class="btn btn-sm btn-outline-success set-default-address"
                                                 th:data-address-id="${addr.id}">
                                             <i class="fas fa-star me-1"></i>
                                             <span th:text="#{address.set.default}">Đặt mặc định</span>
                                         </button>
-                                        <a th:href="@{/tai-khoan/dia-chi/xoa/{id}(id=${addr.id})}" 
+                                        <a th:href="@{/tai-khoan/dia-chi/xoa/{id}(id=${addr.id})}"
                                            class="btn btn-sm btn-outline-danger">
                                             <i class="fas fa-trash me-1"></i>
                                             <span th:text="#{address.delete}">Xóa</span>
@@ -199,74 +223,80 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
-                                        <tr>
-                                            <th th:text="#{order.code}">Mã đơn hàng</th>
-                                            <th th:text="#{order.date}">Ngày đặt</th>
-                                            <th th:text="#{order.status}">Trạng thái</th>
-                                            <th th:text="#{order.total}">Tổng tiền</th>
-                                            <th th:text="#{order.actions}">Hành động</th>
-                                        </tr>
+                                    <tr>
+                                        <th th:text="#{order.code}">Mã đơn hàng</th>
+                                        <th th:text="#{order.date}">Ngày đặt</th>
+                                        <th th:text="#{order.status}">Trạng thái</th>
+                                        <th th:text="#{order.total}">Tổng tiền</th>
+                                        <th th:text="#{order.actions}">Hành động</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="order : ${orders}">
-                                            <td>
-                                                <span class="fw-semibold" th:text="${order.maHoaDon}"></span>
-                                            </td>
-                                            <td th:text="${order.createAt != null ? #temporals.format(order.createAt, 'dd/MM/yyyy HH:mm') : ''}"></td>
-                                            <td>
+                                    <tr th:each="order : ${orders}">
+                                        <td>
+                                            <span class="fw-semibold" th:text="${order.maHoaDon}"></span>
+                                        </td>
+                                        <td th:text="${order.createAt != null ? #temporals.format(order.createAt, 'dd/MM/yyyy HH:mm') : ''}"></td>
+                                        <td>
                                                 <span th:switch="${order.trangThai}">
                                                     <span th:case="0" class="badge rounded-pill bg-secondary">Chờ xác nhận</span>
-                                                    <span th:case="1" class="badge rounded-pill bg-info">Đã xác nhận</span>
-                                                    <span th:case="2" class="badge rounded-pill bg-warning">Đang giao</span>
-                                                    <span th:case="3" class="badge rounded-pill bg-success">Hoàn thành</span>
+                                                    <span th:case="1"
+                                                          class="badge rounded-pill bg-info">Đã xác nhận</span>
+                                                    <span th:case="2"
+                                                          class="badge rounded-pill bg-warning">Đang giao</span>
+                                                    <span th:case="3"
+                                                          class="badge rounded-pill bg-success">Hoàn thành</span>
                                                     <span th:case="4" class="badge rounded-pill bg-danger">Đã hủy</span>
                                                     <span th:case="5" class="badge rounded-pill bg-primary">Đã thanh toán</span>
-                                                    <span th:case="6" class="badge rounded-pill bg-danger">Trả hàng</span>
+                                                    <span th:case="6"
+                                                          class="badge rounded-pill bg-danger">Trả hàng</span>
                                                     <span th:case="7" class="badge rounded-pill bg-warning text-dark">Xử lý trả hàng</span>
                                                     <span th:case="8" class="badge rounded-pill bg-dark">Trả hàng thất bại</span>
                                                     <span th:case="*" class="badge rounded-pill bg-dark">Khác</span>
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <span class="fw-semibold text-primary" th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 0) + 'đ'}"></span>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex gap-1 flex-wrap">
-                                                    <a th:href="@{/don-hang/chi-tiet/{id}(id=${order.id})}" 
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-eye me-1"></i>
-                                                        <span th:text="#{order.view.detail}">Chi tiết</span>
-                                                    </a>
-                                                    
-                                                    <!-- Nút hủy đơn hàng (chỉ cho đơn chờ xử lý) -->
-                                                    <form th:if="${order.trangThai == 0}" 
-                                                          th:action="@{/don-hang/{id}/cancel(id=${order.id})}" 
-                                                          method="post" style="display:inline">
-                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                            <i class="fas fa-times me-1"></i>
-                                                            <span th:text="#{order.cancel}">Hủy đơn</span>
-                                                        </button>
-                                                    </form>
-                                                    
-                                                    <!-- Nút yêu cầu trả hàng (chỉ cho đơn hoàn thành, chưa trả hàng, và chưa có yêu cầu đang chờ/xử lý) -->
-                                                    <a th:if="${order.trangThai == 3} and ${order.trangThai != 6} and ${pendingReturns != null and pendingReturns[order.id] == false}" 
-                                                       th:href="@{/don-hang/{id}/return-request(id=${order.id})}"
-                                                       class="btn btn-sm btn-outline-warning">
-                                                        <i class="fas fa-undo me-1"></i>
-                                                        <span th:text="#{order.return}">Trả hàng</span>
-                                                    </a>
-                                                    
-                                                    <!-- Nút đặt lại -->
-                                                    <a th:if="${order.trangThai == 3 || order.trangThai == 4}" 
-                                                       th:href="@{/don-hang/{id}/reorder(id=${order.id})}"
-                                                       class="btn btn-sm btn-outline-success">
-                                                        <i class="fas fa-redo me-1"></i>
-                                                        <span th:text="#{order.reorder}">Đặt lại</span>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-primary"
+                                                  th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 0) + 'đ'}"></span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 flex-wrap">
+                                                <a th:href="@{/don-hang/chi-tiet/{id}(id=${order.id})}"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye me-1"></i>
+                                                    <span th:text="#{order.view.detail}">Chi tiết</span>
+                                                </a>
+
+                                                <!-- Nút hủy đơn hàng (chỉ cho đơn chờ xử lý) -->
+                                                <form th:if="${order.trangThai == 0}"
+                                                      th:action="@{/don-hang/{id}/cancel(id=${order.id})}"
+                                                      method="post" style="display:inline">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}"
+                                                           th:value="${_csrf.token}"/>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-times me-1"></i>
+                                                        <span th:text="#{order.cancel}">Hủy đơn</span>
+                                                    </button>
+                                                </form>
+
+                                                <!-- Nút yêu cầu trả hàng (chỉ cho đơn hoàn thành, chưa trả hàng, và chưa có yêu cầu đang chờ/xử lý) -->
+                                                <a th:if="${order.trangThai == 3} and ${order.trangThai != 6} and ${pendingReturns != null and pendingReturns[order.id] == false}"
+                                                   th:href="@{/don-hang/{id}/return-request(id=${order.id})}"
+                                                   class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-undo me-1"></i>
+                                                    <span th:text="#{order.return}">Trả hàng</span>
+                                                </a>
+
+                                                <!-- Nút đặt lại -->
+                                                <a th:if="${order.trangThai == 3 || order.trangThai == 4}"
+                                                   th:href="@{/don-hang/{id}/reorder(id=${order.id})}"
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-redo me-1"></i>
+                                                    <span th:text="#{order.reorder}">Đặt lại</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -274,7 +304,7 @@
                         <div th:if="${orders == null or orders.empty}" class="empty-state">
                             <i class="fas fa-shopping-cart"></i>
                             <h5 th:text="#{order.empty}">Bạn chưa có đơn hàng nào</h5>
-                            <p>Khám phá và mua sắm những sản phẩm yêu thích ngay!</p>
+                            <p th:text="#{account.explore}"></p>
                             <a href="/" class="btn btn-primary">
                                 <i class="fas fa-shopping-bag me-2"></i>
                                 <span th:text="#{order.go.shopping}">Mua sắm ngay</span>
@@ -329,29 +359,30 @@
                             <div class="mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-lock me-1"></i>
-                                    Mật khẩu hiện tại
+                                    <span th:text="#{changepass.current}"></span>
                                 </label>
                                 <input type="password" name="oldPassword" class="form-control" required
-                                       placeholder="Nhập mật khẩu hiện tại">
+                                       th:placeholder="#{changepass.currenttext}">
+
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">
                                     <i class="fas fa-key me-1"></i>
-                                    Mật khẩu mới
+                                    <span th:text="#{changepass.newpass}"></span>
                                 </label>
                                 <input type="password" name="newPassword" class="form-control" required
-                                       placeholder="Nhập mật khẩu mới (ít nhất 8 ký tự)">
-                                <div class="form-text">
-                                    Mật khẩu nên có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số
+                                       th:placeholder="#{changepass.newpasstext}">
+                                <div class="form-text" th:text="#{changepass.suggest}">
+
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">
                                     <i class="fas fa-check-circle me-1"></i>
-                                    Nhập lại mật khẩu mới
+                                    <span th:text="#{changepass.confirmnewpass}"></span>
                                 </label>
                                 <input type="password" name="confirmPassword" class="form-control" required
-                                       placeholder="Xác nhận mật khẩu mới">
+                                       th:placeholder="#{changepass.confirmnewpasstext}">
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
@@ -364,18 +395,18 @@
                                 </button>
                             </div>
                         </form>
-                        
+
                         <!-- Security recommendations -->
                         <div class="mt-4 p-3 bg-light rounded">
                             <h6 class="mb-2">
                                 <i class="fas fa-lightbulb me-2 text-warning"></i>
-                                Khuyến nghị bảo mật
+                                <span th:text="#{changepass.recommend}"></span>
                             </h6>
                             <ul class="mb-0 small text-muted">
-                                <li>Sử dụng mật khẩu mạnh với ít nhất 8 ký tự</li>
-                                <li>Kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt</li>
-                                <li>Không chia sẻ mật khẩu với người khác</li>
-                                <li>Thay đổi mật khẩu định kỳ để bảo mật tài khoản</li>
+                                <li th:text="#{changepass.rule.1}"></li>
+                                <li th:text="#{changepass.rule.2}"></li>
+                                <li th:text="#{changepass.rule.3}"></li>
+                                <li th:text="#{changepass.rule.4}"></li>
                             </ul>
                         </div>
                     </div>

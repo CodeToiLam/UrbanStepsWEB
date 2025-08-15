@@ -18,13 +18,11 @@
         <div class="container py-4">
             <!-- Search Header -->
             <div class="search-header">
-                <h1 class="search-title">Tìm kiếm sản phẩm</h1>
+                <h1 class="search-title" th:text="#{search.titleproduct}"></h1>
                 <p class="search-subtitle" th:if="${keyword}">
                     Kết quả cho từ khóa: "<strong th:text="${keyword}">keyword</strong>"
                 </p>
-                <p class="search-subtitle" th:unless="${keyword}">
-                    Khám phá hàng nghìn sản phẩm giày dép chất lượng
-                </p>
+                <p class="search-subtitle" th:unless="${keyword}" th:text="#{search.subtitle}"></p>
             </div>
 
             <!-- Search Form -->
@@ -34,13 +32,14 @@
                         <input type="text"
                                name="keyword"
                                class="search-input"
-                               placeholder="Tìm kiếm sản phẩm, thương hiệu..."
+                               th:placeholder="#{search.placetext}"
                                th:value="${keyword}"
                                list="search-suggestions">
                         <button type="submit" class="search-btn">
                             <i class="bi bi-search"></i>
-                            Tìm kiếm
+                            <span th:text="#{search.button}"></span>
                         </button>
+
 
                         <!-- Search Suggestions -->
                         <datalist id="search-suggestions">
@@ -59,14 +58,14 @@
 
             <!-- Filter Section -->
             <div class="filter-section" th:if="${danhSachThuongHieu != null and !#lists.isEmpty(danhSachThuongHieu)}">
-                <h3>Lọc sản phẩm</h3>
+                <h3 th:text="#{search.filter.title}">Lọc sản phẩm</h3>
                 <form action="/tim-kiem" method="get" class="filter-form">
                     <input type="hidden" name="keyword" th:value="${keyword}">
                     <div class="filter-controls">
                         <div class="filter-group">
-                            <label for="thuongHieu">Thương hiệu:</label>
+                            <label for="thuongHieu" th:text="#{search.filter.brand}">Thương hiệu:</label>
                             <select name="thuongHieu" id="thuongHieu" class="filter-select" onchange="this.form.submit()">
-                                <option value="">Tất cả thương hiệu</option>
+                                <option value="" th:text="#{search.brand.all}">Tất cả thương hiệu</option>
                                 <option th:each="brand : ${danhSachThuongHieu}"
                                         th:value="${brand}"
                                         th:text="${brand}"
@@ -74,13 +73,13 @@
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label for="sapXep">Sắp xếp:</label>
+                            <label for="sapXep" th:text="#{search.sort}">Sắp xếp:</label>
                             <select name="sapXep" id="sapXep" class="filter-select" onchange="this.form.submit()">
-                                <option value="">Mặc định</option>
-                                <option value="name-asc" th:selected="${sapXep == 'name-asc'}">Tên A-Z</option>
-                                <option value="name-desc" th:selected="${sapXep == 'name-desc'}">Tên Z-A</option>
-                                <option value="price-asc" th:selected="${sapXep == 'price-asc'}">Giá thấp đến cao</option>
-                                <option value="price-desc" th:selected="${sapXep == 'price-desc'}">Giá cao đến thấp</option>
+                                <option value="" th:text="#{search.sort.default}">Mặc định</option>
+                                <option value="name-asc" th:selected="${sapXep == 'name-asc'}" th:text="#{search.sort.nameasc}">Tên A-Z</option>
+                                <option value="name-desc" th:selected="${sapXep == 'name-desc'}" th:text="#{search.sort.namedesc}">Tên Z-A</option>
+                                <option value="price-asc" th:selected="${sapXep == 'price-asc'}" th:text="#{search.sort.priceasc}">Giá thấp đến cao</option>
+                                <option value="price-desc" th:selected="${sapXep == 'price-desc'}" th:text="#{search.sort.pricedesc}">Giá cao đến thấp</option>
                             </select>
                         </div>
                     </div>
@@ -90,7 +89,9 @@
             <!-- Results Info -->
             <div class="results-info" th:if="${products != null}">
                 <div class="results-count">
-                    Tìm thấy <span class="count" th:text="${#lists.size(products)}">0</span> sản phẩm
+                    <span th:text="#{search.results.found}">Tìm thấy</span>
+                    <span class="count" th:text="${#lists.size(products)}">0</span>
+                    <span th:text="#{search.results.product}">sản phẩm</span>
                     <span th:if="${keyword}" th:text="'cho từ khóa &quot;' + ${keyword} + '&quot;'"></span>
                 </div>
             </div>
@@ -100,16 +101,22 @@
                 <!-- No Results -->
                 <div th:if="${products == null or #lists.isEmpty(products)}" class="no-results">
                     <i class="bi bi-search display-1"></i>
-                    <h3>Không tìm thấy sản phẩm nào</h3>
-                    <p th:if="${keyword}">Không có sản phẩm nào phù hợp với từ khóa "<strong th:text="${keyword}"></strong>"</p>
-                    <p th:unless="${keyword}">Hãy nhập từ khóa để tìm kiếm sản phẩm</p>
-                    <p><strong>Gợi ý tìm kiếm:</strong></p>
-                    <p>• Thử tìm kiếm với từ khóa khác</p>
-                    <p>• Kiểm tra chính tả</p>
-                    <p>• Sử dụng từ khóa chung như "giày", "sneaker"</p>
+                    <h3 th:text="#{search.no.results}">Không tìm thấy sản phẩm nào</h3>
+
+                    <p th:if="${keyword}">
+                        <span th:text="#{search.no.match}"></span>
+                        "<strong th:text="${keyword}"></strong>"
+                    </p>
+                    <p th:unless="${keyword}" th:text="#{search.enter.keyword}">Hãy nhập từ khóa để tìm kiếm sản phẩm</p>
+
+                    <p><strong th:text="#{search.suggestion}">Gợi ý tìm kiếm:</strong></p>
+                    <p th:text="#{search.suggestion.try.other}">• Thử tìm kiếm với từ khóa khác</p>
+                    <p th:text="#{search.suggestion.check.spelling}">• Kiểm tra chính tả</p>
+                    <p th:text="#{search.suggestion.common.keyword}">• Sử dụng từ khóa chung như "giày", "sneaker"</p>
+
                     <a href="/" th:href="@{/}" class="btn-view">
                         <i class="bi bi-house me-2"></i>
-                        Về trang chủ
+                        <span th:text="#{search.back.home}">Về trang chủ</span>
                     </a>
                 </div>
 
@@ -143,8 +150,12 @@
                             </div>
                             <!-- Thêm thông tin mã sản phẩm -->
                             <div class="product-code" th:if="${product.maSanPham != null}">
-                                <small class="text-muted">Mã: <span th:text="${product.maSanPham}">SP001</span></small>
+                                <small class="text-muted">
+                                    <span th:text="#{search.code}">Mã:</span>
+                                    <span th:text="${product.maSanPham}">SP001</span>
+                                </small>
                             </div>
+
                         </div>
                     </div>
                 </div>

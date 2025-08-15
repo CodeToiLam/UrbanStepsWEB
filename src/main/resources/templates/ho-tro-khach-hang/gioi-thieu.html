@@ -80,55 +80,55 @@
   <div class="content-wrapper">
     <!-- Sidebar -->
     <div class="sidebar">
-      <h3>Danh mục</h3>
+      <h3 th:text="#{sidebar.title}">Danh mục</h3>
 
       <!-- Accordion group 1 -->
       <div class="accordion-section open">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <span>Hỗ trợ khách hàng</span>
+          <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
           <span class="arrow">▼</span>
         </div>
         <ul class="accordion-content">
-          <li><a href="/ho-tro">Hỗ trợ</a></li>
-          <li><a href="/van-don">Vận đơn</a></li>
-          <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-          <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-          <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-          <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-          <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+          <li><a th:href="@{/ho-tro}" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+          <li><a th:href="@{/van-don}" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+          <li><a th:href="@{/huong-dan-tra-gop}" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+          <li><a th:href="@{/huong-dan-doi-tra}" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+          <li><a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+          <li><a th:href="@{/chinh-sach-bao-hanh}" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+          <li><a th:href="@{/cau-hoi-thuong-gap}" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
         </ul>
       </div>
 
       <!-- Accordion group 2 -->
       <div class="accordion-section">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <span>Về UrbanSteps</span>
+          <span th:text="#{sidebar.about}">Về UrbanSteps</span>
           <span class="arrow">▼</span>
         </div>
         <ul class="accordion-content">
-          <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-          <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-          <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-          <li><a href="/lien-he">Liên hệ</a></li>
+          <li><a th:href="@{/gioi-thieu}" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+          <li><a th:href="@{/tuyen-dung}" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+          <li><a th:href="@{/dang-ki-ban-hang}" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+          <li><a th:href="@{/lien-he}" th:text="#{sidebar.contact}">Liên hệ</a></li>
         </ul>
       </div>
     </div>
 
-
     <!-- Main content -->
     <div class="main-content">
-      <h2>Giới thiệu về UrbanSteps</h2>
-      <p>UrbanSteps là thương hiệu chuyên cung cấp các sản phẩm giày dép chất lượng cao, đa dạng mẫu mã và phong cách.</p>
-      <p>Với sứ mệnh mang đến trải nghiệm mua sắm tuyệt vời cho khách hàng, UrbanSteps cam kết:</p>
+      <h2 th:text="#{about.title}">Giới thiệu về UrbanSteps</h2>
+      <p th:text="#{about.desc1}">UrbanSteps là thương hiệu chuyên cung cấp các sản phẩm giày dép chất lượng cao, đa dạng mẫu mã và phong cách.</p>
+      <p th:text="#{about.desc2}">Với sứ mệnh mang đến trải nghiệm mua sắm tuyệt vời cho khách hàng, UrbanSteps cam kết:</p>
       <ul>
-        <li>Cung cấp sản phẩm chính hãng, chất lượng.</li>
-        <li>Dịch vụ chăm sóc khách hàng tận tâm, chuyên nghiệp.</li>
-        <li>Giao hàng nhanh chóng và chính xác.</li>
-        <li>Chính sách đổi trả và bảo hành minh bạch.</li>
+        <li th:text="#{about.commitment1}">Cung cấp sản phẩm chính hãng, chất lượng.</li>
+        <li th:text="#{about.commitment2}">Dịch vụ chăm sóc khách hàng tận tâm, chuyên nghiệp.</li>
+        <li th:text="#{about.commitment3}">Giao hàng nhanh chóng và chính xác.</li>
+        <li th:text="#{about.commitment4}">Chính sách đổi trả và bảo hành minh bạch.</li>
       </ul>
-      <p>Cảm ơn bạn đã tin tưởng và đồng hành cùng UrbanSteps.</p>
+      <p th:text="#{about.thanks}">Cảm ơn bạn đã tin tưởng và đồng hành cùng UrbanSteps.</p>
     </div>
   </div>
 </div>
+
 </body>
 </html>

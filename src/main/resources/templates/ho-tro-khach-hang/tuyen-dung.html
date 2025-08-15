@@ -80,65 +80,65 @@
     <div class="content-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Danh mục</h3>
+            <h3 th:text="#{sidebar.title}">Danh mục</h3>
 
             <!-- Accordion group 1 -->
             <div class="accordion-section open">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Hỗ trợ khách hàng</span>
+                    <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/ho-tro">Hỗ trợ</a></li>
-                    <li><a href="/van-don">Vận đơn</a></li>
-                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    <li><a th:href="@{/ho-tro}" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+                    <li><a th:href="@{/van-don}" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+                    <li><a th:href="@{/huong-dan-tra-gop}" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a th:href="@{/huong-dan-doi-tra}" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-bao-hanh}" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+                    <li><a th:href="@{/cau-hoi-thuong-gap}" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>
 
             <!-- Accordion group 2 -->
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Về UrbanSteps</span>
+                    <span th:text="#{sidebar.about}">Về UrbanSteps</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-                    <li><a href="/lien-he">Liên hệ</a></li>
+                    <li><a th:href="@{/gioi-thieu}" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+                    <li><a th:href="@{/tuyen-dung}" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+                    <li><a th:href="@{/dang-ki-ban-hang}" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+                    <li><a th:href="@{/lien-he}" th:text="#{sidebar.contact}">Liên hệ</a></li>
                 </ul>
             </div>
         </div>
 
-
         <!-- Main content -->
         <div class="main-content">
-            <h2>Tuyển dụng</h2>
-            <p>UrbanSteps luôn tìm kiếm những nhân sự tài năng và nhiệt huyết để cùng phát triển.</p>
+            <h2 th:text="#{recruitment.title}">Tuyển dụng</h2>
+            <p th:text="#{recruitment.intro}">UrbanSteps luôn tìm kiếm những nhân sự tài năng và nhiệt huyết để cùng phát triển.</p>
 
-            <h4>Vị trí đang tuyển</h4>
+            <h4 th:text="#{recruitment.positions.title}">Vị trí đang tuyển</h4>
             <ul>
-                <li>Nhân viên bán hàng</li>
-                <li>Nhân viên chăm sóc khách hàng</li>
-                <li>Nhân viên marketing</li>
-                <li>Nhân viên kho</li>
+                <li th:text="#{recruitment.positions.sales}">Nhân viên bán hàng</li>
+                <li th:text="#{recruitment.positions.customer}">Nhân viên chăm sóc khách hàng</li>
+                <li th:text="#{recruitment.positions.marketing}">Nhân viên marketing</li>
+                <li th:text="#{recruitment.positions.warehouse}">Nhân viên kho</li>
             </ul>
 
-            <h4>Yêu cầu chung</h4>
+            <h4 th:text="#{recruitment.requirements.title}">Yêu cầu chung</h4>
             <ul>
-                <li>Đam mê công việc, nhiệt tình và có trách nhiệm.</li>
-                <li>Kỹ năng giao tiếp tốt.</li>
-                <li>Ưu tiên ứng viên có kinh nghiệm liên quan.</li>
+                <li th:text="#{recruitment.requirements.passion}">Đam mê công việc, nhiệt tình và có trách nhiệm.</li>
+                <li th:text="#{recruitment.requirements.communication}">Kỹ năng giao tiếp tốt.</li>
+                <li th:text="#{recruitment.requirements.experience}">Ưu tiên ứng viên có kinh nghiệm liên quan.</li>
             </ul>
 
-            <h4>Cách thức ứng tuyển</h4>
-            <p>Vui lòng gửi CV và thư xin việc về email: <a href="mailto:tuyen.dung@urbansteps.vn">tuyen.dung@urbansteps.vn</a></p>
+            <h4 th:text="#{recruitment.apply.title}">Cách thức ứng tuyển</h4>
+            <p th:utext="#{recruitment.apply.desc}">Vui lòng gửi CV và thư xin việc về email: <a href="mailto:tuyen.dung@urbansteps.vn">tuyen.dung@urbansteps.vn</a></p>
         </div>
     </div>
 </div>
+
 </body>
 </html>
