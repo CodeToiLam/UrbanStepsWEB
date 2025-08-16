@@ -358,6 +358,18 @@ public class ThanhToanController {
                 response.put("message", "Thiếu thông tin bắt buộc (họ tên / SĐT)");
                 return ResponseEntity.badRequest().body(response);
             }
+            // Phone format VN 9-11 digits
+            if (!sdt.matches("^\\+?\\d{9,11}$")){
+                response.put("success", false);
+                response.put("message", "Số điện thoại không hợp lệ");
+                return ResponseEntity.badRequest().body(response);
+            }
+            // Email optional, but if present must be valid
+            if (email != null && !email.isBlank() && !email.matches("^[\\w.+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+                response.put("success", false);
+                response.put("message", "Email không hợp lệ");
+                return ResponseEntity.badRequest().body(response);
+            }
             
             // Kiểm tra địa chỉ giao hàng đã được xử lý ở trên
             if (diaChiGiaoHang.isEmpty()) {

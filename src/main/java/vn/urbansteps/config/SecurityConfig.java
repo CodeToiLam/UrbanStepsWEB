@@ -45,6 +45,7 @@ public class SecurityConfig {
                         // API endpoints - Cho phép guest thao tác giỏ hàng
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/cart/**").permitAll()
+                        .requestMatchers("/api/search/**").permitAll()
 
                         // Giỏ hàng và thanh toán cho guest cũng được phép truy cập
                         .requestMatchers("/gio-hang", "/gio-hang/", "/cart", "/cart/").permitAll()

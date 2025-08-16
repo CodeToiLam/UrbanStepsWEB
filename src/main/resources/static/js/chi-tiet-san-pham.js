@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Debug toggle: set window.ENV_DEBUG = true to enable verbose logs in dev
+    const ENV_DEBUG = Boolean(window.ENV_DEBUG);
     // Debug: Log all data received from server
-    console.log('=== PRODUCT DETAIL DEBUG ===');
+    if (ENV_DEBUG) console.log('=== PRODUCT DETAIL DEBUG ===');
     if (typeof window.productId !== 'undefined') {
         console.log('Product ID:', window.productId);
     } else {
@@ -131,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             
             newImg.onerror = function() {
-                console.log('Lỗi tải ảnh:', imagePath);
+                if (ENV_DEBUG) console.warn('Lỗi tải ảnh:', imagePath);
                 showImageLoading(false);
             };
             
@@ -452,21 +454,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateStockInfo() {
-        console.log('=== UPDATE STOCK INFO ===');
+    if (ENV_DEBUG) console.log('=== UPDATE STOCK INFO ===');
         const sizeChecked = document.querySelector('input[name="size"]:checked');
         const colorChecked = document.querySelector('input[name="color"]:checked');
         
-        console.log('Size checked:', sizeChecked ? sizeChecked.value : 'none');
-        console.log('Color checked:', colorChecked ? colorChecked.value : 'none');
-        console.log('Current stockData:', stockData);
-        console.log('Window tonKhoMap:', window.tonKhoMap);
+        if (ENV_DEBUG) {
+            console.log('Size checked:', sizeChecked ? sizeChecked.value : 'none');
+            console.log('Color checked:', colorChecked ? colorChecked.value : 'none');
+            console.log('Current stockData:', stockData);
+            console.log('Window tonKhoMap:', window.tonKhoMap);
+        }
 
         // Auto-select first color if only one color is available and none is selected
         if (!colorChecked && window.availableColors && window.availableColors.length === 1) {
             const firstColorInput = document.querySelector('input[name="color"]');
             if (firstColorInput) {
                 firstColorInput.checked = true;
-                console.log('Auto-selected single color:', window.availableColors[0]);
+                if (ENV_DEBUG) console.log('Auto-selected single color:', window.availableColors[0]);
             }
         }
 
@@ -484,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Cách 1: Từ window.tonKhoMap (nested structure: {size: {color: quantity}})
             if (window.tonKhoMap && window.tonKhoMap[selectedSize] && window.tonKhoMap[selectedSize][selectedColor]) {
                 stockQuantity = window.tonKhoMap[selectedSize][selectedColor];
-                console.log('Stock from window.tonKhoMap (nested):', stockQuantity);
+                if (ENV_DEBUG) console.log('Stock from window.tonKhoMap (nested):', stockQuantity);
             }
             
             // Cách 2: Từ stockData (flat structure hoặc nested)
@@ -492,13 +496,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Thử cấu trúc nested
                 if (stockData[selectedSize] && stockData[selectedSize][selectedColor]) {
                     stockQuantity = stockData[selectedSize][selectedColor];
-                    console.log('Stock from stockData (nested):', stockQuantity);
+                    if (ENV_DEBUG) console.log('Stock from stockData (nested):', stockQuantity);
                 }
                 // Thử cấu trúc flat
                 else {
                     const flatKey = selectedSize + '_' + selectedColor;
                     stockQuantity = stockData[flatKey] || 0;
-                    console.log('Stock from stockData (flat) with key', flatKey, ':', stockQuantity);
+                    if (ENV_DEBUG) console.log('Stock from stockData (flat) with key', flatKey, ':', stockQuantity);
                 }
             }
             
@@ -512,15 +516,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 if (variant) {
                     stockQuantity = variant.soLuong || 0;
-                    console.log('Stock from variants:', stockQuantity, 'variant:', variant);
+                    if (ENV_DEBUG) console.log('Stock from variants:', stockQuantity, 'variant:', variant);
                 }
             }
 
-            console.log('Final stock quantity:', stockQuantity);
-            console.log('Stock calculation summary:');
-            console.log('- Selected size:', selectedSize);
-            console.log('- Selected color:', selectedColor);
-            console.log('- Final quantity:', stockQuantity);
+            if (ENV_DEBUG) {
+                console.log('Final stock quantity:', stockQuantity);
+                console.log('Stock calculation summary:');
+                console.log('- Selected size:', selectedSize);
+                console.log('- Selected color:', selectedColor);
+                console.log('- Final quantity:', stockQuantity);
+            }
             
             // Thay đổi ảnh theo màu sắc đã chọn
             updateImagesByColor(selectedColor);
@@ -595,18 +601,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Hàm thay đổi ảnh theo màu sắc
     function updateImagesByColor(colorName) {
         if (!colorName) {
-            console.log('No color name provided');
+            if (ENV_DEBUG) console.log('No color name provided');
             return;
         }
         
         if (!window.variants) {
-            console.log('No variants data available');
+            if (ENV_DEBUG) console.log('No variants data available');
             return;
         }
         
-        console.log('=== UPDATE IMAGES BY COLOR ===');
-        console.log('Selected color:', colorName);
-        console.log('Available variants:', window.variants);
+        if (ENV_DEBUG) {
+            console.log('=== UPDATE IMAGES BY COLOR ===');
+            console.log('Selected color:', colorName);
+            console.log('Available variants:', window.variants);
+        }
         
         // Tìm variant theo màu sắc để lấy ảnh - thử nhiều cách khác nhau
         const colorVariants = window.variants.filter(variant => {
@@ -614,16 +622,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const variantColor2 = variant.mauSac || '';
             const variantColor3 = variant.tenMauSac || '';
             
-            console.log(`Checking variant: color1="${variantColor1}", color2="${variantColor2}", color3="${variantColor3}" vs "${colorName}"`);
+            if (ENV_DEBUG) console.log(`Checking variant: color1="${variantColor1}", color2="${variantColor2}", color3="${variantColor3}" vs "${colorName}"`);
             
             return variantColor1 === colorName || variantColor2 === colorName || variantColor3 === colorName;
         });
         
-        console.log('Found color variants:', colorVariants);
+        if (ENV_DEBUG) console.log('Found color variants:', colorVariants);
         
         if (colorVariants.length > 0) {
             const firstVariant = colorVariants[0];
-            console.log('Using variant for color:', firstVariant);
+            if (ENV_DEBUG) console.log('Using variant for color:', firstVariant);
             
             // Cập nhật ảnh chính nếu variant có ảnh - sử dụng ID chính xác
             if (firstVariant.sanPham && firstVariant.sanPham.idHinhAnhDaiDien) {
@@ -631,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (mainImage) {
                     const newImageSrc = firstVariant.sanPham.idHinhAnhDaiDien.duongDan || '/images/no-image.svg';
                     mainImage.src = newImageSrc;
-                    console.log('Updated main image to:', newImageSrc);
+                    if (ENV_DEBUG) console.log('Updated main image to:', newImageSrc);
                     
                     // Cập nhật thumbnail active state
                     document.querySelectorAll('.thumbnail-item').forEach(thumb => {
@@ -642,10 +650,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 } else {
-                    console.log('Main product image element not found');
+                    if (ENV_DEBUG) console.log('Main product image element not found');
                 }
             } else {
-                console.log('No main image found in variant');
+                if (ENV_DEBUG) console.log('No main image found in variant');
             }
             
             // Cập nhật gallery thumbnails nếu có nhiều ảnh
@@ -692,16 +700,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                     
-                    console.log('Updated gallery with', firstVariant.sanPham.hinhAnhs.length, 'images');
+                    if (ENV_DEBUG) console.log('Updated gallery with', firstVariant.sanPham.hinhAnhs.length, 'images');
                 } else {
-                    console.log('Thumbnails container not found');
+                    if (ENV_DEBUG) console.log('Thumbnails container not found');
                 }
             } else {
-                console.log('No additional images found in variant');
+                if (ENV_DEBUG) console.log('No additional images found in variant');
             }
         } else {
-            console.log('No variants found for color:', colorName);
-            console.log('Available colors in variants:', window.variants.map(v => {
+            if (ENV_DEBUG) console.log('No variants found for color:', colorName);
+            if (ENV_DEBUG) console.log('Available colors in variants:', window.variants.map(v => {
                 return {
                     mauSac: v.mauSac,
                     tenMauSac: v.tenMauSac,
@@ -807,9 +815,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleAddToCart() {
-        console.log('=== HANDLE ADD TO CART DEBUG ===');
-        console.log('Selected size:', selectedSize);
-        console.log('Selected color:', selectedColor);
+        if (ENV_DEBUG) {
+            console.log('=== HANDLE ADD TO CART DEBUG ===');
+            console.log('Selected size:', selectedSize);
+            console.log('Selected color:', selectedColor);
+        }
         
         // Check if size and color are selected
         if (!selectedSize) {
@@ -825,7 +835,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const quantityInput = document.getElementById('quantity');
         const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
         
-        console.log('Quantity:', quantity);
+    if (ENV_DEBUG) console.log('Quantity:', quantity);
         
         // Validate quantity
         if (isNaN(quantity) || quantity <= 0) {
@@ -836,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Tìm sản phẩm chi tiết ID dựa vào size và color đã chọn
         const sanPhamChiTietId = getSanPhamChiTietId(selectedSize, selectedColor);
         
-        console.log('San pham chi tiet ID:', sanPhamChiTietId);
+    if (ENV_DEBUG) console.log('San pham chi tiet ID:', sanPhamChiTietId);
         
         if (!sanPhamChiTietId) {
             console.log('Available variants for debugging:', window.variants);
@@ -852,7 +862,7 @@ document.addEventListener('DOMContentLoaded', function () {
         addToCartBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang thêm...';
         addToCartBtn.disabled = true;
 
-        console.log('Sending request to /api/cart/add with:', {
+    if (ENV_DEBUG) console.log('Sending request to /api/cart/add with:', {
             sanPhamChiTietId: sanPhamChiTietId,
             soLuong: quantity
         });
@@ -866,12 +876,14 @@ document.addEventListener('DOMContentLoaded', function () {
             body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${quantity}`
         })
         .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
+            if (ENV_DEBUG) {
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+            }
             
             // Check if response indicates user needs to login (401 or 403)
             if (response.status === 401 || response.status === 403) {
-                console.log('User not authenticated, redirecting to login...');
+                if (ENV_DEBUG) console.log('User not authenticated, redirecting to login...');
                 // Redirect to login page
                 window.location.href = '/dang-nhap';
                 return null; // Return null to skip further processing
@@ -887,7 +899,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // If data is null, it means we redirected to login
             if (data === null) return;
             
-            console.log('Response data:', data);
+            if (ENV_DEBUG) console.log('Response data:', data);
             if (data.success) {
                 const prodNameEl = document.querySelector('.product-title, h1');
                 const prodName = prodNameEl ? prodNameEl.textContent.trim() : '';
@@ -899,7 +911,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // Check if the error message indicates need to login or if requireLogin flag is set
                 if (data.requireLogin || (data.message && (data.message.includes('đăng nhập') || data.message.includes('login')))) {
-                    console.log('Login required, redirecting to login page...');
+                    if (ENV_DEBUG) console.log('Login required, redirecting to login page...');
                     window.location.href = '/dang-nhap';
                     return;
                 }
@@ -968,18 +980,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Hàm tìm ID sản phẩm chi tiết dựa vào size và color
     function getSanPhamChiTietId(size, color) {
-        console.log('=== getSanPhamChiTietId() được gọi ===');
-        console.log('Looking for size:', size, 'color:', color);
-        console.log('Available variants:', window.variants);
+        if (ENV_DEBUG) {
+            console.log('=== getSanPhamChiTietId() được gọi ===');
+            console.log('Looking for size:', size, 'color:', color);
+            console.log('Available variants:', window.variants);
+        }
         
         if (!window.variants || !Array.isArray(window.variants)) {
-            console.log('No variants data available');
+            if (ENV_DEBUG) console.log('No variants data available');
             return null;
         }
         
         // Try exact match first
         let variant = window.variants.find(v => {
-            console.log('Checking variant:', v);
+            if (ENV_DEBUG) console.log('Checking variant:', v);
             
             // Handle different data structures for kichCo and mauSac
             let variantSize = '';
@@ -993,16 +1007,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 variantColor = v.mauSac.tenMauSac || v.mauSac;
             }
             
-            console.log('Variant size:', variantSize, 'Variant color:', variantColor);
-            console.log('Size match:', variantSize === size);
-            console.log('Color match:', variantColor === color);
+            if (ENV_DEBUG) {
+                console.log('Variant size:', variantSize, 'Variant color:', variantColor);
+                console.log('Size match:', variantSize === size);
+                console.log('Color match:', variantColor === color);
+            }
             
             return variantSize === size && variantColor === color;
         });
         
         // If exact match fails, try case-insensitive match
         if (!variant) {
-            console.log('Exact match failed, trying case-insensitive match...');
+            if (ENV_DEBUG) console.log('Exact match failed, trying case-insensitive match...');
             variant = window.variants.find(v => {
                 let variantSize = '';
                 let variantColor = '';
@@ -1018,8 +1034,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const sizeMatch = variantSize === size.toLowerCase().trim();
                 const colorMatch = variantColor === color.toLowerCase().trim();
                 
-                console.log('Case-insensitive - Variant size:', variantSize, 'Variant color:', variantColor);
-                console.log('Case-insensitive - Size match:', sizeMatch, 'Color match:', colorMatch);
+                if (ENV_DEBUG) {
+                    console.log('Case-insensitive - Variant size:', variantSize, 'Variant color:', variantColor);
+                    console.log('Case-insensitive - Size match:', sizeMatch, 'Color match:', colorMatch);
+                }
                 
                 return sizeMatch && colorMatch;
             });
@@ -1027,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // If still no match, try size-only match (fallback for single color products)
         if (!variant && window.variants.length > 0) {
-            console.log('No exact match found, trying size-only match...');
+            if (ENV_DEBUG) console.log('No exact match found, trying size-only match...');
             variant = window.variants.find(v => {
                 let variantSize = '';
                 
@@ -1036,17 +1054,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 
                 const sizeMatch = variantSize === size.toLowerCase().trim();
-                console.log('Size-only match - Variant size:', variantSize, 'Size match:', sizeMatch);
+                if (ENV_DEBUG) console.log('Size-only match - Variant size:', variantSize, 'Size match:', sizeMatch);
                 
                 return sizeMatch;
             });
             
-            if (variant) {
-                console.log('Found variant using size-only match:', variant);
-            }
+            if (variant && ENV_DEBUG) console.log('Found variant using size-only match:', variant);
         }
         
-        console.log('Final found variant:', variant);
+    if (ENV_DEBUG) console.log('Final found variant:', variant);
         return variant ? variant.id : null;
     }
 
@@ -1072,32 +1088,38 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.appendChild(div);
             setTimeout(()=>{div.style.opacity='0';div.style.transition='opacity .4s';setTimeout(()=>div.remove(),400);},3000);
         }
-        console.log('Alert shown (toast):', message);
+    if (ENV_DEBUG) console.log('Alert shown (toast):', message);
     }
     
     // Debug helper function
     window.debugCartData = function() {
-        console.log('=== CART DEBUG INFO ===');
-        console.log('Product ID:', window.productId);
-        console.log('Available sizes:', window.availableSizes);
-        console.log('Available colors:', window.availableColors);
-        console.log('Variants:', window.variants);
-        console.log('Stock map:', window.tonKhoMap);
-        console.log('Selected size:', selectedSize);
-        console.log('Selected color:', selectedColor);
-        console.log('========================');
+        if (ENV_DEBUG) {
+            console.log('=== CART DEBUG INFO ===');
+            console.log('Product ID:', window.productId);
+            console.log('Available sizes:', window.availableSizes);
+            console.log('Available colors:', window.availableColors);
+            console.log('Variants:', window.variants);
+            console.log('Stock map:', window.tonKhoMap);
+            console.log('Selected size:', selectedSize);
+            console.log('Selected color:', selectedColor);
+            console.log('========================');
+        }
     };
 
     // STOCK DATA SETTER
     window.setStockData = function(data) {
         stockData = data || {};
-        console.log('Stock data set to:', stockData);
-        console.log('Stock data type:', typeof stockData);
-        console.log('Stock data keys:', Object.keys(stockData));
+        if (ENV_DEBUG) {
+            console.log('Stock data set to:', stockData);
+            console.log('Stock data type:', typeof stockData);
+            console.log('Stock data keys:', Object.keys(stockData));
+        }
         
         // Log first level structure
-        for (const key in stockData) {
-            console.log(`stockData[${key}]:`, stockData[key], 'type:', typeof stockData[key]);
+        if (ENV_DEBUG) {
+            for (const key in stockData) {
+                console.log(`stockData[${key}]:`, stockData[key], 'type:', typeof stockData[key]);
+            }
         }
     };
 
@@ -1105,10 +1127,12 @@ document.addEventListener('DOMContentLoaded', function () {
     initProductDetailPage();
 
     // Debug: Check if data is loaded correctly after initialization
-    console.log('=== DEBUG CHI TIẾT SẢN PHẨM AFTER INIT ===');
-    console.log('Variants data:', window.variants);
-    console.log('Stock data:', stockData);
-    console.log('Selected size:', selectedSize);
-    console.log('Selected color:', selectedColor);
-    console.log('==============================================');
+    if (ENV_DEBUG) {
+        console.log('=== DEBUG CHI TIẾT SẢN PHẨM AFTER INIT ===');
+        console.log('Variants data:', window.variants);
+        console.log('Stock data:', stockData);
+        console.log('Selected size:', selectedSize);
+        console.log('Selected color:', selectedColor);
+        console.log('==============================================');
+    }
 });

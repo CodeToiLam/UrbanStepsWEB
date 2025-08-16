@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.text.Normalizer;
 
 @Service
 public class SanPhamService {
@@ -109,7 +110,7 @@ public class SanPhamService {
         System.out.println("=== DEBUG SEARCH ===");
         System.out.println("Search keyword: '" + keyword + "'");
         
-        String lower = keyword == null ? "" : keyword.toLowerCase();
+    String lower = normalizeText(keyword);
         List<SanPham> allProducts = getActiveProductsWithCache();
         
         System.out.println("Total active products: " + allProducts.size());
@@ -117,20 +118,57 @@ public class SanPhamService {
         List<SanPham> result = allProducts.stream()
             .filter(sp -> {
                 if (lower.isEmpty()) return true;
-                
-                boolean matches = (sp.getTenSanPham() != null && sp.getTenSanPham().toLowerCase().contains(lower))
-                    || (sp.getThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu() != null && sp.getThuongHieu().getTenThuongHieu().toLowerCase().contains(lower))
-                    || (sp.getLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham() != null && sp.getLoaiSanPham().getTenLoaiSanPham().toLowerCase().contains(lower))
-                    || (sp.getDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc() != null && sp.getDanhMuc().getTenDanhMuc().toLowerCase().contains(lower))
-                    || (sp.getMaSanPham() != null && sp.getMaSanPham().toLowerCase().contains(lower))
-                    || (sp.getXuatXu() != null && sp.getXuatXu().getTenXuatXu() != null && sp.getXuatXu().getTenXuatXu().toLowerCase().contains(lower))
-                    || (sp.getKieuDang() != null && sp.getKieuDang().getTenKieuDang() != null && sp.getKieuDang().getTenKieuDang().toLowerCase().contains(lower))
-                    || (sp.getChatLieu() != null && sp.getChatLieu().getTenChatLieu() != null && sp.getChatLieu().getTenChatLieu().toLowerCase().contains(lower));
-                
-                if (matches && sp.getTenSanPham() != null) {
-                    System.out.println("Match found: " + sp.getTenSanPham());
+                try {
+                    String ten = normalizeText(sp.getTenSanPham());
+                    String thuongHieu = "";
+                    if (sp.getThuongHieu() != null) {
+                        try { thuongHieu = normalizeText(sp.getThuongHieu().getTenThuongHieu()); } catch (Exception ignore) {}
+                    }
+                    String loai = "";
+                    if (sp.getLoaiSanPham() != null) {
+                        try { loai = normalizeText(sp.getLoaiSanPham().getTenLoaiSanPham()); } catch (Exception ignore) {}
+                    }
+                    String danhMuc = "";
+                    if (sp.getDanhMuc() != null) {
+                        try { danhMuc = normalizeText(sp.getDanhMuc().getTenDanhMuc()); } catch (Exception ignore) {}
+                    }
+                    String ma = normalizeText(sp.getMaSanPham());
+                    String xuatXu = "";
+                    if (sp.getXuatXu() != null) {
+                        try { xuatXu = normalizeText(sp.getXuatXu().getTenXuatXu()); } catch (Exception ignore) {}
+                    }
+                    String kieuDang = "";
+                    if (sp.getKieuDang() != null) {
+                        try { kieuDang = normalizeText(sp.getKieuDang().getTenKieuDang()); } catch (Exception ignore) {}
+                    }
+                    String chatLieu = "";
+                    if (sp.getChatLieu() != null) {
+                        try { chatLieu = normalizeText(sp.getChatLieu().getTenChatLieu()); } catch (Exception ignore) {}
+                    }
+
+                    boolean matches = (ten.contains(lower))
+                        || (thuongHieu.contains(lower))
+                        || (loai.contains(lower))
+                        || (danhMuc.contains(lower))
+                        || (ma.contains(lower))
+                        || (xuatXu.contains(lower))
+                        || (kieuDang.contains(lower))
+                        || (chatLieu.contains(lower));
+
+                    if (matches && sp.getTenSanPham() != null) {
+                        System.out.println("Match found: " + sp.getTenSanPham());
+                    }
+                    return matches;
+                } catch (Exception e) {
+                    // Nếu gặp lazy proxy chưa khởi tạo, bỏ qua field đó
+                    String ten = normalizeText(sp.getTenSanPham());
+                    String ma = normalizeText(sp.getMaSanPham());
+                    boolean matches = ten.contains(lower) || ma.contains(lower);
+                    if (matches && sp.getTenSanPham() != null) {
+                        System.out.println("Match(found-safe): " + sp.getTenSanPham());
+                    }
+                    return matches;
                 }
-                return matches;
             })
             .collect(Collectors.toList());
             
@@ -138,6 +176,16 @@ public class SanPhamService {
         System.out.println("=== END DEBUG SEARCH ===");
         
         return result;
+    }
+
+    private static String normalizeText(String s) {
+        if (s == null) return "";
+        String lower = s.toLowerCase().trim();
+        String norm = Normalizer.normalize(lower, Normalizer.Form.NFD);
+        // remove diacritical marks
+        norm = norm.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        // collapse spaces
+        return norm.replaceAll("\\s+", " ").trim();
     }
 
     public List<String> layDanhSachThuongHieu() {

@@ -38,6 +38,7 @@
     align-items: center;
     max-width: 600px;
     margin: 0 auto;
+    position: relative; /* ensure dropdown positions under the input */
 }
 
 .search-input {

@@ -81,7 +81,15 @@ public class HomeController {
     @PostMapping("/dang-nhap")
     public String processLogin(@RequestParam String taiKhoan,
                                @RequestParam String matKhau,
-                               Model model) {
+                               @RequestParam(value = "redirectUrl", required = false) String redirectUrl,
+                               Model model,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
+        taiKhoan = taiKhoan == null ? "" : taiKhoan.trim();
+        matKhau = matKhau == null ? "" : matKhau;
+        if (taiKhoan.isEmpty() || matKhau.isEmpty()) {
+            model.addAttribute("loginError", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+            return "dang-nhap";
+        }
         vn.urbansteps.model.TaiKhoan user = taiKhoanService.findByTaiKhoan(taiKhoan);
         if (user == null) {
             model.addAttribute("loginError", "Tài khoản không tồn tại.");
@@ -91,9 +99,9 @@ public class HomeController {
             model.addAttribute("loginError", "Mật khẩu không đúng.");
             return "dang-nhap";
         }
-        model.addAttribute("loginSuccess", "Đăng nhập thành công!");
-        // TODO: Lưu session hoặc chuyển hướng hợp lý như các web lớn
-        return "redirect:/";
+        ra.addFlashAttribute("success", "Đăng nhập thành công!");
+        String dest = (redirectUrl != null && !redirectUrl.isBlank()) ? redirectUrl : "/";
+        return "redirect:" + dest;
     }
 
     @PostMapping("/dang-ky")

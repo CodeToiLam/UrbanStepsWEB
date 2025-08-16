@@ -42,6 +42,14 @@ public class DiaChiGiaoHangController {
         TaiKhoan tk = currentUser();
         if(tk==null){return "redirect:/dang-nhap";}
         addr.setTaiKhoan(tk);
+        // Validate minimal fields
+        if (addr.getDiaChiChiTiet()==null || addr.getDiaChiChiTiet().isBlank()
+                || addr.getTinhThanhPho()==null || addr.getTinhThanhPho().isBlank()
+                || addr.getQuanHuyen()==null || addr.getQuanHuyen().isBlank()
+                || addr.getPhuongXa()==null || addr.getPhuongXa().isBlank()){
+            ra.addFlashAttribute("error","Vui lòng nhập đầy đủ địa chỉ.");
+            return "redirect:/tai-khoan#address";
+        }
         // Auto-fill recipient info if missing (form no longer asks for these fields)
         if(addr.getTenNguoiNhan()==null || addr.getTenNguoiNhan().isBlank()){
             addr.setTenNguoiNhan(tk.getHoTenTaiKhoan()!=null? tk.getHoTenTaiKhoan(): tk.getTaiKhoan());
@@ -79,6 +87,13 @@ public class DiaChiGiaoHangController {
         DiaChiGiaoHang dc = diaChiService.findById(id).orElse(null);
         if(dc==null || !dc.getTaiKhoan().getId().equals(tk.getId())){
             ra.addFlashAttribute("error","Không tìm thấy địa chỉ");
+            return "redirect:/tai-khoan#address";
+        }
+        if (form.getDiaChiChiTiet()==null || form.getDiaChiChiTiet().isBlank()
+                || form.getTinhThanhPho()==null || form.getTinhThanhPho().isBlank()
+                || form.getQuanHuyen()==null || form.getQuanHuyen().isBlank()
+                || form.getPhuongXa()==null || form.getPhuongXa().isBlank()){
+            ra.addFlashAttribute("error","Vui lòng nhập đầy đủ địa chỉ.");
             return "redirect:/tai-khoan#address";
         }
     // Keep existing or overwrite with auto values if form omitted

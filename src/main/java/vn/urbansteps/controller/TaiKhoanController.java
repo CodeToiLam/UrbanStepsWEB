@@ -102,7 +102,8 @@ public class TaiKhoanController {
                            @RequestParam String email,
                            @RequestParam String matKhau,
                            @RequestParam("confirm-password") String confirmPassword,
-                           Model model) {
+                           Model model,
+                           RedirectAttributes ra) {
         TaiKhoan tk = new TaiKhoan();
         tk.setTaiKhoan(taiKhoan);
         tk.setEmail(email);
@@ -110,20 +111,27 @@ public class TaiKhoanController {
         model.addAttribute("taiKhoan", tk);
 
         boolean hasError = false;
+        // Normalize inputs
+        taiKhoan = taiKhoan == null ? "" : taiKhoan.trim();
+        email = email == null ? "" : email.trim();
 
-        if (taiKhoan.length() < 5 || taiKhoan.length() > 12) {
+        // Username 6-12 per UI hint
+        if (taiKhoan.length() < 6 || taiKhoan.length() > 12) {
             model.addAttribute("usernameError", "Tên đăng nhập phải từ 6 đến 12 ký tự.");
             hasError = true;
         }
 
-        if (!email.matches("^[\\w.-]+@(?:gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$")) {
+        // Email whitelist common domains; basic shape check first
+        if (!email.matches("^[\\w.+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$") ||
+            !email.matches("^[\\w.+-]+@(?:gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$")) {
             model.addAttribute("emailError", "Email chỉ được sử dụng các đuôi: gmail, yahoo, outlook, hotmail.");
             hasError = true;
         }
 
-
-        if (matKhau.length() < 8 || matKhau.length() > 12) {
-            model.addAttribute("passwordError", "Mật khẩu phải từ 8 đến 12 ký tự.");
+        // Password 8-12 and contains at least one letter and one digit
+        if (matKhau == null || matKhau.length() < 8 || matKhau.length() > 12 ||
+                !matKhau.matches(".*[A-Za-z].*") || !matKhau.matches(".*[0-9].*")) {
+            model.addAttribute("passwordError", "Mật khẩu 8-12 ký tự, bao gồm chữ và số.");
             hasError = true;
         }
 
@@ -145,9 +153,9 @@ public class TaiKhoanController {
         if (hasError) return "dang-ky";
 
         tk.setRole("USER");
-        taiKhoanService.registerTaiKhoan(tk);
-        model.addAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
-        return "dang-nhap";
+    taiKhoanService.registerTaiKhoan(tk);
+    ra.addFlashAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
+    return "redirect:/dang-nhap";
     }
     @PostMapping("/huy-don-hang")
     public String huyDonHang(@RequestParam("orderId") Integer orderId, Model model) {

@@ -29,30 +29,20 @@
 
             <!-- Search Form -->
             <div class="search-form">
-                <form action="/tim-kiem" method="get">
-                    <div class="search-box">
+                <form action="/tim-kiem" method="get" autocomplete="off">
+                    <div class="search-box" data-search>
                         <input type="text"
                                name="keyword"
                                class="search-input"
                                placeholder="Tìm kiếm sản phẩm, thương hiệu..."
                                th:value="${keyword}"
-                               list="search-suggestions">
+                               data-search-input>
                         <button type="submit" class="search-btn">
                             <i class="bi bi-search"></i>
                             Tìm kiếm
                         </button>
-
-                        <!-- Search Suggestions -->
-                        <datalist id="search-suggestions">
-                            <option value="Giày Adidas">
-                            <option value="Giày Nike">
-                            <option value="Giày Converse">
-                            <option value="Giày MLB">
-                            <option value="Sneaker">
-                            <option value="Giày thể thao">
-                            <option value="Giày cao cổ">
-                            <option value="Giày thấp cổ">
-                        </datalist>
+                        <!-- Live suggestions dropdown -->
+                        <div class="search-suggest-dropdown" data-search-dropdown hidden></div>
                     </div>
                 </form>
             </div>

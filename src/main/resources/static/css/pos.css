@@ -28,13 +28,17 @@
   position: absolute;
   left: 0;
   right: 0;
-  margin-top: 4px;
+  margin-top: 6px;
+  z-index: 1000; /* ensure dropdown shows above other elements */
 }
 .search-item {
-  padding: 10px 16px;
+  padding: 10px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f4fa;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .search-item:last-child {
   border-bottom: none;
@@ -42,6 +46,15 @@
 .search-item:hover {
   background: #e3eaf2;
 }
+.sug-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#f3f4f6;border:1px solid #eef0f3}
+.sug-meta{display:flex;flex-direction:column;min-width:0}
+.sug-name{font-size:14px;font-weight:700;color:#12344d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug-sub{font-size:12px;color:#6b7280}
+.sug-price{font-size:13px;color:#1565c0;font-weight:700}
+
+/* Results list items */
+.pos-result-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e3e6ed;border-radius:10px;background:#fff;margin-bottom:8px}
+.pos-result-item .sug-action{margin-left:auto;display:flex;align-items:center;gap:8px}
 /* pos.css - Style riêng cho POS */
 
 /* POS dùng style giống admin */
@@ -57,6 +70,13 @@
 .pos-section {
   margin-bottom: 28px;
 }
+/* Make POS page align snugly with the browser viewport */
+.layout-admin{padding:0}
+.admin-layout{min-height:100vh}
+.admin-main-content{padding:24px 28px}
+.admin-sidebar{padding-top:24px}
+.admin-header-bar{padding:0 24px}
+.admin-footer{margin-top:0}
 .pos-table {
   width: 100%;
   border-collapse: collapse;

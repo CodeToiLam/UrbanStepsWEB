@@ -57,6 +57,14 @@ body {
 .header-close-search{display:none;width:32px;height:32px;border:none;background:transparent}
 .header-trigger-search{display:none}
 .header-search-form:focus-within{background:#fff;border-color:#c9cccf;box-shadow:0 4px 16px -4px rgba(0,0,0,.16)}
+/* Suggest dropdown */
+.search-suggest-dropdown{position:absolute;left:0;right:0;top:48px;background:#fff;border:1px solid #e6e8ec;border-radius:14px;box-shadow:0 16px 42px -18px rgba(0,0,0,.16);padding:6px;max-height:420px;overflow:auto;z-index:50}
+.sug-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;text-decoration:none;color:#1f2328}
+.sug-item:hover{background:#f6f8fa}
+.sug-img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:#f3f4f6;border:1px solid #eef0f3}
+.sug-meta{display:flex;flex-direction:column;min-width:0}
+.sug-name{font-size:14px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug-sub{font-size:12px;color:#6b7280}
 /* Compact on scroll */
 body.scrolled .site-header .header-inner{padding:6px 30px 8px}
 body.scrolled .brand-logo{height:52px}

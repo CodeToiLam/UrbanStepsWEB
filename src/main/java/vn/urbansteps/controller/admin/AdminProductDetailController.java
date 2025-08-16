@@ -39,7 +39,6 @@ public class AdminProductDetailController {
             SanPham sanPham = new SanPham();
             sanPham.setTenSanPham("Không xác định");
             sanPham.setId(0);
-            System.out.println("Debug: sanPhamId = " + sanPhamId);
             if (sanPhamId != null) {
                 Optional<SanPham> sanPhamOpt = sanPhamService.findById(sanPhamId);
                 sanPham = sanPhamOpt.orElse(sanPham);
@@ -62,15 +61,16 @@ public class AdminProductDetailController {
 
     @GetMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public String showAddForm(@RequestParam(required = false) Integer sanPhamId, Model model) {
+    public String showAddForm(@RequestParam(required = false) Integer sanPhamId, Model model,
+                              org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         try {
             if (sanPhamId == null) {
-                model.addAttribute("error", "Vui lòng chọn một sản phẩm để thêm chi tiết.");
+                ra.addFlashAttribute("error", "Vui lòng chọn một sản phẩm để thêm chi tiết.");
                 return "redirect:/admin/product-management";
             }
             Optional<SanPham> sanPhamOpt = sanPhamService.findById(sanPhamId);
             if (!sanPhamOpt.isPresent()) {
-                model.addAttribute("error", "Sản phẩm không tồn tại với ID: " + sanPhamId);
+                ra.addFlashAttribute("error", "Sản phẩm không tồn tại với ID: " + sanPhamId);
                 return "redirect:/admin/product-management";
             }
             SanPham sanPham = sanPhamOpt.get();
@@ -81,7 +81,7 @@ public class AdminProductDetailController {
             List<KichCo> kichCos = kichCoService.getAllKichCos() != null ? kichCoService.getAllKichCos() : Collections.emptyList();
             List<MauSac> mauSacs = mauSacService.getAllMauSacs() != null ? mauSacService.getAllMauSacs() : Collections.emptyList();
             if (kichCos.isEmpty() || mauSacs.isEmpty()) {
-                model.addAttribute("error", "Không có kích cỡ hoặc màu sắc để thêm chi tiết.");
+                ra.addFlashAttribute("error", "Không có kích cỡ hoặc màu sắc để thêm chi tiết.");
                 return "redirect:/admin/product-management?selectedSanPhamId=" + sanPhamId;
             }
             model.addAttribute("chiTiet", chiTiet);
@@ -89,7 +89,7 @@ public class AdminProductDetailController {
             model.addAttribute("kichCos", kichCos);
             model.addAttribute("mauSacs", mauSacs);
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi khi tải form thêm chi tiết: " + e.getMessage());
+            ra.addFlashAttribute("error", "Lỗi khi tải form thêm chi tiết: " + e.getMessage());
             return "redirect:/admin/product-management?selectedSanPhamId=" + (sanPhamId != null ? sanPhamId : 0);
         }
         return "admin/product-detail-form";
@@ -97,7 +97,8 @@ public class AdminProductDetailController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public String saveSanPhamChiTiet(@ModelAttribute SanPhamChiTiet chiTiet, BindingResult result, Model model) {
+    public String saveSanPhamChiTiet(@ModelAttribute SanPhamChiTiet chiTiet, BindingResult result, Model model,
+                                     org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         try {
             if (result.hasErrors()) {
                 model.addAttribute("sanPham", sanPhamService.findById(chiTiet.getSanPham().getId())
@@ -125,6 +126,7 @@ public class AdminProductDetailController {
                 throw new IllegalStateException("Kích cỡ và màu sắc đã tồn tại cho sản phẩm này.");
             }
             sanPhamChiTietService.save(chiTiet);
+            ra.addFlashAttribute("success", "Lưu chi tiết sản phẩm thành công");
             return "redirect:/admin/product-management?selectedSanPhamId=" + chiTiet.getSanPham().getId();
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi lưu chi tiết sản phẩm: " + e.getMessage());
@@ -141,7 +143,8 @@ public class AdminProductDetailController {
 
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String showEditForm(@PathVariable Integer id, Model model) {
+    public String showEditForm(@PathVariable Integer id, Model model,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         try {
             Optional<SanPhamChiTiet> chiTiet = sanPhamChiTietService.findById(id);
             if (chiTiet.isPresent()) {
@@ -156,11 +159,11 @@ public class AdminProductDetailController {
                 model.addAttribute("kichCos", kichCos);
                 model.addAttribute("mauSacs", mauSacs);
             } else {
-                model.addAttribute("error", "Chi tiết sản phẩm không tồn tại với ID: " + id);
+                ra.addFlashAttribute("error", "Chi tiết sản phẩm không tồn tại với ID: " + id);
                 return "redirect:/admin/san-pham-chi-tiet";
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi khi tải form chỉnh sửa: " + e.getMessage());
+            ra.addFlashAttribute("error", "Lỗi khi tải form chỉnh sửa: " + e.getMessage());
             return "redirect:/admin/san-pham-chi-tiet";
         }
         return "admin/product-detail-form";
@@ -168,19 +171,21 @@ public class AdminProductDetailController {
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deleteSanPhamChiTiet(@PathVariable Integer id, Model model) {
+    public String deleteSanPhamChiTiet(@PathVariable Integer id, Model model,
+                                       org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         try {
             Optional<SanPhamChiTiet> chiTiet = sanPhamChiTietService.findById(id);
             if (chiTiet.isPresent()) {
                 SanPhamChiTiet ct = chiTiet.get();
                 ct.setTrangThai(false);
                 sanPhamChiTietService.save(ct);
+                ra.addFlashAttribute("success", "Đã vô hiệu hóa biến thể sản phẩm");
                 return "redirect:/admin/product-management?selectedSanPhamId=" + ct.getSanPham().getId();
             } else {
-                model.addAttribute("error", "Chi tiết sản phẩm không tồn tại với ID: " + id);
+                ra.addFlashAttribute("error", "Chi tiết sản phẩm không tồn tại với ID: " + id);
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi khi xóa chi tiết sản phẩm: " + e.getMessage());
+            ra.addFlashAttribute("error", "Lỗi khi xóa chi tiết sản phẩm: " + e.getMessage());
         }
         return "redirect:/admin/san-pham-chi-tiet";
     }

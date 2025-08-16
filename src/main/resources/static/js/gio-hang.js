@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Debug toggle for verbose console logs in dev only
+    const ENV_DEBUG = Boolean(window.ENV_DEBUG);
+    if (!ENV_DEBUG) { try { console.debug = function(){}; } catch(e) {} }
     // Lấy CSRF token từ meta tag (an toan hơn với try-catch)
     let csrfToken = '';
     try {
@@ -174,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // If failed but we can retry
                         if (retryCount < maxRetries) {
                             retryCount++;
-                            console.log(`Retry attempt ${retryCount} for updating item ${itemId} quantity to ${newQuantity}`);
+                            if (ENV_DEBUG) console.log(`Retry attempt ${retryCount} for updating item ${itemId} quantity to ${newQuantity}`);
                             setTimeout(attemptUpdate, 1000); // Wait 1 second before retry
                             return;
                         }
@@ -197,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // If error but we can retry
                     if (retryCount < maxRetries) {
                         retryCount++;
-                        console.log(`Retry attempt ${retryCount} for updating item ${itemId} quantity after error`);
+                        if (ENV_DEBUG) console.log(`Retry attempt ${retryCount} for updating item ${itemId} quantity after error`);
                         setTimeout(attemptUpdate, 1000); // Wait 1 second before retry
                         return;
                     }
@@ -226,13 +229,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cập nhật hiển thị của một item cụ thể
     function updateItemDisplay(itemId, newQuantity, itemTotal) {
-        console.log(`Updating display for item ${itemId}: quantity=${newQuantity}, total=${itemTotal}`);
+    if (ENV_DEBUG) console.log(`Updating display for item ${itemId}: quantity=${newQuantity}, total=${itemTotal}`);
         
         // Cập nhật số lượng trong input hidden
         const quantityInput = document.querySelector(`input[type="hidden"][data-item-id="${itemId}"]`);
         if (quantityInput) {
             quantityInput.value = newQuantity;
-            console.log(`Updated hidden input for item ${itemId}`);
+            if (ENV_DEBUG) console.log(`Updated hidden input for item ${itemId}`);
         }
         
         // Tìm container của item này
@@ -247,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (quantityInputElement) {
             quantityInputElement.value = newQuantity;
             quantityInputElement.style.color = '';
-            console.log(`Updated quantity input for item ${itemId}: ${newQuantity}`);
+            if (ENV_DEBUG) console.log(`Updated quantity input for item ${itemId}: ${newQuantity}`);
         }
         
         // Cập nhật số lượng hiển thị trong span (nếu có)
@@ -255,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (quantityValueElement) {
             quantityValueElement.textContent = newQuantity;
             quantityValueElement.style.color = '';
-            console.log(`Updated quantity display for item ${itemId}: ${newQuantity}`);
+            if (ENV_DEBUG) console.log(`Updated quantity display for item ${itemId}: ${newQuantity}`);
         }
         
         // Add animation effect for quantity
@@ -282,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 itemTotalElement.classList.remove('price-updated');
             }, 1500);
             
-            console.log(`Updated item total for item ${itemId}: ${formatCurrency(itemTotal)}`);
+            if (ENV_DEBUG) console.log(`Updated item total for item ${itemId}: ${formatCurrency(itemTotal)}`);
         } else {
             console.warn(`Item total element not found for item ${itemId}`);
         }
@@ -298,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             increaseBtn.setAttribute('onclick', `updateQuantity(${itemId}, ${newQuantity + 1})`);
         }
         
-        console.log(`Finished updating item ${itemId}`);
+    if (ENV_DEBUG) console.log(`Finished updating item ${itemId}`);
     }
     
     // Cập nhật tổng tiền giỏ hàng
@@ -326,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        console.log(`Updated cart total: ${formatCurrency(cartTotal)}, count: ${cartCount}`);
+    if (ENV_DEBUG) console.log(`Updated cart total: ${formatCurrency(cartTotal)}, count: ${cartCount}`);
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
@@ -442,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // If failed but we can retry
                         if (retryCount < maxRetries) {
                             retryCount++;
-                            console.log(`Retry attempt ${retryCount} for deleting item ${itemId}`);
+                            if (ENV_DEBUG) console.log(`Retry attempt ${retryCount} for deleting item ${itemId}`);
                             setTimeout(attemptDelete, 1000); // Wait 1 second before retry
                             return;
                         }
@@ -460,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // If error but we can retry
                     if (retryCount < maxRetries) {
                         retryCount++;
-                        console.log(`Retry attempt ${retryCount} for deleting item ${itemId} after error`);
+                        if (ENV_DEBUG) console.log(`Retry attempt ${retryCount} for deleting item ${itemId} after error`);
                         setTimeout(attemptDelete, 1000); // Wait 1 second before retry
                         return;
                     }

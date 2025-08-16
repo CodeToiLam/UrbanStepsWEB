@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Hàm làm nổi bật từ khóa tìm kiếm
 function highlightSearchKeyword(keyword) {
-    const productNames = document.querySelectorAll('.product-name a');
+    const productNames = document.querySelectorAll('.product-name, .product-name span, .product-name a');
     productNames.forEach(element => {
         const regex = new RegExp(`(${keyword})`, 'gi');
         element.innerHTML = element.innerHTML.replace(regex, '<mark>$1</mark>');
@@ -152,13 +152,7 @@ function initAutoSubmitFilters() {
 
 // Khởi tạo gợi ý tìm kiếm
 function initSearchSuggestions() {
-    const searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-        // Có thể thêm logic gợi ý tìm kiếm ở đây
-        searchInput.addEventListener('input', function() {
-            // TODO: Thêm logic gợi ý tìm kiếm realtime
-        });
-    }
+    // Đã được xử lý bởi search-suggest.js dùng chung cho header và trang
 }
 
 // Khởi tạo hiệu ứng cho card sản phẩm

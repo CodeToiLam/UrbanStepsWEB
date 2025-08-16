@@ -1,0 +1,13 @@
+<div th:fragment="alerts">
+  <div class="container" style="max-width: 1100px; margin: 16px auto;">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    <div th:if="${warning}" class="alert alert-warning" role="alert" th:text="${warning}"></div>
+    <div th:if="${info}" class="alert alert-info" role="alert" th:text="${info}"></div>
+
+    <!-- Compatibility with existing keys -->
+    <div th:if="${loginError}" class="alert alert-danger" role="alert" th:text="${loginError}"></div>
+    <div th:if="${loginSuccess}" class="alert alert-success" role="alert" th:text="${loginSuccess}"></div>
+    <div th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
+  </div>
+</div>

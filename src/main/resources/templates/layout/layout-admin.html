@@ -46,7 +46,9 @@
     </ul>
   </nav>
   <main class="admin-main-content">
-    <div layout:fragment="content">
+  <!-- Global alerts for admin pages -->
+  <div th:replace="~{layout/_alerts :: alerts}"></div>
+  <div layout:fragment="content">
       <!-- Nội dung trang con sẽ được nhúng ở đây -->
     </div>
   </main>

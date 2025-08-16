@@ -367,13 +367,15 @@
 
         // Set stock data from server (legacy function call)
         window.setStockData(/*[[${tonKhoMap}]]*/ {});
-
-        // Debug: Log the data structure from backend
-        console.log('Backend data received:');
-        console.log('tonKhoMap:', window.tonKhoMap);
-        console.log('variants:', window.variants);
-        console.log('availableSizes:', window.availableSizes);
-        console.log('availableColors:', window.availableColors);
+        // Optional: enable debug logs in dev only by setting window.ENV_DEBUG = true in the console
+        if (window.ENV_DEBUG) {
+            console.log('Backend data received:', {
+                tonKhoMap: window.tonKhoMap,
+                variants: window.variants,
+                availableSizes: window.availableSizes,
+                availableColors: window.availableColors
+            });
+        }
     </script>
 </th:block>
 
