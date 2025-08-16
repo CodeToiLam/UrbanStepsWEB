@@ -80,54 +80,54 @@
   <div class="content-wrapper">
     <!-- Sidebar -->
     <div class="sidebar">
-      <h3>Danh mục</h3>
+      <h3 th:text="#{sidebar.title}">Danh mục</h3>
 
       <!-- Accordion group 1 -->
       <div class="accordion-section open">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <span>Hỗ trợ khách hàng</span>
+          <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
           <span class="arrow">▼</span>
         </div>
         <ul class="accordion-content">
-          <li><a href="/ho-tro">Hỗ trợ</a></li>
-          <li><a href="/van-don">Vận đơn</a></li>
-          <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-          <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-          <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-          <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-          <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+          <li><a th:href="@{/ho-tro}" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+          <li><a th:href="@{/van-don}" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+          <li><a th:href="@{/huong-dan-tra-gop}" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+          <li><a th:href="@{/huong-dan-doi-tra}" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+          <li><a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+          <li><a th:href="@{/chinh-sach-bao-hanh}" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+          <li><a th:href="@{/cau-hoi-thuong-gap}" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
         </ul>
       </div>
 
       <!-- Accordion group 2 -->
       <div class="accordion-section">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <span>Về UrbanSteps</span>
+          <span th:text="#{sidebar.about}">Về UrbanSteps</span>
           <span class="arrow">▼</span>
         </div>
         <ul class="accordion-content">
-          <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-          <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-          <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-          <li><a href="/lien-he">Liên hệ</a></li>
+          <li><a th:href="@{/gioi-thieu}" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+          <li><a th:href="@{/tuyen-dung}" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+          <li><a th:href="@{/dang-ki-ban-hang}" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+          <li><a th:href="@{/lien-he}" th:text="#{sidebar.contact}">Liên hệ</a></li>
         </ul>
       </div>
     </div>
 
-
     <!-- Main content -->
     <div class="main-content">
-      <h2>Hướng dẫn thanh toán trả góp</h2>
-      <p>UrbanSteps hỗ trợ khách hàng thanh toán trả góp với các bước đơn giản:</p>
+      <h2 th:text="#{installment.guide.title}">Hướng dẫn thanh toán trả góp</h2>
+      <p th:text="#{installment.guide.desc}">UrbanSteps hỗ trợ khách hàng thanh toán trả góp với các bước đơn giản:</p>
       <ol>
-        <li>Chọn sản phẩm bạn muốn mua.</li>
-        <li>Chọn phương thức thanh toán trả góp khi thanh toán.</li>
-        <li>Điền thông tin cá nhân và hồ sơ cần thiết.</li>
-        <li>Chờ xét duyệt và nhận sản phẩm.</li>
+        <li th:text="#{installment.guide.step1}">Chọn sản phẩm bạn muốn mua.</li>
+        <li th:text="#{installment.guide.step2}">Chọn phương thức thanh toán trả góp khi thanh toán.</li>
+        <li th:text="#{installment.guide.step3}">Điền thông tin cá nhân và hồ sơ cần thiết.</li>
+        <li th:text="#{installment.guide.step4}">Chờ xét duyệt và nhận sản phẩm.</li>
       </ol>
-      <p>Liên hệ bộ phận hỗ trợ để biết thêm chi tiết.</p>
+      <p th:text="#{installment.guide.contact}">Liên hệ bộ phận hỗ trợ để biết thêm chi tiết.</p>
     </div>
   </div>
 </div>
+
 </body>
 </html>

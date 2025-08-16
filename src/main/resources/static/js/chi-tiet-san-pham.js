@@ -544,26 +544,26 @@ document.addEventListener('DOMContentLoaded', function () {
             if (stockQuantity > 0) {
                 if (addToCartBtn) {
                     addToCartBtn.disabled = false;
-                    addToCartBtn.textContent = 'Thêm vào giỏ hàng';
+                    addToCartBtn.textContent = TEXT_ADD_TO_CART;
                     addToCartBtn.classList.remove('btn-secondary');
                     addToCartBtn.classList.add('btn-primary');
                 }
                 if (buyNowBtn) {
                     buyNowBtn.disabled = false;
-                    buyNowBtn.textContent = 'Mua ngay';
+                    buyNowBtn.textContent = TEXT_BUY_NOW;
                     buyNowBtn.classList.remove('btn-secondary');
                     buyNowBtn.classList.add('btn-warning');
                 }
             } else {
                 if (addToCartBtn) {
                     addToCartBtn.disabled = true;
-                    addToCartBtn.textContent = 'Hết hàng';
+                    addToCartBtn.textContent = TEXT_OUT_OF_STOCK;
                     addToCartBtn.classList.remove('btn-primary');
                     addToCartBtn.classList.add('btn-secondary');
                 }
                 if (buyNowBtn) {
                     buyNowBtn.disabled = true;
-                    buyNowBtn.textContent = 'Hết hàng';
+                    buyNowBtn.textContent = TEXT_OUT_OF_STOCK;
                     buyNowBtn.classList.remove('btn-warning');
                     buyNowBtn.classList.add('btn-secondary');
                 }
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Reset to default state when no size/color selected
             const stockQuantityElement = document.getElementById('stock-quantity');
             if (stockQuantityElement) {
-                stockQuantityElement.textContent = 'Chọn kích cỡ và màu';
+                stockQuantityElement.textContent = TEXT_CHOOSE_SIZE_COLOR;
             }
 
             const addToCartBtn = document.getElementById('add-to-cart');
@@ -589,11 +589,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (addToCartBtn) {
                 addToCartBtn.disabled = true;
-                addToCartBtn.textContent = 'Chọn kích cỡ và màu';
+                addToCartBtn.textContent = TEXT_CHOOSE_SIZE_COLOR;
             }
             if (buyNowBtn) {
                 buyNowBtn.disabled = true;
-                buyNowBtn.textContent = 'Chọn kích cỡ và màu';
+                buyNowBtn.textContent = TEXT_CHOOSE_SIZE_COLOR;
             }
         }
     }

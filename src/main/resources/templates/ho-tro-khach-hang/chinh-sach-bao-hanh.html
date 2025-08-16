@@ -110,57 +110,60 @@
     <div class="content-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Danh mục</h3>
+            <h3 th:text="#{sidebar.title}">Hỗ trợ khách hàng</h3>
 
             <!-- Accordion group 1 -->
             <div class="accordion-section open">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Hỗ trợ khách hàng</span>
+                    <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/ho-tro">Hỗ trợ</a></li>
-                    <li><a href="/van-don">Vận đơn</a></li>
-                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    <li><a href="/ho-tro" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+                    <li><a href="/van-don" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+                    <li><a href="/huong-dan-tra-gop" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a href="/huong-dan-doi-tra" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+                    <li><a href="/chinh-sach-doi-tra" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+                    <li><a href="/chinh-sach-bao-hanh" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+                    <li><a href="/cau-hoi-thuong-gap" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>
 
             <!-- Accordion group 2 -->
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Về UrbanSteps</span>
+                    <span th:text="#{sidebar.about}">Về UrbanSteps</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-                    <li><a href="/lien-he">Liên hệ</a></li>
+                    <li><a href="/gioi-thieu" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+                    <li><a href="/tuyen-dung" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+                    <li><a href="/dang-ki-ban-hang" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+                    <li><a href="/lien-he" th:text="#{sidebar.contact}">Liên hệ</a></li>
                 </ul>
             </div>
         </div>
 
-
         <!-- Main content -->
         <div class="main-content">
-            <h2>Chính sách bảo hành</h2>
-            <p>UrbanSteps cung cấp chính sách bảo hành nhằm đảm bảo quyền lợi tốt nhất cho khách hàng.</p>
+            <h2 th:text="#{warranty.title}">Chính sách bảo hành</h2>
+            <p th:text="#{warranty.desc}">
+                UrbanSteps cung cấp chính sách bảo hành nhằm đảm bảo quyền lợi tốt nhất cho khách hàng.
+            </p>
+
             <ul>
-                <li>Thời gian bảo hành sản phẩm là 12 tháng kể từ ngày mua hàng.</li>
-                <li>Bảo hành áp dụng cho các lỗi kỹ thuật do nhà sản xuất.</li>
-                <li>Không bảo hành các lỗi do người sử dụng gây ra như rơi vỡ, ngấm nước, tự ý sửa chữa.</li>
-                <li>Khách hàng cần giữ lại hóa đơn mua hàng và phiếu bảo hành (nếu có) để được hỗ trợ.</li>
+                <li th:text="#{warranty.term1}">Thời gian bảo hành sản phẩm là 12 tháng kể từ ngày mua hàng.</li>
+                <li th:text="#{warranty.term2}">Bảo hành áp dụng cho các lỗi kỹ thuật do nhà sản xuất.</li>
+                <li th:text="#{warranty.term3}">Không bảo hành các lỗi do người sử dụng gây ra như rơi vỡ, ngấm nước, tự ý sửa chữa.</li>
+                <li th:text="#{warranty.term4}">Khách hàng cần giữ lại hóa đơn mua hàng và phiếu bảo hành (nếu có) để được hỗ trợ.</li>
             </ul>
-            <p>Quy trình bảo hành:</p>
+
+            <p th:text="#{warranty.process}">Quy trình bảo hành:</p>
             <ol>
-                <li>Liên hệ bộ phận chăm sóc khách hàng để được hướng dẫn.</li>
-                <li>Gửi sản phẩm cần bảo hành kèm theo hóa đơn và phiếu bảo hành.</li>
-                <li>Chờ kiểm tra và xác nhận từ bộ phận kỹ thuật.</li>
-                <li>Nhận sản phẩm đã được sửa chữa hoặc đổi mới theo chính sách.</li>
+                <li th:text="#{warranty.step1}">Liên hệ bộ phận chăm sóc khách hàng để được hướng dẫn.</li>
+                <li th:text="#{warranty.step2}">Gửi sản phẩm cần bảo hành kèm theo hóa đơn và phiếu bảo hành.</li>
+                <li th:text="#{warranty.step3}">Chờ kiểm tra và xác nhận từ bộ phận kỹ thuật.</li>
+                <li th:text="#{warranty.step4}">Nhận sản phẩm đã được sửa chữa hoặc đổi mới theo chính sách.</li>
             </ol>
         </div>
     </div>

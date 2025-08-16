@@ -99,57 +99,58 @@
     <div class="content-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Danh mục</h3>
+            <h3 th:text="#{sidebar.title}">Danh mục</h3>
 
             <!-- Accordion group 1 -->
             <div class="accordion-section open">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Hỗ trợ khách hàng</span>
+                    <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/ho-tro">Hỗ trợ</a></li>
-                    <li><a href="/van-don">Vận đơn</a></li>
-                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    <li><a href="/ho-tro" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+                    <li><a href="/van-don" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+                    <li><a href="/huong-dan-tra-gop" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a href="/huong-dan-doi-tra" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+                    <li><a href="/chinh-sach-doi-tra" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+                    <li><a href="/chinh-sach-bao-hanh" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+                    <li><a href="/cau-hoi-thuong-gap" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>
 
             <!-- Accordion group 2 -->
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Về UrbanSteps</span>
+                    <span th:text="#{sidebar.about}">Về UrbanSteps</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-                    <li><a href="/lien-he">Liên hệ</a></li>
+                    <li><a href="/gioi-thieu" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+                    <li><a href="/tuyen-dung" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+                    <li><a href="/dang-ki-ban-hang" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+                    <li><a href="/lien-he" th:text="#{sidebar.contact}">Liên hệ</a></li>
                 </ul>
             </div>
         </div>
 
-
         <!-- Main content -->
         <div class="main-content">
-            <h2>Chính sách đổi trả</h2>
-            <p>UrbanSteps cam kết mang đến sự hài lòng cho khách hàng với chính sách đổi trả rõ ràng và minh bạch.</p>
+            <h2 th:text="#{return.policy.title}">Chính sách đổi trả</h2>
+            <p th:text="#{return.policy.desc}">
+                UrbanSteps cam kết mang đến sự hài lòng cho khách hàng với chính sách đổi trả rõ ràng và minh bạch.
+            </p>
             <ul>
-                <li>Sản phẩm có thể được đổi trả trong vòng 7 ngày kể từ ngày nhận hàng.</li>
-                <li>Sản phẩm phải còn nguyên tem, nhãn, chưa qua sử dụng và còn nguyên bao bì.</li>
-                <li>Không áp dụng đổi trả với các sản phẩm giảm giá đặc biệt hoặc sản phẩm theo yêu cầu riêng.</li>
-                <li>Khách hàng cần giữ lại hóa đơn mua hàng để làm thủ tục đổi trả.</li>
+                <li th:text="#{return.policy.term1}">Sản phẩm có thể được đổi trả trong vòng 7 ngày kể từ ngày nhận hàng.</li>
+                <li th:text="#{return.policy.term2}">Sản phẩm phải còn nguyên tem, nhãn, chưa qua sử dụng và còn nguyên bao bì.</li>
+                <li th:text="#{return.policy.term3}">Không áp dụng đổi trả với các sản phẩm giảm giá đặc biệt hoặc sản phẩm theo yêu cầu riêng.</li>
+                <li th:text="#{return.policy.term4}">Khách hàng cần giữ lại hóa đơn mua hàng để làm thủ tục đổi trả.</li>
             </ul>
-            <p>Quy trình đổi trả:</p>
+            <p th:text="#{return.policy.process}">Quy trình đổi trả:</p>
             <ol>
-                <li>Liên hệ bộ phận chăm sóc khách hàng để được hướng dẫn chi tiết.</li>
-                <li>Chuẩn bị sản phẩm và hóa đơn mua hàng.</li>
-                <li>Gửi sản phẩm về địa chỉ của UrbanSteps theo hướng dẫn.</li>
-                <li>Chờ xác nhận và nhận sản phẩm mới hoặc hoàn tiền.</li>
+                <li th:text="#{return.policy.step1}">Liên hệ bộ phận chăm sóc khách hàng để được hướng dẫn chi tiết.</li>
+                <li th:text="#{return.policy.step2}">Chuẩn bị sản phẩm và hóa đơn mua hàng.</li>
+                <li th:text="#{return.policy.step3}">Gửi sản phẩm về địa chỉ của UrbanSteps theo hướng dẫn.</li>
+                <li th:text="#{return.policy.step4}">Chờ xác nhận và nhận sản phẩm mới hoặc hoàn tiền.</li>
             </ol>
         </div>
     </div>

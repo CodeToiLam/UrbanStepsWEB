@@ -28,14 +28,14 @@
                         <h2 class="mb-0"><i class="bi bi-box-seam"></i> <span th:text="#{order.history}">Danh sách đơn hàng</span></h2>
                         <div class="status-filters nav nav-pills" role="tablist">
                             <a class="nav-link active" href="#" data-status="all" th:text="#{filter.all.status}">Tất cả</a>
-                            <a class="nav-link" href="#" data-status="0">#{status.pending}</a>
-                            <a class="nav-link" href="#" data-status="1">#{status.processing}</a>
-                            <a class="nav-link" href="#" data-status="2">Giao</a>
+                            <a class="nav-link" href="#" data-status="0" th:text="#{status.pending}"></a>
+                            <a class="nav-link" href="#" data-status="1" th:text="#{status.processing}"></a>
+                            <a class="nav-link" href="#" data-status="2" th:text="#{status.deliver}"></a>
                             <a class="nav-link" href="#" data-status="3" th:text="#{order.status.completed}">Hoàn thành</a>
                             <a class="nav-link" href="#" data-status="4" th:text="#{status.cancelled}">Đã hủy</a>
-                                <a class="nav-link" href="#" data-status="6">Trả hàng</a>
-                                <a class="nav-link" href="#" data-status="7">Xử lý trả hàng</a>
-                                <a class="nav-link" href="#" data-status="8">Trả hàng thất bại</a>
+                                <a class="nav-link" href="#" data-status="6" th:text="#{status.return}">Trả hàng</a>
+                                <a class="nav-link" href="#" data-status="7" th:text="#{status.Returnprocessing}">Xử lý trả hàng</a>
+                                <a class="nav-link" href="#" data-status="8" th:text="#{status.returnfailed}">Trả hàng thất bại</a>
                         </div>
                         <div id="ordersCount" class="orders-summary-count ms-auto" th:text="${orders != null}? ${orders.size()} + ' ' + #{order.history} : '0'"></div>
                     </div>

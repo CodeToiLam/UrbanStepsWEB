@@ -4,9 +4,11 @@
       layout:decorate="~{layout/main}">
 
 <head>
+
     <title layout:fragment="title"
            th:text="${product != null ? product.tenSanPham : 'Chi tiết sản phẩm'} + ' - UrbanSteps'">Chi tiết sản phẩm -
         UrbanSteps</title>
+    <meta charset="UTF-8">
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" href="/css/chi-tiet-san-pham.css">
     </th:block>
@@ -17,15 +19,19 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb custom-breadcrumb">
                 <li class="breadcrumb-item">
-                    <a th:href="@{/}"><i class="bi bi-house-door"></i> Trang chủ</a>
+                    <a th:href="@{/}">
+                        <i class="bi bi-house-door"></i>
+                        <span th:text="#{home.title}"></span>
+                    </a>
                 </li>
+
                 <li class="breadcrumb-separator">
                     <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M6.646 1.646a.5.5 0 0 1 .708 0l4.5 4.5a.5.5 0 0 1 0 .708l-4.5 4.5a.5.5 0 0 1-.708-.708L10.293 6 6.646 2.354a.5.5 0 0 1 0-.708z"/>
                     </svg>
                 </li>
                 <li class="breadcrumb-item">
-                    <a th:href="@{/san-pham}">Sản phẩm</a>
+                    <a th:href="@{/san-pham}" th:text="#{spct.detail.namelink}"></a>
                 </li>
                 <li class="breadcrumb-separator">
                     <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
@@ -163,11 +169,14 @@
                     </div>
                     <div class="image-actions">
                         <button class="btn btn-sm btn-outline-primary" onclick="openLightbox()" th:if="${productImages.size() > 1}">
-                            <i class="bi bi-arrows-fullscreen"></i> Xem tất cả
+                            <i class="bi bi-arrows-fullscreen"></i>
+                            <span th:text="#{spct.zoom}"></span>
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="shareImage()">
-                            <i class="bi bi-share"></i> Chia sẻ
+                        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" onclick="shareImage()">
+                            <i class="bi bi-share"></i>
+                            <span th:text="#{spct.share}"></span>
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -177,7 +186,7 @@
                 <h1 class="product-title" th:text="${product.tenSanPham}">Tên sản phẩm</h1>
 
             <div class="product-code mb-3">
-                <span>Mã sản phẩm: </span>
+                <span th:text="#{spct.detail.code}"></span>
                 <span th:text="${product.maSanPham}" class="code">SP001</span>
             </div>
 
@@ -199,7 +208,7 @@
 
             <!-- Chọn kích cỡ -->
             <div class="product-size mb-3" th:if="${!kichCos.empty}">
-                <h5>Kích cỡ:</h5>
+                <h5 th:text="#{spct.size}"></h5>
                 <div class="size-options">
                     <div th:each="size : ${kichCos}" class="size-option">
                         <input type="radio" th:id="${'size-' + size}" name="size" th:value="${size}">
@@ -210,7 +219,7 @@
 
             <!-- Chọn màu sắc -->
             <div class="product-color mb-3" th:if="${!mauSacs.empty}">
-                <h5>Màu sắc:</h5>
+                <h5 th:text="#{spct.color}"></h5>
                 <div class="color-options">
                     <div th:each="color : ${mauSacs}" class="color-option">
                         <input type="radio" th:id="${'color-' + color}" name="color" th:value="${color}">
@@ -225,23 +234,22 @@
 
             <!-- Số lượng tồn kho -->
             <div class="product-stock mb-3" th:if="${!kichCos.empty && !mauSacs.empty}">
-                <span>Còn lại: </span>
+                <span th:text="#{spct.remainingproducts}"> </span>
                 <span id="stock-quantity"
                       th:text="${mauSacs.size() == 1 ? 'Vui lòng chọn kích cỡ' : 'Vui lòng chọn kích cỡ và màu sắc'}">
-                    Vui lòng chọn kích cỡ và màu sắc
                 </span>
             </div>
 
             <!-- Số lượng mua -->
             <div class="product-quantity mb-3">
-                <h5 class="quantity-label">Số lượng:</h5>
+                <h5 class="quantity-label" th:text="#{spct.quantity}"></h5>
                 <div class="quantity-selector">
                     <button id="decrease-quantity" class="quantity-btn decrease-btn" type="button">
                         <i class="bi bi-dash"></i>
                     </button>
                     <div class="quantity-display">
                         <input type="number" id="quantity" value="1" min="1" class="quantity-input" readonly>
-                        <span class="quantity-label-text">Sản phẩm</span>
+                        <span class="quantity-label-text" th:text="#{spct.sanpham}"></span>
                     </div>
                     <button id="increase-quantity" class="quantity-btn increase-btn" type="button">
                         <i class="bi bi-plus"></i>
@@ -273,14 +281,14 @@
 
             <!-- Mô tả sản phẩm -->
             <div class="product-description mb-4" th:if="${product.moTa != null && !product.moTa.empty}">
-                <h5>Mô tả:</h5>
+                <h5 th:text="#{spct.description}"></h5>
                 <p th:text="${product.moTa}">Mô tả sản phẩm sẽ hiển thị ở đây...</p>
             </div>
 
             <!-- Thông tin thương hiệu và xuất xứ -->
             <div class="product-info">
                 <div class="info-item" th:if="${product.thuongHieu != null}">
-                    <span class="info-label">Thương hiệu:</span>
+                    <span class="info-label" th:text="#{spct.brand}"></span>
                     <span class="info-value" th:text="${product.thuongHieu.tenThuongHieu}">Nike</span>
                 </div>
             </div>
@@ -289,7 +297,7 @@
 
     <!-- Sản phẩm liên quan -->
     <div class="related-products mt-5" th:if="${!relatedProducts.empty}">
-        <h3 class="section-title">Sản phẩm liên quan</h3>
+        <h3 class="section-title" th:text="#{spct.RelatedProducts}"></h3>
         <div class="row">
             <div class="col-md-3 mb-4" th:each="relatedProduct : ${relatedProducts}">
                 <div class="card product-card h-100">
@@ -322,7 +330,7 @@
 
     <!-- Gợi ý theo sản phẩm đã xem -->
     <div class="related-products mt-5" th:if="${recommendedProducts != null and !#lists.isEmpty(recommendedProducts)}">
-        <h3 class="section-title">Gợi ý cho bạn</h3>
+        <h3 class="section-title" th:text="#{spct.suggest}"></h3>
         <div class="row">
             <div class="col-md-3 mb-4" th:each="rp : ${recommendedProducts}">
                 <div class="card product-card h-100">
@@ -378,33 +386,43 @@
         }
     </script>
 </th:block>
+    <script th:inline="javascript">
+        // Ẩn counter nếu không còn ảnh hợp lệ
+        window.updateImageCounter = function() {
+            const counterElement = document.getElementById('currentImageIndex');
+            const totalElement = document.getElementById('totalImageCount');
+            const counterBlock = document.getElementById('imageCounterBlock');
 
-<script>
-// Ẩn counter nếu không còn ảnh hợp lệ
-window.updateImageCounter = function() {
-    const counterElement = document.getElementById('currentImageIndex');
-    const totalElement = document.getElementById('totalImageCount');
-    const counterBlock = document.getElementById('imageCounterBlock');
-    // Lấy index hiện tại từ JS gallery nếu có, fallback về 1
-    let currentIndex = 1;
-    if (window.galleryImages && Array.isArray(window.galleryImages) && window.galleryImages.length > 0 && typeof window.currentImageIndex === 'number') {
-        currentIndex = window.currentImageIndex + 1;
-    }
-    const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
-        const img = thumb.querySelector('img');
-        return img && img.style.display !== 'none';
-    });
-    if (counterBlock) {
-        if (visibleThumbnails.length > 0) {
-            counterBlock.style.display = '';
-            if (counterElement) counterElement.textContent = currentIndex;
-            if (totalElement) totalElement.textContent = visibleThumbnails.length;
-        } else {
-            counterBlock.style.display = 'none';
+            // Lấy index hiện tại từ JS gallery nếu có, fallback về 1
+            let currentIndex = 1;
+            if (window.galleryImages && Array.isArray(window.galleryImages) && window.galleryImages.length > 0 && typeof window.currentImageIndex === 'number') {
+                currentIndex = window.currentImageIndex + 1;
+            }
+
+            const visibleThumbnails = Array.from(document.querySelectorAll('.thumbnail-item')).filter(thumb => {
+                const img = thumb.querySelector('img');
+                return img && img.style.display !== 'none';
+            });
+
+            if (counterBlock) {
+                if (visibleThumbnails.length > 0) {
+                    counterBlock.style.display = '';
+                    if (counterElement) counterElement.textContent = currentIndex;
+                    if (totalElement) totalElement.textContent = visibleThumbnails.length;
+                } else {
+                    counterBlock.style.display = 'none';
+                }
+            }
         }
-    }
-}
-</script>
+
+        /* Đa ngôn ngữ */
+        const TEXT_CHOOSE_SIZE        = [[#{spct.choose.size}]];
+        const TEXT_CHOOSE_SIZE_COLOR  = [[#{spct.choose.size.color}]];
+        const TEXT_ADD_TO_CART        = [[#{spct.add.to.cart}]];
+        const TEXT_BUY_NOW            = [[#{spct.buy.now}]];
+        const TEXT_OUT_OF_STOCK       = [[#{spct.out.of.stock}]];
+    </script>
+
 
 </div>
 

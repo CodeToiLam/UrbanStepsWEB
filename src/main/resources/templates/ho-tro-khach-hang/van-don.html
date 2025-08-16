@@ -80,73 +80,73 @@
     <div class="content-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Danh mục</h3>
+            <h3 th:text="#{sidebar.title}">Danh mục</h3>
 
             <!-- Accordion group 1 -->
             <div class="accordion-section open">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Hỗ trợ khách hàng</span>
+                    <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/ho-tro">Hỗ trợ</a></li>
-                    <li><a href="/van-don">Vận đơn</a></li>
-                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    <li><a th:href="@{/ho-tro}" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+                    <li><a th:href="@{/van-don}" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+                    <li><a th:href="@{/huong-dan-tra-gop}" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a th:href="@{/huong-dan-doi-tra}" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-bao-hanh}" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+                    <li><a th:href="@{/cau-hoi-thuong-gap}" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>
 
             <!-- Accordion group 2 -->
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Về UrbanSteps</span>
+                    <span th:text="#{sidebar.about}">Về UrbanSteps</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-                    <li><a href="/lien-he">Liên hệ</a></li>
+                    <li><a th:href="@{/gioi-thieu}" th:text="#{sidebar.about.us}">Giới thiệu về UrbanSteps</a></li>
+                    <li><a th:href="@{/tuyen-dung}" th:text="#{sidebar.recruitment}">Tuyển dụng</a></li>
+                    <li><a th:href="@{/dang-ki-ban-hang}" th:text="#{sidebar.register.seller}">Đăng ký bán hàng</a></li>
+                    <li><a th:href="@{/lien-he}" th:text="#{sidebar.contact}">Liên hệ</a></li>
                 </ul>
             </div>
         </div>
 
-
         <!-- Main content -->
         <div class="main-content">
-            <h2>Thông tin vận chuyển đơn hàng</h2>
-            <p>UrbanSteps hợp tác với các đơn vị vận chuyển uy tín để giao hàng nhanh chóng và an toàn đến tay khách hàng.</p>
+            <h2 th:text="#{shipping.title}">Thông tin vận chuyển đơn hàng</h2>
+            <p th:text="#{shipping.intro}">UrbanSteps hợp tác với các đơn vị vận chuyển uy tín để giao hàng nhanh chóng và an toàn đến tay khách hàng.</p>
 
-            <h4>1. Đơn vị vận chuyển</h4>
+            <h4 th:text="#{shipping.carriers.title}">1. Đơn vị vận chuyển</h4>
             <ul>
-                <li>Giao hàng nhanh (GHN)</li>
-                <li>Giao hàng tiết kiệm (GHTK)</li>
-                <li>VNPost / EMS</li>
-                <li>J&T Express</li>
+                <li th:text="#{shipping.carriers.ghn}">Giao hàng nhanh (GHN)</li>
+                <li th:text="#{shipping.carriers.ghtk}">Giao hàng tiết kiệm (GHTK)</li>
+                <li th:text="#{shipping.carriers.vnpost}">VNPost / EMS</li>
+                <li th:text="#{shipping.carriers.jt}">J&T Express</li>
             </ul>
 
-            <h4>2. Phạm vi giao hàng</h4>
-            <p>Chúng tôi giao hàng trên toàn quốc, bao gồm cả các khu vực huyện/xã miền núi và hải đảo.</p>
+            <h4 th:text="#{shipping.scope.title}">2. Phạm vi giao hàng</h4>
+            <p th:text="#{shipping.scope.desc}">Chúng tôi giao hàng trên toàn quốc, bao gồm cả các khu vực huyện/xã miền núi và hải đảo.</p>
 
-            <h4>3. Thời gian giao hàng</h4>
+            <h4 th:text="#{shipping.time.title}">3. Thời gian giao hàng</h4>
             <ul>
-                <li>Khu vực nội thành: 1–2 ngày làm việc</li>
-                <li>Khu vực ngoại thành và tỉnh: 2–5 ngày làm việc</li>
+                <li th:text="#{shipping.time.inner.city}">Khu vực nội thành: 1–2 ngày làm việc</li>
+                <li th:text="#{shipping.time.outer.city}">Khu vực ngoại thành và tỉnh: 2–5 ngày làm việc</li>
             </ul>
 
-            <h4>4. Phí vận chuyển</h4>
-            <p>Phí giao hàng được tính theo địa chỉ nhận và hiển thị rõ tại trang thanh toán trước khi đặt hàng.</p>
+            <h4 th:text="#{shipping.fee.title}">4. Phí vận chuyển</h4>
+            <p th:text="#{shipping.fee.desc}">Phí giao hàng được tính theo địa chỉ nhận và hiển thị rõ tại trang thanh toán trước khi đặt hàng.</p>
 
-            <h4>5. Lưu ý</h4>
+            <h4 th:text="#{shipping.notes.title}">5. Lưu ý</h4>
             <ul>
-                <li>Vui lòng cung cấp địa chỉ chính xác để tránh giao hàng chậm trễ.</li>
-                <li>Trong trường hợp cần hỗ trợ, hãy liên hệ bộ phận chăm sóc khách hàng.</li>
+                <li th:text="#{shipping.notes.accurate.address}">Vui lòng cung cấp địa chỉ chính xác để tránh giao hàng chậm trễ.</li>
+                <li th:text="#{shipping.notes.contact.support}">Trong trường hợp cần hỗ trợ, hãy liên hệ bộ phận chăm sóc khách hàng.</li>
             </ul>
         </div>
     </div>
 </div>
+
 </body>
 </html>

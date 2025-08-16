@@ -111,70 +111,76 @@
 
 </head>
 <body>
+<body>
 <div layout:fragment="content" class="container my-5">
     <div class="content-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Danh mục</h3>
+            <h3 th:text="#{sidebar.category}">Danh mục</h3>
 
             <!-- Accordion group 1 -->
             <div class="accordion-section open">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Hỗ trợ khách hàng</span>
+                    <span th:text="#{sidebar.customer.support}">Hỗ trợ khách hàng</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/ho-tro">Hỗ trợ</a></li>
-                    <li><a href="/van-don">Vận đơn</a></li>
-                    <li><a href="/huong-dan-tra-gop">Hướng dẫn thanh toán trả góp</a></li>
-                    <li><a href="/huong-dan-doi-tra">Hướng dẫn đổi trả</a></li>
-                    <li><a href="/chinh-sach-doi-tra">Chính sách đổi trả</a></li>
-                    <li><a href="/chinh-sach-bao-hanh">Chính sách bảo hành</a></li>
-                    <li><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li>
+                    <li><a th:href="@{/ho-tro}" th:text="#{sidebar.support}">Hỗ trợ</a></li>
+                    <li><a th:href="@{/van-don}" th:text="#{sidebar.shipping}">Vận đơn</a></li>
+                    <li><a th:href="@{/huong-dan-tra-gop}" th:text="#{sidebar.installment.guide}">Hướng dẫn thanh toán trả góp</a></li>
+                    <li><a th:href="@{/huong-dan-doi-tra}" th:text="#{sidebar.return.guide}">Hướng dẫn đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a></li>
+                    <li><a th:href="@{/chinh-sach-bao-hanh}" th:text="#{sidebar.warranty.policy}">Chính sách bảo hành</a></li>
+                    <li><a th:href="@{/cau-hoi-thuong-gap}" th:text="#{sidebar.faq}">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>
 
             <!-- Accordion group 2 -->
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>Về UrbanSteps</span>
+                    <span th:text="#{sidebar.about}">Về UrbanSteps</span>
                     <span class="arrow">▼</span>
                 </div>
                 <ul class="accordion-content">
-                    <li><a href="/gioi-thieu">Giới thiệu về UrbanSteps</a></li>
-                    <li><a href="/tuyen-dung">Tuyển dụng</a></li>
-                    <li><a href="/dang-ki-ban-hang">Đăng ký bán hàng</a></li>
-                    <li><a href="/lien-he">Liên hệ</a></li>
+                    <li><a th:href="@{/gioi-thieu}" th:text="#{sidebar.intro}">Giới thiệu về UrbanSteps</a></li>
+                    <li><a th:href="@{/tuyen-dung}" th:text="#{sidebar.career}">Tuyển dụng</a></li>
+                    <li><a th:href="@{/dang-ki-ban-hang}" th:text="#{sidebar.sell.register}">Đăng ký bán hàng</a></li>
+                    <li><a th:href="@{/lien-he}" th:text="#{sidebar.contact}">Liên hệ</a></li>
                 </ul>
             </div>
         </div>
 
-
         <!-- Main content -->
         <div class="main-content">
-            <h2>Câu hỏi thường gặp (FAQs)</h2>
+            <h2 th:text="#{faq.title}">Câu hỏi thường gặp (FAQs)</h2>
+
             <div>
-                <h4>1. Làm thế nào để đặt hàng trên UrbanSteps?</h4>
-                <p>Bạn có thể chọn sản phẩm, thêm vào giỏ hàng và tiến hành thanh toán theo hướng dẫn.</p>
+                <h4 th:text="#{faq.q1}">1. Làm thế nào để đặt hàng trên UrbanSteps?</h4>
+                <p th:text="#{faq.a1}">Bạn có thể chọn sản phẩm, thêm vào giỏ hàng và tiến hành thanh toán theo hướng dẫn.</p>
             </div>
             <div>
-                <h4>2. Tôi có thể thanh toán bằng những phương thức nào?</h4>
-                <p>UrbanSteps hỗ trợ thanh toán tiền mặt khi nhận hàng, chuyển khoản ngân hàng và thanh toán trả góp.</p>
+                <h4 th:text="#{faq.q2}">2. Tôi có thể thanh toán bằng những phương thức nào?</h4>
+                <p th:text="#{faq.a2}">UrbanSteps hỗ trợ thanh toán tiền mặt khi nhận hàng, chuyển khoản ngân hàng và thanh toán trả góp.</p>
             </div>
             <div>
-                <h4>3. Thời gian giao hàng mất bao lâu?</h4>
-                <p>Thời gian giao hàng thường từ 2-5 ngày làm việc tùy khu vực.</p>
+                <h4 th:text="#{faq.q3}">3. Thời gian giao hàng mất bao lâu?</h4>
+                <p th:text="#{faq.a3}">Thời gian giao hàng thường từ 2-5 ngày làm việc tùy khu vực.</p>
             </div>
             <div>
-                <h4>4. Tôi có thể đổi trả sản phẩm không?</h4>
-                <p>Có, bạn có thể tham khảo chi tiết tại trang <a th:href="@{/chinh-sach-doi-tra}">Chính sách đổi trả</a>.</p>
+                <h4 th:text="#{faq.q4}">4. Tôi có thể đổi trả sản phẩm không?</h4>
+                <p>
+                    <span th:text="#{faq.a4}">Có, bạn có thể tham khảo chi tiết tại trang </span>
+                    <a th:href="@{/chinh-sach-doi-tra}" th:text="#{sidebar.return.policy}">Chính sách đổi trả</a>.
+                </p>
             </div>
             <div>
-                <h4>5. Làm sao để liên hệ hỗ trợ khách hàng?</h4>
-                <p>Bạn có thể liên hệ qua số điện thoại, email hoặc chat trực tiếp trên website.</p>
+                <h4 th:text="#{faq.q5}">5. Làm sao để liên hệ hỗ trợ khách hàng?</h4>
+                <p th:text="#{faq.a5}">Bạn có thể liên hệ qua số điện thoại, email hoặc chat trực tiếp trên website.</p>
             </div>
         </div>
     </div>
 </div>
+</body>
+
 </body>
 </html>

@@ -58,31 +58,16 @@
                th:alt="${product.tenSanPham}"
                onerror="this.src='/images/no-image.svg';"
                class="product-image">
-      <div class="product-info">
-    <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-    <div class="mb-1">
-      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
-        class="badge rounded-pill bg-danger me-1">SALE -<span th:text="${#numbers.formatDecimal(product.phanTramGiam,0,0)}"></span>%</span>
-              <span th:if="${product.luotBan != null and product.luotBan > 0}"
-        class="badge rounded-pill bg-warning text-dark">HOT</span>
-    </div>
-    <div>
-      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
-        class="text-muted text-decoration-line-through me-2"
-        th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
-      <span class="product-price fw-bold text-danger"
-        th:text="${(product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0) ?
-              #numbers.formatDecimal(product.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ' :
-              (product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ')}"
-      >Giá</span>
-    </div>
-    <p class="product-brand" th:text="${product.thuongHieu != null && product.thuongHieu.tenThuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
-      </div>
+          <div class="product-info">
+            <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+            <p class="product-price" th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">Giá</p>
+            <p class="product-brand" th:text="${product.thuongHieu != null && product.thuongHieu.tenThuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
+          </div>
         </a>
       </div>
     </div>
     <div class="view-all">
-      <a href="/san-pham?sale=true" th:href="@{/san-pham(sale=true)}">Xem tất cả</a>
+      <a href="/san-pham" th:href="@{/san-pham}">Xem tất cả</a>
     </div>
   </div>
 
@@ -95,31 +80,16 @@
                th:alt="${product.tenSanPham}"
                onerror="this.src='/images/no-image.svg';"
                class="product-image">
-      <div class="product-info">
-    <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
-    <div class="mb-1">
-      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
-        class="badge rounded-pill bg-danger me-1">SALE -<span th:text="${#numbers.formatDecimal(product.phanTramGiam,0,0)}"></span>%</span>
-              <span th:if="${product.luotBan != null and product.luotBan > 0}"
-        class="badge rounded-pill bg-warning text-dark">HOT</span>
-    </div>
-    <div>
-      <span th:if="${product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0}"
-        class="text-muted text-decoration-line-through me-2"
-        th:text="${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
-      <span class="product-price fw-bold text-danger"
-        th:text="${(product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0) ?
-              #numbers.formatDecimal(product.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ' :
-              (product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ')}"
-      >Giá</span>
-    </div>
-    <p class="product-brand" th:text="${product.thuongHieu != null && product.thuongHieu.tenThuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
-      </div>
+          <div class="product-info">
+            <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+            <p class="product-price" th:text="${product.giaBan != null ? #numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">Giá</p>
+            <p class="product-brand" th:text="${product.thuongHieu != null && product.thuongHieu.tenThuongHieu != null ? product.thuongHieu.tenThuongHieu : 'N/A'}">Thương hiệu</p>
+          </div>
         </a>
       </div>
     </div>
     <div class="view-all">
-      <a href="/san-pham?hot=true" th:href="@{/san-pham(hot=true)}">Xem tất cả</a>
+      <a href="/san-pham" th:href="@{/san-pham}">Xem tất cả</a>
     </div>
   </div>
   </div> <!-- Close main-wrapper -->
