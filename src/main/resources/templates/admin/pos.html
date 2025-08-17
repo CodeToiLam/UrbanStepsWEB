@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
 <head>
     <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
 </head>
 <body>
+<div layout:fragment="content">
 <div class="layout-admin">
   <header class="admin-main-header">
     <div class="admin-header-bar">
@@ -23,17 +26,6 @@
     </div>
   </header>
   <div class="admin-layout">
-    <nav class="admin-sidebar">
-      <h5>Xin chào Admin!</h5>
-      <ul>
-  <li><a href="/admin/quan-ly-san-pham"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a></li>
-  <li><a href="/admin/quan-ly-san-pham-chi-tiet"><i class="bi bi-grid-1x2"></i> Quản lý sản phẩm chi tiết</a></li>
-  <li><a href="/admin/quan-ly-phieu-giam-gia"><i class="bi bi-tag-fill"></i> Quản lý phiếu giảm giá</a></li>
-  <li><a href="/admin/ban-hang-tai-quay"><i class="fa-solid fa-cash-register"></i> Bán hàng tại quầy (POS)</a></li>
-        <li><a href="/admin/admin-log.html"><i class="bi bi-clock-history"></i> Lịch sử hoạt động Admin</a></li>
-        <li><a href="/"><i class="bi bi-house"></i> Về trang chủ</a></li>
-      </ul>
-    </nav>
     <main class="admin-main-content">
       <div>
         <!-- Xóa nút về trang admin, đã có sidebar -->
@@ -120,5 +112,6 @@ function updatePaymentFields() {
 }
 window.onload = updatePaymentFields;
 </script>
+</div>
 </body>
 </html>

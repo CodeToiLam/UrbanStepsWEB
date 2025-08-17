@@ -4,12 +4,11 @@
       layout:decorate="~{layout/main}">
 <head>
     <title layout:fragment="title" th:text="#{checkout.title}">Thanh toán - UrbanSteps</title>
-    <!-- Thêm: CSRF meta tag -->
     <meta name="_csrf" th:content="${_csrf.token}" />
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
+        <link rel="stylesheet" th:href="@{/css/checkout.css}">
         <script th:src="@{/js/checkout-fix.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/checkout.css}">
     </th:block>
 </head>
 <body>
@@ -19,8 +18,7 @@
 
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-    <form id="checkoutForm" class="needs-validation" novalidate>
-            <!-- 1. Giỏ hàng -->
+        <form id="checkoutForm" class="needs-validation" novalidate>
             <div class="card mb-4">
                 <div class="card-header bg-light fw-bold" th:text="#{checkout.cart.title}">1. Thông tin sản phẩm</div>
                 <div class="card-body p-0">
@@ -74,6 +72,11 @@
                             <label class="form-label" th:text="#{checkout.promo.label}">Mã khuyến mãi</label>
                             <div class="input-group">
                                 <input type="text" name="maGiamGia" class="form-control" th:placeholder="#{checkout.promo.placeholder}" placeholder="Nhập mã giảm giá nếu có">
+                                <select id="voucherCode" class="form-select" style="max-width: 200px;">
+                                    <option value="">Chọn mã khuyến mãi</option>
+                                    <option th:each="voucher : ${publicVouchers}" th:value="${voucher.maPhieuGiamGia}"
+                                            th:text="${voucher.maPhieuGiamGia} + ' - ' + ${voucher.moTa}"></option>
+                                </select>
                                 <button id="openVoucherModalBtn" class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#voucherModal" th:text="#{checkout.chooseVoucher}">Chọn mã</button>
                                 <button id="applyVoucherBtn" class="btn btn-secondary" type="button" data-exclusive="1" th:text="#{checkout.apply}">Áp dụng</button>
                             </div>
@@ -84,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- 2. Thông tin giao hàng -->
             <div class="card mb-4">
                 <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
                     <span th:text="#{checkout.shipping.title}">2. Thông tin giao hàng</span>
@@ -110,15 +112,9 @@
                         <div class="invalid-feedback" th:text="#{validation.email}">Email không hợp lệ</div>
                     </div>
 
-                    <!-- Container cho địa chỉ đã lưu -->
-                    <div id="savedAddressesContainer">
-                        <!-- Địa chỉ đã lưu sẽ được load bằng JavaScript -->
-                    </div>
-
-                    <!-- Hidden field lưu ID địa chỉ đã chọn -->
+                    <div id="savedAddressesContainer"></div>
                     <input type="hidden" id="selectedAddressId" name="selectedAddressId" value="" />
 
-                    <!-- Form nhập địa chỉ thủ công -->
                     <div id="manualAddressFields" class="manual-address-section">
                         <h6>Thông tin giao hàng</h6>
                         <div class="address-selector">
@@ -161,7 +157,6 @@
                 </div>
             </div>
 
-            <!-- 3. Thanh toán -->
             <div class="card mb-4">
                 <div class="card-header bg-light fw-bold" th:text="#{checkout.payment.title}">3. Phương thức thanh toán</div>
                 <div class="card-body">
@@ -171,7 +166,6 @@
                             <option value="1" th:text="#{checkout.cod}">Thanh toán tiền mặt khi nhận hàng</option>
                             <option value="2" th:text="#{checkout.bankTransfer}">Chuyển khoản qua QR ngân hàng</option>
                         </select>
-                        <!-- QR Code chuyển khoản -->
                         <div class="mb-3" id="qr-section" style="display:none;">
                             <label class="form-label" th:text="#{checkout.bank.qrLabel}">Quét mã QR để chuyển khoản Vietcombank</label>
                             <div class="d-flex flex-column align-items-center">
@@ -180,7 +174,6 @@
                                 <div class=""><span th:text="#{checkout.bank.accountName}">Chủ tài khoản</span>: <strong>PHAM NHU SON TUNG</strong></div>
                                 <div class=""><span th:text="#{checkout.bank.bankName}">Ngân hàng</span>: Vietcombank - Trụ sở CN Chương Dương</div>
                                 <div class="text-muted"><span th:text="#{checkout.bank.transferContent}">Nội dung chuyển khoản</span>: <span id="qr-content">Thanh toán UrbanSteps</span></div>
-                                
                             </div>
                         </div>
                     </div>
@@ -191,7 +184,6 @@
                 </div>
             </div>
 
-            <!-- Submit -->
             <div class="d-flex justify-content-between align-items-center">
                 <a th:href="@{/gio-hang}" class="btn btn-outline-secondary" th:text="#{checkout.backToCart}">← Quay lại giỏ hàng</a>
                 <div>
@@ -209,66 +201,182 @@
     <script th:src="@{/js/checkout-core.js}"></script>
     <script th:src="@{/js/checkout-address-new.js}"></script>
     <script th:src="@{/js/thanh-toan.js}"></script>
-        <script>
-            // Fallback mở modal voucher nếu vì lý do nào đó data-bs-toggle không hoạt động
-            document.addEventListener('DOMContentLoaded', function(){
-                const btn = document.getElementById('openVoucherModalBtn');
-                const modalEl = document.getElementById('voucherModal');
-                if(btn && modalEl && window.bootstrap && bootstrap.Modal){
-                    btn.addEventListener('click', function(){
-                        try{ const m = bootstrap.Modal.getOrCreateInstance(modalEl); m.show(); }catch(e){}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const openVoucherModalBtn = document.getElementById('openVoucherModalBtn');
+            const modalEl = document.getElementById('voucherModal');
+            const voucherList = modalEl.querySelector('.modal-body .list-group');
+            const voucherInput = document.querySelector('input[name="maGiamGia"]');
+            const voucherSelect = document.getElementById('voucherCode');
+            const resetVoucherBtn = document.getElementById('resetVoucherBtn');
+            const totalAmount = parseFloat(document.querySelector('.text-danger.fs-5.fw-bold').textContent.replace(/[^0-9]/g, '') || 0);
+            const originalTotal = totalAmount; // Lưu tổng tiền ban đầu
+            const discountAmountEl = document.getElementById('discountAmount');
+            const finalTotalEl = document.getElementById('finalTotal');
+            const voucherMessage = document.getElementById('voucherMessage');
+            const voucherError = document.getElementById('voucherError');
+
+            // Hàm reset về giá ban đầu
+            function resetVoucher() {
+                // Reset tổng thanh toán về giá ban đầu
+                finalTotalEl.textContent = formatCurrency(originalTotal);
+                // Reset giảm giá về 0
+                discountAmountEl.textContent = formatCurrency(0);
+                // Ẩn các giảm giá từng sản phẩm
+                document.querySelectorAll('.item-line-discount').forEach(el => {
+                    el.style.display = 'none';
+                    el.textContent = '-0đ';
+                });
+                // Xóa thông báo
+                voucherMessage.style.display = 'none';
+                voucherError.style.display = 'none';
+                // Reset input và dropdown
+                voucherInput.value = '';
+                voucherSelect.value = '';
+            }
+
+            // Kiểm tra trạng thái ban đầu
+            if (!voucherInput.value && !voucherSelect.value) {
+                resetVoucher(); // Reset giá gốc nếu không có mã nào được chọn
+            }
+
+            // Tải danh sách mã khuyến mãi cho modal
+            async function loadVouchers() {
+                try {
+                    const response = await fetch('/checkout/api/public-vouchers', {
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
+                        }
                     });
+                    console.log('API /checkout/api/public-vouchers response:', response.status, response.statusText);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    const vouchers = await response.json();
+                    console.log('Vouchers received:', vouchers);
+
+                    // Điền danh sách mã vào modal
+                    voucherList.innerHTML = '';
+                    if (vouchers.length === 0) {
+                        voucherList.innerHTML = '<div class="text-muted">Hiện chưa có mã nào.</div>';
+                    } else {
+                        vouchers.forEach(v => {
+                            const isApplicable = v.donToiThieu ? totalAmount >= parseFloat(v.donToiThieu) : true;
+                            const item = document.createElement('div');
+                            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                            item.innerHTML = `
+                                <div>
+                                    <div class="fw-bold">${v.maPhieuGiamGia}</div>
+                                    <div class="small text-muted">${v.moTa || ''}</div>
+                                    <div class="small">
+                                        ${v.donToiThieu ? `Đơn tối thiểu: ${formatCurrency(parseFloat(v.donToiThieu))}` : ''}
+                                        ${v.giamToiDa ? ` • Giảm tối đa: ${formatCurrency(parseFloat(v.giamToiDa))}` : ''}
+                                        • HSD: ${new Date(v.ngayKetThuc).toLocaleDateString('vi-VN')}
+                                        ${!isApplicable ? '<div class="text-danger small">Đơn hàng chưa đủ giá trị tối thiểu</div>' : ''}
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-code="${v.maPhieuGiamGia}" onclick="navigator.clipboard.writeText(this.dataset.code)">Copy</button>
+                                    <button type="button" class="btn btn-sm btn-primary use-voucher-btn" data-code="${v.maPhieuGiamGia}" ${!isApplicable ? 'disabled' : ''}>Dùng mã</button>
+                                </div>
+                            `;
+                            voucherList.appendChild(item);
+                        });
+
+                        // Gắn sự kiện cho các nút "Dùng mã" trong modal
+                        voucherList.querySelectorAll('.use-voucher-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const code = this.dataset.code;
+                                voucherInput.value = code;
+                                voucherSelect.value = code; // Đồng bộ với dropdown
+                                if (typeof applyVoucher === 'function') {
+                                    applyVoucher();
+                                } else {
+                                    console.error('applyVoucher function not found');
+                                }
+                                bootstrap.Modal.getInstance(modalEl).hide();
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading vouchers:', error);
+                    voucherList.innerHTML = '<div class="text-danger">Lỗi khi tải mã khuyến mãi</div>';
                 }
-            });
-        </script>
+            }
+
+            // Tải danh sách mã khi trang được tải
+            loadVouchers();
+
+            // Mở modal
+            if (openVoucherModalBtn && modalEl && window.bootstrap && bootstrap.Modal) {
+                openVoucherModalBtn.addEventListener('click', function() {
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                });
+            }
+
+            // Xử lý chọn mã từ dropdown
+            if (voucherSelect) {
+                voucherSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        voucherInput.value = this.value;
+                        if (typeof applyVoucher === 'function') {
+                            applyVoucher();
+                        } else {
+                            console.error('applyVoucher function not found');
+                        }
+                    } else {
+                        resetVoucher();
+                    }
+                });
+            }
+
+            // Xử lý xóa mã từ input
+            if (voucherInput) {
+                voucherInput.addEventListener('input', function() {
+                    if (!this.value) {
+                        voucherSelect.value = ''; // Đồng bộ với dropdown
+                        resetVoucher();
+                    }
+                });
+            }
+
+            // Xử lý nút "Làm mới"
+            if (resetVoucherBtn) {
+                resetVoucherBtn.addEventListener('click', function() {
+                    resetVoucher();
+                });
+            }
+        });
+    </script>
 </th:block>
 
-<!-- Voucher Modal -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                                <h5 class="modal-title" th:text="#{checkout.modal.title}">Chọn mã khuyến mãi</h5>
+                <h5 class="modal-title" th:text="#{checkout.modal.title}">Chọn mã khuyến mãi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                                <div th:if="${publicVouchers == null || publicVouchers.isEmpty()}" class="text-muted" th:text="#{checkout.modal.empty}">Hiện chưa có mã nào.</div>
-                <div class="list-group" th:if="${publicVouchers != null && !publicVouchers.isEmpty()}">
-                    <div class="list-group-item d-flex justify-content-between align-items-center" th:each="v : ${publicVouchers}">
-                        <div>
-                            <div class="fw-bold" th:text="${v.maPhieuGiamGia}">PGG</div>
-                            <div class="small text-muted" th:text="${v.moTa}">Mô tả</div>
-                            <div class="small">
-                                                                <span th:if="${v.giaTriDonToiThieu != null}"><span th:text="#{checkout.minOrder}">Đơn tối thiểu</span>: <span th:text="${#numbers.formatDecimal(v.giaTriDonToiThieu,0,0)} + 'đ'"></span></span>
-                                                                <span th:if="${v.giamToiDa != null}"> • <span th:text="#{checkout.maxDiscount}">Giảm tối đa</span>: <span th:text="${#numbers.formatDecimal(v.giamToiDa,0,0)} + 'đ'"></span></span>
-                                                                <span> • <span th:text="#{checkout.expiry}">HSD</span>: <span th:text="${#temporals.format(v.ngayKetThuc,'dd/MM/yyyy')}"></span></span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" th:attr="data-code=${v.maPhieuGiamGia}" onclick="navigator.clipboard.writeText(this.dataset.code)" th:text="#{common.copy}">Copy</button>
-                                                        <button type="button" class="btn btn-sm btn-primary" th:attr="data-code=${v.maPhieuGiamGia}" onclick="(function(btn){ const code=btn.dataset.code; const sel=document.querySelector('input[name=\'maGiamGia\']'); if(sel){sel.value=code;} document.getElementById('applyVoucherBtn')?.click(); const modalEl=document.getElementById('voucherModal'); const inst=bootstrap.Modal.getInstance(modalEl); inst&&inst.hide(); })(this)" th:text="#{checkout.useThis}">Dùng mã</button>
-                        </div>
-                    </div>
-                </div>
+                <div class="list-group"></div>
             </div>
             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{checkout.close}">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{checkout.close}">Đóng</button>
             </div>
         </div>
     </div>
-    </div>
-        <!-- Page-scoped i18n for checkout JS -->
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            window.i18n = Object.assign({}, window.i18n || {}, {
-                voucher_selectPrompt: '[[#{voucher.selectPrompt}]]',
-                voucher_applySuccess: '[[#{voucher.applySuccess}]]',
-                voucher_invalid: '[[#{voucher.invalid}]]',
-                voucher_error: '[[#{voucher.error}]]',
-                network_error: '[[#{common.networkError}]]',
-                place_failed: '[[#{checkout.placeFailed}]]'
-            });
-            /*]]>*/
-        </script>
+</div>
+
+<script th:inline="javascript">
+    window.i18n = Object.assign({}, window.i18n || {}, {
+        voucher_selectPrompt: '[[#{voucher.selectPrompt}]]',
+        voucher_applySuccess: '[[#{voucher.applySuccess}]]',
+        voucher_invalid: '[[#{voucher.invalid}]]',
+        voucher_error: '[[#{voucher.error}]]',
+        network_error: '[[#{common.networkError}]]',
+        place_failed: '[[#{checkout.placeFailed}]]'
+    });
+</script>
 </body>
 </html>

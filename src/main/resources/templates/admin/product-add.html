@@ -10,25 +10,40 @@
     <link rel="stylesheet" type="text/css" href="/css/admin.css">
 </head>
 <body>
-<th:block th:fragment="content">
+<div layout:fragment="content" class="container mt-4">
     <h1 th:text="${sanPham.id != null ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}"></h1>
-    <p th:if="${error}" class="error" th:text="${error}"></p>
-    <form th:action="${sanPham.id != null ? '/admin/products/' + sanPham.id : '/admin/products'}" th:object="${sanPham}" method="post">
-        <label>Mã sản phẩm:</label>
-        <input type="text" th:field="*{maSanPham}" th:disabled="${sanPham.id != null}" required><br>
-        <label>Tên sản phẩm:</label>
-        <input type="text" th:field="*{tenSanPham}" required><br>
-        <label>Mô tả:</label>
-        <textarea th:field="*{moTa}"></textarea><br>
-        <label>Giá nhập:</label>
-        <input type="number" step="0.01" th:field="*{giaNhap}" required><br>
-        <label>Giá bán:</label>
-        <input type="number" step="0.01" th:field="*{giaBan}" required><br>
-        <label>Trạng thái:</label>
-        <input type="checkbox" th:field="*{trangThai}"><br>
-        <button type="submit">Lưu</button>
+    <p th:if="${error}" class="error text-danger" th:text="${error}"></p>
+    <form th:action="${sanPham.id != null ? '/admin/products/' + sanPham.id : '/admin/products'}"
+          th:object="${sanPham}" method="post" class="mb-3">
+
+        <div class="mb-3">
+            <label class="form-label">Mã sản phẩm:</label>
+            <input type="text" th:field="*{maSanPham}" th:disabled="${sanPham.id != null}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tên sản phẩm:</label>
+            <input type="text" th:field="*{tenSanPham}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mô tả:</label>
+            <textarea th:field="*{moTa}" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Giá nhập:</label>
+            <input type="number" step="0.01" th:field="*{giaNhap}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Giá bán:</label>
+            <input type="number" step="0.01" th:field="*{giaBan}" class="form-control" required>
+        </div>
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{trangThai}" class="form-check-input" id="trangThai">
+            <label for="trangThai" class="form-check-label">Hoạt động</label>
+        </div>
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a th:href="@{/admin/products}" class="btn btn-secondary">Quay lại</a>
     </form>
-    <a th:href="@{/admin/products}">Quay lại</a>
-</th:block>
+</div>
+
 </body>
 </html>

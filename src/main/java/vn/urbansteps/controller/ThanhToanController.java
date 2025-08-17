@@ -26,10 +26,7 @@ import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.service.DiaChiGiaoHangService;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 @Controller
 @RequestMapping("/checkout")
@@ -100,26 +97,24 @@ public class ThanhToanController {
         }
 
         if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
-            // Mua ngay - chỉ tạo giỏ hàng tạm thời với 1 sản phẩm
             GioHang tempCart = new GioHang();
-            tempCart.setId(0); // ID tạm thời
+            tempCart.setId(0);
             tempCart.setItems(new ArrayList<>());
-            
-            // Tìm sản phẩm từ buyNowItemId (đây là sanPhamChiTietId từ chi-tiet-san-pham.js)
+
             try {
                 java.util.Optional<vn.urbansteps.model.SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietService.findById(buyNowItemId);
                 if (sanPhamChiTietOpt.isPresent()) {
                     vn.urbansteps.model.SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietOpt.get();
                     GioHangItem buyNowItem = new GioHangItem();
-                    buyNowItem.setId(0); // ID tạm thời
+                    buyNowItem.setId(0);
                     buyNowItem.setGioHang(tempCart);
                     buyNowItem.setSanPhamChiTiet(sanPhamChiTiet);
                     buyNowItem.setSoLuong(buyNowQuantity != null && buyNowQuantity > 0 ? buyNowQuantity : 1);
                     buyNowItem.setGiaTaiThoidiem(sanPhamChiTiet.getGiaBanThucTe());
-                    
+
                     tempCart.getItems().add(buyNowItem);
                     gioHang = tempCart;
-                    
+
                     logger.info("Tạo giỏ hàng mua ngay: sanPhamChiTietId={}, soLuong={}", buyNowItemId, buyNowItem.getSoLuong());
                 } else {
                     logger.warn("Không tìm thấy sản phẩm với ID: {}", buyNowItemId);
@@ -131,12 +126,11 @@ public class ThanhToanController {
                 model.addAttribute("error", "Có lỗi xảy ra khi xử lý mua ngay.");
                 return "gio-hang";
             }
-            
+
             model.addAttribute("buyNow", true);
             model.addAttribute("buyNowItemId", buyNowItemId);
             model.addAttribute("buyNowQuantity", buyNowQuantity);
         } else {
-            // Checkout bình thường - lấy giỏ hàng của user
             if (username != null) {
                 TaiKhoan taiKhoan = taiKhoanService.findByTaiKhoan(username);
                 logger.info("TaiKhoan found: {}", taiKhoan != null ? taiKhoan.getId() : "null");
@@ -158,11 +152,10 @@ public class ThanhToanController {
         model.addAttribute("gioHang", gioHang);
         model.addAttribute("publicVouchers", publicVouchers);
         model.addAttribute("discountedTotal", session.getAttribute("discountedTotal") != null ? session.getAttribute("discountedTotal") : gioHang.getTongTien());
-        
-        // Thêm logging để debug
-        logger.info("Checkout page - GioHang items: {}, Total: {}", 
+
+        logger.info("Checkout page - GioHang items: {}, Total: {}",
                 gioHang.getItems().size(), gioHang.getTongTien());
-        
+
         return "thanh-toan";
     }
 
@@ -255,7 +248,6 @@ public class ThanhToanController {
             }
 
             BigDecimal totalAmount = gioHang.getTongTien();
-            // New: allocate item-level discounts
             PhieuGiamGiaService.AllocationResult alloc = phieuGiamGiaService.allocateDiscountAcrossItems(voucherCode, gioHang.getItems());
             if (alloc != null && alloc.totalAfter.compareTo(totalAmount) < 0) {
                 session.setAttribute("appliedVoucherCode", voucherCode);
@@ -294,27 +286,23 @@ public class ThanhToanController {
             String hoTen = (String) orderData.getOrDefault("fullName", "");
             String sdt = (String) orderData.getOrDefault("phoneNumber", "");
             String email = (String) orderData.getOrDefault("email", "");
-            
-            // Xử lý địa chỉ - ưu tiên địa chỉ đã lưu
+
             String selectedAddressIdStr = (String) orderData.getOrDefault("selectedAddressId", "");
             Integer selectedAddressId = null;
             String diaChiGiaoHang = "";
-            
-            // Khai báo các biến địa chỉ thủ công
+
             String province = (String) orderData.getOrDefault("province", "");
             String district = (String) orderData.getOrDefault("district", "");
             String ward = (String) orderData.getOrDefault("ward", "");
             String addressDetail = (String) orderData.getOrDefault("addressDetail", "");
-            
+
             if (selectedAddressIdStr != null && !selectedAddressIdStr.trim().isEmpty()) {
                 try {
                     selectedAddressId = Integer.parseInt(selectedAddressIdStr);
-                    // Lấy địa chỉ đã lưu
                     java.util.Optional<DiaChiGiaoHang> savedAddressOpt = diaChiGiaoHangService.findById(selectedAddressId);
                     if (savedAddressOpt.isPresent()) {
                         DiaChiGiaoHang savedAddress = savedAddressOpt.get();
                         diaChiGiaoHang = savedAddress.getDiaChiDayDu();
-                        // Cập nhật thông tin từ địa chỉ đã lưu nếu cần
                         if (hoTen.isEmpty() && savedAddress.getTenNguoiNhan() != null) {
                             hoTen = savedAddress.getTenNguoiNhan();
                         }
@@ -331,53 +319,47 @@ public class ThanhToanController {
                     logger.warn("ID địa chỉ không hợp lệ: {}", selectedAddressIdStr);
                 }
             }
-            
-            // Nếu không có địa chỉ đã lưu, sử dụng địa chỉ thủ công
+
             if (diaChiGiaoHang.isEmpty()) {
                 if (addressDetail.isEmpty() || province.isEmpty() || district.isEmpty() || ward.isEmpty()) {
                     response.put("success", false);
                     response.put("message", "Vui lòng điền đầy đủ thông tin địa chỉ giao hàng");
                     return ResponseEntity.badRequest().body(response);
                 }
-                
+
                 diaChiGiaoHang = addressDetail + ", " + ward + ", " + district + ", " + province;
                 logger.info("Sử dụng địa chỉ thủ công: {}", diaChiGiaoHang);
             }
-            
+
             String ghiChu = (String) orderData.getOrDefault("note", "");
-            
-            // Parse payment method
+
             Object pmObj = orderData.get("paymentMethod");
             int phuongThucThanhToan = 1;
             if(pmObj!=null){
                 try { phuongThucThanhToan = Integer.parseInt(String.valueOf(pmObj)); } catch (NumberFormatException ignored) {}
             }
-            // Basic validation
             if(hoTen.isBlank() || sdt.isBlank()){
                 response.put("success", false);
                 response.put("message", "Thiếu thông tin bắt buộc (họ tên / SĐT)");
                 return ResponseEntity.badRequest().body(response);
             }
-            // Phone format VN 9-11 digits
             if (!sdt.matches("^\\+?\\d{9,11}$")){
                 response.put("success", false);
                 response.put("message", "Số điện thoại không hợp lệ");
                 return ResponseEntity.badRequest().body(response);
             }
-            // Email optional, but if present must be valid
             if (email != null && !email.isBlank() && !email.matches("^[\\w.+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
                 response.put("success", false);
                 response.put("message", "Email không hợp lệ");
                 return ResponseEntity.badRequest().body(response);
             }
-            
-            // Kiểm tra địa chỉ giao hàng đã được xử lý ở trên
+
             if (diaChiGiaoHang.isEmpty()) {
                 response.put("success", false);
                 response.put("message", "Vui lòng chọn địa chỉ giao hàng hoặc nhập địa chỉ mới");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+
             String appliedVoucherCode = (String) orderData.get("promoCode");
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -424,7 +406,30 @@ public class ThanhToanController {
                     tongThanhToan = gioHang.getTongTien();
                 }
 
-                // If selectedAddressId provided and user logged in, override address with saved one
+                // Thêm kiểm tra donToiThieu trước khi tạo hóa đơn
+                if (appliedVoucherCode != null && !appliedVoucherCode.isEmpty()) {
+                    Optional<PhieuGiamGia> voucher = phieuGiamGiaService.findById(
+                            phieuGiamGiaService.getAllPhieuGiamGia().stream()
+                                    .filter(v -> v.getMaPhieuGiamGia().equals(appliedVoucherCode))
+                                    .findFirst().map(PhieuGiamGia::getId).orElse(null)
+                    );
+                    if (voucher.isPresent()) {
+                        BigDecimal donToiThieu = voucher.get().getDonToiThieu();
+                        BigDecimal originalTotal = gioHang.getTongTien();
+                        if (originalTotal.compareTo(donToiThieu) < 0) {
+                            logger.warn("Đơn hàng không đủ điều kiện áp dụng phiếu giảm giá: total={}, donToiThieu={}", originalTotal, donToiThieu);
+                            response.put("success", false);
+                            response.put("message", "Đơn hàng không đủ giá trị tối thiểu để áp dụng mã khuyến mãi (" + donToiThieu + " VNĐ)");
+                            return ResponseEntity.badRequest().body(response);
+                        }
+                    } else {
+                        logger.warn("Phiếu giảm giá không tồn tại: {}", appliedVoucherCode);
+                        response.put("success", false);
+                        response.put("message", "Mã khuyến mãi không hợp lệ");
+                        return ResponseEntity.badRequest().body(response);
+                    }
+                }
+
                 if(selectedAddressId != null && taiKhoan != null){
                     try {
                         List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
@@ -441,7 +446,6 @@ public class ThanhToanController {
                         phuongThucThanhToan, ghiChu, itemsToProcess, taiKhoanId, laKhachVangLai,
                         appliedVoucherCode, tongThanhToan);
 
-                // Persist address if user logged in and have at least detail + province/district/ward optional
                 if (!laKhachVangLai && taiKhoan != null && selectedAddressId == null && !addressDetail.isBlank()) {
                     try {
                         List<DiaChiGiaoHang> existing = diaChiGiaoHangService.listByTaiKhoan(taiKhoan);
@@ -467,19 +471,15 @@ public class ThanhToanController {
                     }
                 }
 
-                // XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
                 logger.info("Xóa giỏ hàng sau khi đặt hàng thành công");
                 if (!laKhachVangLai) {
-                    // User đã đăng nhập
                     gioHangService.clearGioHangByUserId(taiKhoanId);
                     logger.info("Đã xóa giỏ hàng cho user ID: {}", taiKhoanId);
                 } else {
-                    // Guest user
                     gioHangService.clearGioHangBySessionId(session.getId());
                     logger.info("Đã xóa giỏ hàng cho session ID: {}", session.getId());
                 }
 
-                // Async email send moved to separate thread
                 if (email != null && !email.isEmpty()) {
                     String subject = "Xác nhận đơn hàng UrbanSteps";
                     String text = "Cảm ơn bạn đã đặt hàng tại UrbanSteps! Mã đơn hàng: " + hoaDon.getMaHoaDon()
@@ -508,8 +508,6 @@ public class ThanhToanController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-
-    
 
     @GetMapping("/addresses")
     @ResponseBody

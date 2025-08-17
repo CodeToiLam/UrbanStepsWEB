@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.urbansteps.model.PhieuGiamGia;
 import vn.urbansteps.service.PhieuGiamGiaService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,6 @@ public class AdminDiscountController {
 
     @Autowired
     private PhieuGiamGiaService phieuGiamGiaService;
-    // Aspect-based logging will capture create/update/delete actions
 
     @GetMapping("/discount-management")
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,7 +46,6 @@ public class AdminDiscountController {
             int currentYear = LocalDateTime.now().getYear();
             int currentMonth = LocalDateTime.now().getMonthValue();
             model.addAttribute("monthlyStats", phieuGiamGiaService.getMonthlyStatistics(currentYear));
-            // Debug: Lấy danh sách phiếu trong tháng hiện tại
             List<PhieuGiamGia> vouchersThisMonth = phieuGiamGiaService.findVouchersByMonth(currentYear, currentMonth);
             logger.info("Vouchers in year {} month {}: {}", currentYear, currentMonth, vouchersThisMonth);
         } catch (Exception e) {
@@ -67,6 +66,15 @@ public class AdminDiscountController {
     @PreAuthorize("hasRole('ADMIN')")
     public String saveDiscount(@ModelAttribute PhieuGiamGia phieuGiamGia, Model model) {
         try {
+            // Thêm xác thực cho donToiThieu
+            if (phieuGiamGia.getDonToiThieu() == null || phieuGiamGia.getDonToiThieu().compareTo(BigDecimal.ZERO) < 0) {
+                model.addAttribute("error", "Đơn tối thiểu phải là số không âm!");
+                return "admin/discount-add";
+            }
+            if (phieuGiamGia.getDonToiThieu().compareTo(new BigDecimal("100000")) < 0) {
+                model.addAttribute("error", "Đơn tối thiểu phải lớn hơn hoặc bằng 100.000 VND!");
+                return "admin/discount-add";
+            }
             if (phieuGiamGia.getMaPhieuGiamGia() == null || phieuGiamGia.getMaPhieuGiamGia().trim().isEmpty()) {
                 phieuGiamGia.setMaPhieuGiamGia("PGG_DEFAULT_" + System.currentTimeMillis());
             }
@@ -76,7 +84,6 @@ public class AdminDiscountController {
             if (phieuGiamGia.getId() != null) {
                 phieuGiamGiaService.incrementUsageCount(phieuGiamGia.getId());
             }
-            // log by aspect
             return "redirect:/admin/discount-management";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi lưu phiếu giảm giá: " + e.getMessage());
@@ -107,7 +114,6 @@ public class AdminDiscountController {
             Optional<PhieuGiamGia> discount = phieuGiamGiaService.findById(id);
             if (discount.isPresent()) {
                 phieuGiamGiaService.deactivate(id);
-                // log by aspect
                 return "redirect:/admin/discount-management?success=true";
             } else {
                 return "redirect:/admin/discount-management?error=true";
