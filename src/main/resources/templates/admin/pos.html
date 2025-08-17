@@ -3,115 +3,148 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-admin}">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bán hàng tại quầy (POS)</title>
+  <title th:text="#{pos.title}">Bán hàng tại quầy (POS)</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/pos.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous"/>
 </head>
 <body>
 <div layout:fragment="content">
-<div class="layout-admin">
-  <header class="admin-main-header">
-    <div class="admin-header-bar">
-      <div class="admin-header-title">Admin-UrbanSteps</div>
-      <div class="admin-header-actions">
-        <span>Xin chào Admin!</span>
-        <form action="/dang-xuat" method="post" style="display: inline; margin-left: 10px;">
-          <button type="submit" class="logout-btn">Đăng xuất</button>
-        </form>
-      </div>
-    </div>
-  </header>
-  <div class="admin-layout">
-    <main class="admin-main-content">
-      <div>
-        <!-- Xóa nút về trang admin, đã có sidebar -->
-        <div class="pos-title">Bán hàng tại quầy (POS)</div>
-        <!-- Tìm sản phẩm -->
-        <div class="pos-section">
-          <label for="search">Tìm sản phẩm:</label>
-          <div style="position:relative;display:inline-block;width:100%;max-width:480px;">
-            <input type="text" id="search" placeholder="Nhập tên hoặc mã sản phẩm..." oninput="liveSearchProducts()" autocomplete="off" style="width:100%;">
-            <div id="search-dropdown" class="search-dropdown" style="display:none;"></div>
-          </div>
-          <button class="pos-btn" onclick="searchProducts()">Tìm kiếm</button>
-          <div id="search-results"></div>
-        </div>
-        <!-- Giỏ hàng -->
-        <div class="pos-section">
-          <h3>Giỏ hàng</h3>
-          <table class="pos-table" id="cart-table">
-            <thead>
-              <tr>
-                <th>Tên sản phẩm</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-                <th>Xóa</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div class="pos-total">Tổng tiền: <span id="cart-total">0</span> VNĐ</div>
-        </div>
-        <!-- Thông tin khách hàng & thanh toán -->
-        <div class="pos-section">
-          <h3>Thông tin khách hàng & thanh toán</h3>
-          <form id="pos-form" onsubmit="submitOrder(event)">
-            <div>
-              <label>Họ tên khách hàng:</label>
-              <input type="text" name="hoTen" placeholder="Khách vãng lai nếu để trống">
-            </div>
-            <div>
-              <label>Số điện thoại:</label>
-              <input type="text" name="sdt" placeholder="Tùy chọn">
-            </div>
-            <div>
-              <label>Ghi chú:</label>
-              <input type="text" name="ghiChu" placeholder="Ghi chú đơn hàng">
-            </div>
-            <div>
-              <label>Phương thức thanh toán:</label>
-              <select name="phuongThucThanhToan" id="payment-method" onchange="updatePaymentFields()">
-                <option value="1">Tiền mặt</option>
-                <option value="2">Chuyển khoản</option>
-              </select>
-            </div>
-            <div id="cash-field" style="display:none;">
-              <label>Tiền mặt:</label>
-              <input type="number" name="tienMat" min="0" value="0">
-            </div>
-            <div id="bank-field" style="display:none;">
-              <label>Tiền chuyển khoản:</label>
-              <input type="number" name="tienChuyenKhoan" min="0" value="0">
-              <div style="margin-top:8px;">
-                <label>Mã QR chuyển khoản:</label><br>
-                <img src="/images/qr-code.jpg" alt="QR chuyển khoản" style="max-width:160px;border-radius:8px;box-shadow:0 2px 8px #ccc;">
-              </div>
-            </div>
-            <button class="pos-btn" type="submit"><i class="fa-solid fa-cart-plus"></i> Tạo đơn hàng</button>
+  <div class="layout-admin">
+    <!-- HEADER -->
+    <header class="admin-main-header">
+      <div class="admin-header-bar">
+        <div class="admin-header-title">Admin-UrbanSteps</div>
+        <div class="admin-header-actions">
+          <span th:text="#{pos.greeting} + ' Admin!'">Xin chào Admin!</span>
+          <form action="/dang-xuat" method="post" style="display: inline; margin-left: 10px;">
+            <button type="submit" class="logout-btn" th:text="#{logout}">Đăng xuất</button>
           </form>
-          <div id="order-result"></div>
         </div>
       </div>
-    </main>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="admin-layout">
+      <main class="admin-main-content">
+        <div>
+          <div class="pos-title" th:text="#{pos.title}">Bán hàng tại quầy (POS)</div>
+
+          <!-- Tìm sản phẩm -->
+          <div class="pos-section">
+            <label for="search" th:text="#{pos.search.label}">Tìm sản phẩm:</label>
+            <div style="position:relative;display:inline-block;width:100%;max-width:480px;">
+              <input type="text" id="search"
+                     th:placeholder="#{pos.search.placeholder}"
+                     oninput="liveSearchProducts()" autocomplete="off" style="width:100%;">
+              <div id="search-dropdown" class="search-dropdown" style="display:none;"></div>
+            </div>
+            <button class="pos-btn" onclick="searchProducts()" th:text="#{pos.search.button}">Tìm kiếm</button>
+            <div id="search-results"></div>
+          </div>
+
+          <!-- Giỏ hàng -->
+          <div class="pos-section">
+            <h3 th:text="#{pos.cart}">Giỏ hàng</h3>
+            <table class="pos-table" id="cart-table">
+              <thead>
+              <tr>
+                <th th:text="#{pos.cart.product}">Tên sản phẩm</th>
+                <th th:text="#{pos.cart.price}">Giá</th>
+                <th th:text="#{pos.cart.quantity}">Số lượng</th>
+                <th th:text="#{pos.cart.totalItem}">Thành tiền</th>
+                <th th:text="#{pos.cart.remove}">Xóa</th>
+              </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pos-total">
+              <span th:text="#{pos.cart.total}">Tổng tiền:</span>
+              <span id="cart-total">0</span> VNĐ
+            </div>
+          </div>
+
+          <!-- Thông tin khách hàng & thanh toán -->
+          <div class="pos-section">
+            <h3 th:text="#{pos.customerPayment}">Thông tin khách hàng & thanh toán</h3>
+            <form id="pos-form" onsubmit="submitOrder(event)">
+              <div>
+                <label th:text="#{pos.customer.name}">Họ tên khách hàng:</label>
+                <input type="text" name="hoTen" th:placeholder="#{pos.customer.name.placeholder}">
+              </div>
+              <div>
+                <label th:text="#{pos.customer.phone}">Số điện thoại:</label>
+                <input type="text" name="sdt" th:placeholder="#{pos.customer.phone.placeholder}">
+              </div>
+              <div>
+                <label th:text="#{pos.customer.note}">Ghi chú:</label>
+                <input type="text" name="ghiChu" th:placeholder="#{pos.customer.note.placeholder}">
+              </div>
+              <div>
+                <label th:text="#{pos.payment.method}">Phương thức thanh toán:</label>
+                <select name="phuongThucThanhToan" id="payment-method" onchange="updatePaymentFields()">
+                  <option value="1" th:text="#{pos.payment.cash}">Tiền mặt</option>
+                  <option value="2" th:text="#{pos.payment.bank}">Chuyển khoản</option>
+                </select>
+              </div>
+
+              <!-- Tiền mặt -->
+              <div id="cash-field" style="display:none;">
+                <label th:text="#{pos.payment.cashAmount}">Tiền mặt:</label>
+                <input type="number" name="tienMat" min="0" value="0">
+              </div>
+
+              <!-- Chuyển khoản -->
+              <div id="bank-field" style="display:none;">
+                <label th:text="#{pos.payment.bankAmount}">Tiền chuyển khoản:</label>
+                <input type="number" name="tienChuyenKhoan" min="0" value="0">
+                <div style="margin-top:8px;">
+                  <label th:text="#{pos.payment.qr}">Mã QR chuyển khoản:</label><br>
+                  <img src="/images/qr-code.jpg" alt="QR chuyển khoản"
+                       style="max-width:160px;border-radius:8px;box-shadow:0 2px 8px #ccc;">
+                </div>
+              </div>
+
+              <button class="pos-btn" type="submit">
+                <i class="fa-solid fa-cart-plus"></i>
+                <span th:text="#{pos.createOrder}">Tạo đơn hàng</span>
+              </button>
+            </form>
+            <div id="order-result"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- hidden translation texts -->
+    <span id="i18n-addToCart" th:text="#{pos.addToCart}" style="display:none"></span>
+    <span id="i18n-notFound" th:text="#{pos.search.notFound}" style="display:none">Không tìm thấy sản phẩm.</span>
+    <span id="i18n-delete" th:text="#{pos.cart.remove}" style="display:none">Xóa</span>
+
+
+    <!-- FOOTER -->
+    <footer class="admin-footer">
+      <p>© 2025 UrbanSteps. <span th:text="#{all.rights}">All rights reserved.</span></p>
+    </footer>
   </div>
-  <footer class="admin-footer">
-    <p>© 2025 UrbanSteps. All rights reserved.</p>
-  </footer>
-</div>
-<script src="/js/pos.js"></script>
-<script>
-function updatePaymentFields() {
-  var method = document.getElementById('payment-method').value;
-  document.getElementById('cash-field').style.display = (method === '1') ? 'block' : 'none';
-  document.getElementById('bank-field').style.display = (method === '2') ? 'block' : 'none';
-}
-window.onload = updatePaymentFields;
-</script>
+  <script th:inline="javascript">
+    const i18n = {
+      addToCart: [[#{pos.addToCart}]]
+    };
+  </script>
+  <script src="/js/pos.js"></script>
+  <script>
+    function updatePaymentFields() {
+      var method = document.getElementById('payment-method').value;
+      document.getElementById('cash-field').style.display = (method === '1') ? 'block' : 'none';
+      document.getElementById('bank-field').style.display = (method === '2') ? 'block' : 'none';
+    }
+    window.onload = updatePaymentFields;
+  </script>
 </div>
 </body>
 </html>

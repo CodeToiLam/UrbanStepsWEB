@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách sản phẩm</title>
+    <title th:text="#{product.list.title}">Danh sách sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
@@ -13,57 +13,68 @@
 </head>
 <body>
 <div layout:fragment="content">
-<div class="container mt-4">
-    <div class="product-list-header">
-        <div class="header-title">
-            <i class="bi bi-list-ul"></i>
-            <span>Danh sách sản phẩm</span>
+    <div class="container mt-4">
+        <div class="product-list-header">
+            <div class="header-title">
+                <i class="bi bi-list-ul"></i>
+                <span th:text="#{product.list.title}">Danh sách sản phẩm</span>
+            </div>
+            <div class="header-actions">
+                <a th:href="@{/admin/products/add}" class="btn btn-primary" th:title="#{product.add.tooltip}">
+                    <i class="bi bi-plus-circle-fill"></i> <span th:text="#{product.add}">Thêm sản phẩm</span>
+                </a>
+                <a th:href="@{/admin/product-management}" class="btn btn-outline-primary" th:title="#{product.management.tooltip}">
+                    <i class="bi bi-grid-1x2-fill"></i> <span th:text="#{product.management}">Quản lý chi tiết</span>
+                </a>
+            </div>
         </div>
-        <div class="header-actions">
-            <a href="/admin/products/add" class="btn btn-primary" title="Thêm sản phẩm mới"><i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm</a>
-            <a href="/admin/product-management" class="btn btn-outline-primary" title="Quản lý chi tiết"><i class="bi bi-grid-1x2-fill"></i> Quản lý chi tiết</a>
-        </div>
-    </div>
-    <form th:action="@{/admin/products}" method="get" class="filter-bar">
-        <span class="filter-label"><i class="bi bi-filter"></i> Lọc trạng thái</span>
-        <select name="trangThai" class="status-filter form-select" onchange="this.form.submit()">
-            <option value="">Tất cả</option>
-            <option th:value="true" th:selected="${activeFilter == true}">Hoạt động</option>
-            <option th:value="false" th:selected="${activeFilter == false}">Ngừng hoạt động</option>
-        </select>
-    </form>
+        <form th:action="@{/admin/products}" method="get" class="filter-bar">
+            <span class="filter-label"><i class="bi bi-filter"></i> <span th:text="#{product.filter.status}">Lọc trạng thái</span></span>
+            <select name="trangThai" class="status-filter form-select" onchange="this.form.submit()">
+                <option value="" th:text="#{product.filter.all}">Tất cả</option>
+                <option th:value="true" th:selected="${activeFilter == true}" th:text="#{status.active}">Hoạt động</option>
+                <option th:value="false" th:selected="${activeFilter == false}" th:text="#{status.inactive}">Ngừng hoạt động</option>
+            </select>
+        </form>
 
-    <table class="table table-striped table-hover">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Mã sản phẩm</th>
-            <th>Tên sản phẩm</th>
-            <th>Giá bán</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="p : ${products}" th:if="${not #lists.isEmpty(products)}">
-            <td th:text="${p.id}"></td>
-            <td th:text="${p.maSanPham} ?: 'N/A'"></td>
-            <td th:text="${p.tenSanPham}"></td>
-            <td th:text="${p.giaBan != null ? p.giaBan + ' VNĐ' : 'N/A'}">Giá sản phẩm</td>
-            <td th:text="${p.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
-            <td>
-                <a th:href="@{/admin/products/{id}(id=${p.id})}" class="btn btn-info btn-sm me-1" title="Xem"><i class="bi bi-eye-fill"></i></a>
-                <a th:href="@{/admin/products/edit/{id}(id=${p.id})}" class="btn btn-warning btn-sm me-1" title="Sửa"><i class="bi bi-pen-fill"></i></a>
-                <a th:href="@{/admin/products/delete/{id}(id=${p.id})}" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')"><i class="bi bi-trash-fill"></i></a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div th:if="${products == null or #lists.isEmpty(products)}" class="alert alert-warning">
-        <i class="bi bi-exclamation-triangle"></i> Không có sản phẩm nào.
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th th:text="#{product.id}">ID</th>
+                <th th:text="#{product.code}">Mã sản phẩm</th>
+                <th th:text="#{product.name}">Tên sản phẩm</th>
+                <th th:text="#{product.salePrice}">Giá bán</th>
+                <th th:text="#{product.status}">Trạng thái</th>
+                <th th:text="#{actions}">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${products}" th:if="${not #lists.isEmpty(products)}">
+                <td th:text="${p.id}"></td>
+                <td th:text="${p.maSanPham} ?: #{not.available}">N/A</td>
+                <td th:text="${p.tenSanPham}"></td>
+                <td th:text="${p.giaBan != null} ? ${#numbers.formatDecimal(p.giaBan, 1, 'COMMA', 2, 'POINT')} + ' ' + #{currency} : #{not.available}">Giá sản phẩm</td>
+                <td th:text="${p.trangThai} ? #{status.active} : #{status.inactive}"></td>
+                <td>
+                    <a th:href="@{/admin/products/{id}(id=${p.id})}" class="btn btn-info btn-sm me-1" th:title="#{action.view}">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a th:href="@{/admin/products/edit/{id}(id=${p.id})}" class="btn btn-warning btn-sm me-1" th:title="#{action.edit}">
+                        <i class="bi bi-pen-fill"></i>
+                    </a>
+                    <a th:href="@{/admin/products/delete/{id}(id=${p.id})}" class="btn btn-danger btn-sm" th:title="#{action.delete}"
+                       th:onclick="'return confirm(\'' + #{product.delete.confirm} + '\')'">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${products == null or #lists.isEmpty(products)}" class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="#{product.list.empty}">Không có sản phẩm nào.</span>
+        </div>
     </div>
 </div>
-</th:block>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/admin.js}"></script>
 </body>

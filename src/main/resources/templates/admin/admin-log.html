@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lịch sử hoạt động Admin</title>
-    <link rel="stylesheet" href="/css/admin.css">
+    <title th:text="#{admin.logs.title}">Lịch sử hoạt động Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
 <div class="layout-admin">
     <main class="admin-main-content">
-        <h2>Lịch sử hoạt động Admin</h2>
+        <h2 th:text="#{admin.logs.title}">Lịch sử hoạt động Admin</h2>
         <table class="pos-table">
             <thead>
-                <tr>
-                    <th>Thời gian</th>
-                    <th>Tài khoản Admin</th>
-                    <th>Hành động</th>
-                    <th>Chi tiết</th>
-                </tr>
+            <tr>
+                <th th:text="#{admin.logs.time}">Thời gian</th>
+                <th th:text="#{admin.logs.account}">Tài khoản Admin</th>
+                <th th:text="#{admin.logs.action}">Hành động</th>
+                <th th:text="#{admin.logs.details}">Chi tiết</th>
+            </tr>
             </thead>
             <tbody id="admin-log-body">
             </tbody>
@@ -24,20 +24,21 @@
     </main>
 </div>
 <script>
-fetch('/admin/logs')
-    .then(res => res.json())
-    .then(data => {
-        const tbody = document.getElementById('admin-log-body');
-        tbody.innerHTML = '';
-        data.forEach(log => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${log.createdAt.replace('T', ' ')}</td>
+    fetch('/admin/logs')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('admin-log-body');
+            tbody.innerHTML = '';
+            data.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td>${log.createdAt.replace('T', ' ')}</td>
                 <td>${log.adminUsername}</td>
                 <td>${log.action}</td>
                 <td>${log.details}</td>`;
-            tbody.appendChild(tr);
+                tbody.appendChild(tr);
+            });
         });
-    });
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-admin}">
 <head>
-    <title>Detail</title>
+    <title th:text="#{product.detail.title}">Chi tiết sản phẩm</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,19 +11,30 @@
 </head>
 <body>
 <th:block th:fragment="content">
-    <h1>Chi tiết sản phẩm</h1>
+    <h1 th:text="#{product.detail.title}">Chi tiết sản phẩm</h1>
     <p th:if="${error}" class="error" th:text="${error}"></p>
-    <p><strong>ID:</strong> <span th:text="${sanPham.id}"></span></p>
-    <p><strong>Mã sản phẩm:</strong> <span th:text="${sanPham.maSanPham}"></span></p>
-    <p><strong>Tên sản phẩm:</strong> <span th:text="${sanPham.tenSanPham}"></span></p>
-    <p><strong>Mô tả:</strong> <span th:text="${sanPham.moTa}"></span></p>
-    <p><strong>Giá nhập:</strong> <span th:text="${#numbers.formatDecimal(sanPham.giaNhap, 0, 2)}"></span></p>
-    <p><strong>Giá bán:</strong> <span th:text="${#numbers.formatDecimal(sanPham.giaBan, 0, 2)}"></span></p>
-    <p><strong>Trạng thái:</strong> <span th:text="${sanPham.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}"></span></p>
-    <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(sanPham.createAt, 'dd/MM/yyyy HH:mm')}"></span></p>
-    <p><strong>Ngày cập nhật:</strong> <span th:text="${#temporals.format(sanPham.updateAt, 'dd/MM/yyyy HH:mm')}" th:unless="${sanPham.updateAt == null}"></span></p>
-    <a th:href="@{/admin/products/edit/{id}(id=${sanPham.id})}">Sửa</a>
-    <a th:href="@{/admin/products}">Quay lại</a>
+
+    <p><strong th:text="#{product.id}">ID:</strong> <span th:text="${sanPham.id}"></span></p>
+    <p><strong th:text="#{product.code}">Mã sản phẩm:</strong> <span th:text="${sanPham.maSanPham}"></span></p>
+    <p><strong th:text="#{product.name}">Tên sản phẩm:</strong> <span th:text="${sanPham.tenSanPham}"></span></p>
+    <p><strong th:text="#{product.description}">Mô tả:</strong> <span th:text="${sanPham.moTa}"></span></p>
+    <p><strong th:text="#{product.importPrice}">Giá nhập:</strong> <span th:text="${#numbers.formatDecimal(sanPham.giaNhap, 0, 2)}"></span></p>
+    <p><strong th:text="#{product.salePrice}">Giá bán:</strong> <span th:text="${#numbers.formatDecimal(sanPham.giaBan, 0, 2)}"></span></p>
+    <p><strong th:text="#{product.status}">Trạng thái:</strong>
+        <span th:text="${sanPham.trangThai} ? #{status.active} : #{status.inactive}"></span>
+    </p>
+    <p><strong th:text="#{product.createdAt}">Ngày tạo:</strong>
+        <span th:text="${#temporals.format(sanPham.createAt, 'dd/MM/yyyy HH:mm')}"></span>
+    </p>
+    <p><strong th:text="#{product.updatedAt}">Ngày cập nhật:</strong>
+        <span th:text="${#temporals.format(sanPham.updateAt, 'dd/MM/yyyy HH:mm')}"
+              th:unless="${sanPham.updateAt == null}"></span>
+    </p>
+
+    <a th:href="@{/admin/products/edit/{id}(id=${sanPham.id})}"
+       th:text="#{button.edit}">Sửa</a>
+    <a th:href="@{/admin/products}"
+       th:text="#{button.back}">Quay lại</a>
 </th:block>
 </body>
 </html>
