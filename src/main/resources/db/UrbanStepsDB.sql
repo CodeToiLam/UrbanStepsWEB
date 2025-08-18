@@ -96,6 +96,7 @@ CREATE TABLE SanPham (
   luot_ban INT DEFAULT 0,
   diem_danh_gia DECIMAL(3,2) DEFAULT 0 CHECK (diem_danh_gia >= 0 AND diem_danh_gia <= 5),
   so_luong_danh_gia INT DEFAULT 0,
+    so_luong INT DEFAULT 0,
   trang_thai BIT DEFAULT 1,
   create_at DATETIME DEFAULT GETDATE(),
   update_at DATETIME,
@@ -261,6 +262,30 @@ CREATE TABLE HinhAnh_SanPhamChiTiet (
   FOREIGN KEY (id_hinh_anh) REFERENCES HinhAnh(id),
   FOREIGN KEY (id_san_pham_chi_tiet) REFERENCES SanPhamChiTiet(id)
 );
+GO
+
+-- Liên kết ảnh ở cấp Sản phẩm (gallery sản phẩm)
+CREATE TABLE HinhAnh_SanPham (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    id_san_pham INT NOT NULL,
+    id_hinh_anh INT NOT NULL,
+    alt_text NVARCHAR(255) NULL,
+    la_anh_chinh BIT NULL,
+    thu_tu INT NULL,
+    create_at DATETIME DEFAULT GETDATE(),
+    update_at DATETIME,
+    delete_at DATETIME,
+    CONSTRAINT FK_HinhAnh_SanPham_SanPham FOREIGN KEY (id_san_pham) REFERENCES SanPham(id),
+    CONSTRAINT FK_HinhAnh_SanPham_HinhAnh FOREIGN KEY (id_hinh_anh) REFERENCES HinhAnh(id)
+);
+GO
+
+-- Indexes for performance and uniqueness guard
+CREATE INDEX IX_HinhAnh_SanPham_SanPham ON HinhAnh_SanPham(id_san_pham);
+GO
+CREATE INDEX IX_HinhAnh_SanPham_HinhAnh ON HinhAnh_SanPham(id_hinh_anh);
+GO
+CREATE UNIQUE INDEX UX_HinhAnh_SanPham_Unique ON HinhAnh_SanPham(id_san_pham, id_hinh_anh);
 GO
 
 CREATE TABLE GioHang (

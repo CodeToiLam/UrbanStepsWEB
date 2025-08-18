@@ -48,4 +48,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("sanPhamId") Integer sanPhamId,
             @Param("kichCo") String kichCo,
             @Param("mauSac") String mauSac);
+
+        // Dùng khi tạo nhanh biến thể từ lựa chọn size/màu trong form thêm sản phẩm
+        java.util.Optional<SanPhamChiTiet> findFirstBySanPham_IdAndKichCo_IdAndMauSac_Id(Integer sanPhamId, Integer kichCoId, Integer mauSacId);
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
+<head>
+    <title>Quản lý biến thể</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-product-variants.css">
+</head>
+<body>
+<div layout:fragment="content">
+  <h1>Biến thể của sản phẩm</h1>
+  <p><strong th:text="${sanPham.tenSanPham}"></strong> (Mã: <span th:text="${sanPham.maSanPham}"></span>)</p>
+  <a th:href="@{/admin/products}" class="btn-link">← Quay lại danh sách</a>
+
+  <h3>Tạo biến thể hàng loạt</h3>
+  <div class="grid-2">
+    <div>
+      <label>Chọn nhiều kích cỡ:</label>
+      <select id="kcMulti" multiple size="8" class="form-select">
+        <option th:each="k : ${kichCos}" th:value="${k.id}" th:text="${k.tenKichCo}"></option>
+      </select>
+    </div>
+    <div>
+      <label>Chọn nhiều màu sắc:</label>
+      <select id="msMulti" multiple size="8" class="form-select">
+        <option th:each="m : ${mauSacs}" th:value="${m.id}" th:text="${m.tenMauSac}"></option>
+      </select>
+    </div>
+  </div>
+  <div class="form-text" style="margin-top:6px">Gợi ý: hãy chọn 1 màu và nhiều kích cỡ để tạo các biến thể theo màu đó. Bạn cũng có thể chọn sẵn khi lưu sản phẩm mới.</div>
+  <button type="button" id="genComb" class="btn-primary" style="margin-top:10px">Tạo tổ hợp</button>
+
+  <form th:action="@{'/admin/products/' + ${sanPham.id} + '/variants/bulk'}" method="post" enctype="multipart/form-data" id="bulkForm">
+    <input type="hidden" name="rowCount" id="rowCount" value="0" />
+    <table class="variants-table">
+      <thead>
+        <tr>
+          <th>Biến thể (Kích cỡ / Màu sắc)</th>
+          <th>Số lượng</th>
+          <th>Giá bán lẻ</th>
+          <th>Ảnh biến thể (nhiều ảnh)</th>
+        </tr>
+      </thead>
+      <tbody id="rowsBody"></tbody>
+    </table>
+    <div style="margin-top:12px">
+      <button type="submit" class="btn-primary">Lưu các biến thể</button>
+    </div>
+  </form>
+</div>
+<script src="/js/admin/product-variants.js"></script>
+<script>
+// Tự động chọn kích cỡ/màu sắc nếu có query ?kc=1,2&ms=3,4
+document.addEventListener('DOMContentLoaded', function(){
+  const params = new URLSearchParams(window.location.search);
+  const kc = params.get('kc');
+  const ms = params.get('ms');
+  const kcSel = document.getElementById('kcMulti');
+  const msSel = document.getElementById('msMulti');
+  if (kc && kcSel) {
+    const set = new Set(kc.split(',').filter(Boolean));
+    Array.from(kcSel.options).forEach(o => { if (set.has(o.value)) o.selected = true; });
+  }
+  if (ms && msSel) {
+    const setMs = new Set(ms.split(',').filter(Boolean));
+    Array.from(msSel.options).forEach(o => { if (setMs.has(o.value)) o.selected = true; });
+  }
+});
+</script>
+</body>
+</html>

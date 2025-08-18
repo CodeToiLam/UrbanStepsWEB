@@ -12,7 +12,7 @@
 <div class="container mt-4">
   <h2 class="text-primary"><i class="bi bi-plus-circle"></i> Thêm chi tiết sản phẩm</h2>
   <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-  <form th:action="@{/admin/save}" method="post" th:object="${chiTiet}">
+  <form th:action="@{/admin/save}" method="post" th:object="${chiTiet}" enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}" />
     <input type="hidden" th:field="*{sanPham.id}" th:value="${sanPham.id} ?: 0" />
 
@@ -24,12 +24,18 @@
       </select>
     </div>
 
-    <div class="mb-3">
+  <div class="mb-3">
       <label class="form-label">Màu sắc</label>
       <select th:field="*{mauSac}" class="form-select" required>
         <option value="">Chọn màu sắc</option>
         <option th:each="ms : ${mauSacs}" th:value="${ms.id}" th:text="${ms.tenMauSac}"></option>
       </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Ảnh biến thể</label>
+      <input type="file" name="variantImages" accept="image/*" multiple class="form-control" />
+      <div class="form-text">Có thể chọn nhiều ảnh; ảnh đầu tiên sẽ là ảnh chính của biến thể.</div>
+      <div id="variantPreview" class="image-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:8px; margin-top:8px"></div>
     </div>
 
     <div class="mb-3">
@@ -52,5 +58,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/admin.js}"></script>
+<script>
+  // Preview selected variant images
+  document.addEventListener('DOMContentLoaded', function(){
+    const input = document.querySelector('input[name="variantImages"]');
+    const grid = document.getElementById('variantPreview');
+    if (!input || !grid) return;
+    input.addEventListener('change', function(){
+      grid.innerHTML='';
+      Array.from(input.files || []).forEach(f => {
+        const url = URL.createObjectURL(f);
+        const d = document.createElement('div');
+        d.style.border = '1px solid #e5e7eb';
+        d.style.borderRadius = '8px';
+        d.style.overflow = 'hidden';
+        d.innerHTML = `<img src="${url}" style="width:100%;height:100px;object-fit:cover"/>`;
+        grid.appendChild(d);
+      });
+    });
+  });
+</script>
 </body>
 </html>

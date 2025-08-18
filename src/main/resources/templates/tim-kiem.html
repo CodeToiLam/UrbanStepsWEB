@@ -39,24 +39,8 @@
                             <i class="bi bi-search"></i>
                             <span th:text="#{search.button}"></span>
                         </button>
-<<<<<<< HEAD
                         <!-- Live suggestions dropdown -->
                         <div class="search-suggest-dropdown" data-search-dropdown hidden></div>
-=======
-
-
-                        <!-- Search Suggestions -->
-                        <datalist id="search-suggestions">
-                            <option value="Giày Adidas">
-                            <option value="Giày Nike">
-                            <option value="Giày Converse">
-                            <option value="Giày MLB">
-                            <option value="Sneaker">
-                            <option value="Giày thể thao">
-                            <option value="Giày cao cổ">
-                            <option value="Giày thấp cổ">
-                        </datalist>
->>>>>>> 423996189a9040c3783193e1e4e2cf76ced09e1c
                     </div>
                 </form>
             </div>
@@ -130,15 +114,15 @@
                     <div th:each="product : ${products}" th:if="${product != null}" class="product-card" 
                          th:onclick="'location.href=\'/san-pham/chi-tiet/' + ${product.id ?: 0} + '\''" 
                          style="cursor: pointer;">
-                        <div class="product-image">
-                            <img th:if="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
-                                 th:src="${product.idHinhAnhDaiDien.duongDan}"
-                                 th:alt="${product.tenSanPham}"
-                                 onerror="console.log('Failed to load main image: ' + this.src); this.onerror=null; this.src='/images/no-image.svg';">
-                            <img th:unless="${product.idHinhAnhDaiDien != null and product.idHinhAnhDaiDien.duongDan != null}"
-                                 src="/images/no-image.svg"
-                                 th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
-                        </div>
+                    <div class="product-image">
+                       <img th:if="${product.idHinhAnhDaiDien != null}"
+                           th:src="${product.idHinhAnhDaiDien.fullImagePath}"
+                           th:alt="${product.tenSanPham}"
+                           onerror="this.onerror=null; this.src='/images/no-image.svg';">
+                       <img th:unless="${product.idHinhAnhDaiDien != null}"
+                           src="/images/no-image.svg"
+                           th:alt="${product.tenSanPham ?: 'Sản phẩm'}">
+                    </div>
                         <div class="product-info">
                             <div class="product-brand"
                                  th:text="${product.thuongHieu != null ? product.thuongHieu.tenThuongHieu : 'Chưa có thương hiệu'}">

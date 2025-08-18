@@ -25,7 +25,7 @@
     <div class="product-container">
       <div th:each="product : ${products}" class="product-card shadow-sm rounded-3 mb-4 p-3 text-center h-100">
         <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="d-block mb-2">
-          <img th:src="@{${product.idHinhAnhDaiDien != null ? (product.idHinhAnhDaiDien.duongDan.startsWith('/images/') ? product.idHinhAnhDaiDien.duongDan : '/images/' + product.idHinhAnhDaiDien.duongDan) : '/images/no-image.svg'}}"
+          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.fullImagePath : '/images/no-image.svg'}"
                th:alt="${product.tenSanPham}"
                class="img-fluid rounded-3 product-thumb"
                style="max-height:180px;object-fit:cover;background:#f8f8f8;"

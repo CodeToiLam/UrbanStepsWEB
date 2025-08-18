@@ -40,15 +40,16 @@ public class HinhAnh {
 
     public String getFullImagePath() {
         if (this.duongDan == null) return "/images/no-image.jpg";
-
-        // Kiểm tra và đảm bảo đường dẫn đúng định dạng
-        if (this.duongDan.startsWith("/images/")) {
-            return this.duongDan;
-        } else if (this.duongDan.startsWith("images/")) {
-            return "/" + this.duongDan;
-        } else {
-            return "/images/" + this.duongDan;
+        String p = this.duongDan.trim();
+        // Pass-through for known static roots
+    if (p.startsWith("/images/") || p.startsWith("/uploads/")) {
+            return p;
         }
+    if (p.startsWith("images/") || p.startsWith("uploads/")) {
+            return "/" + p;
+        }
+        // Default legacy fallback
+        return "/images/" + p;
     }
 
 }

@@ -126,17 +126,52 @@ public class SanPhamController {
                     List<String> kichCos = sanPhamChiTietService.getKichCosBySanPhamId(id);
                     List<String> mauSacs = sanPhamChiTietService.getMauSacsBySanPhamId(id);
                     Map<String, Map<String, Integer>> tonKhoMap = sanPhamChiTietService.getTonKhoBySanPhamId(id);
-                    
+
                     // Lấy danh sách variants để truyền vào JavaScript
                     List<SanPhamChiTiet> variants = sanPhamChiTietService.getBySanPhamId(id);
 
-                    // Tạo danh sách variants đơn giản cho JavaScript (tránh lỗi Jackson serialization)
+                    // Fallback nếu kichCos/mauSacs rỗng: suy ra từ danh sách variants
+                    if (kichCos == null || kichCos.isEmpty()) {
+                        kichCos = variants.stream()
+                                .filter(v -> v.getKichCo() != null && v.getKichCo().getTenKichCo() != null)
+                                .map(v -> v.getKichCo().getTenKichCo())
+                                .distinct()
+                                .sorted()
+                                .toList();
+                    }
+                    if (mauSacs == null || mauSacs.isEmpty()) {
+                        mauSacs = variants.stream()
+                                .filter(v -> v.getMauSac() != null && v.getMauSac().getTenMauSac() != null)
+                                .map(v -> v.getMauSac().getTenMauSac())
+                                .distinct()
+                                .sorted()
+                                .toList();
+                    }
+                    if (tonKhoMap == null || tonKhoMap.isEmpty()) {
+                        Map<String, Map<String, Integer>> derived = new HashMap<>();
+                        for (SanPhamChiTiet v : variants) {
+                            if (v.getKichCo() == null || v.getMauSac() == null) continue;
+                            String kc = v.getKichCo().getTenKichCo();
+                            String ms = v.getMauSac().getTenMauSac();
+                            if (kc == null || ms == null) continue;
+                            derived.computeIfAbsent(kc, k -> new HashMap<>())
+                                   .put(ms, v.getSoLuong() == null ? 0 : v.getSoLuong());
+                        }
+                        tonKhoMap = derived;
+                    }
+
+                    // Không nạp toàn bộ danh mục kích cỡ/màu nếu chưa có biến thể để tránh hiển thị sai.
+
+                    // Tạo danh sách variants đơn giản cho JavaScript
                     List<Map<String, Object>> variantsForJS = new ArrayList<>();
                     for (SanPhamChiTiet variant : variants) {
                         Map<String, Object> variantMap = new HashMap<>();
                         variantMap.put("id", variant.getId());
-                        variantMap.put("kichCo", variant.getKichCo());
-                        variantMap.put("mauSac", variant.getMauSac());
+                        // Truyền tên kích cỡ/màu sắc dạng chuỗi để JS xử lý ổn định
+                        String kc = (variant.getKichCo() != null) ? variant.getKichCo().getTenKichCo() : null;
+                        String ms = (variant.getMauSac() != null) ? variant.getMauSac().getTenMauSac() : null;
+                        variantMap.put("kichCo", kc);
+                        variantMap.put("mauSac", ms);
                         variantMap.put("soLuong", variant.getSoLuong());
                         variantsForJS.add(variantMap);
                     }

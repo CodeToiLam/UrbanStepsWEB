@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.repository.HinhAnhRepository;
+import vn.urbansteps.repository.HinhAnhSanPhamRepository;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -11,10 +12,13 @@ import java.util.List;
 
 @Service
 public class HinhAnhService {
-    private HinhAnhRepository hinhAnhRepository;
+    private final HinhAnhRepository hinhAnhRepository;
+    private final HinhAnhSanPhamRepository hinhAnhSanPhamRepository;
     
-    public HinhAnhService(HinhAnhRepository hinhAnhRepository) {
+    public HinhAnhService(HinhAnhRepository hinhAnhRepository,
+                          HinhAnhSanPhamRepository hinhAnhSanPhamRepository) {
         this.hinhAnhRepository = hinhAnhRepository;
+        this.hinhAnhSanPhamRepository = hinhAnhSanPhamRepository;
     }
     
     @PostConstruct
@@ -32,6 +36,18 @@ public class HinhAnhService {
                 System.err.println("ERROR: hinhAnhRepository is null!");
                 return new ArrayList<>();
             }
+            // Ưu tiên lấy gallery theo bảng liên kết cấp sản phẩm
+            if (hinhAnhSanPhamRepository != null) {
+                var links = hinhAnhSanPhamRepository.findBySanPham_IdOrderByThuTuAsc(sanPhamId);
+                if (links != null && !links.isEmpty()) {
+                    List<HinhAnh> list = new ArrayList<>();
+                    for (var l : links) {
+                        if (l.getHinhAnh() != null) list.add(l.getHinhAnh());
+                    }
+                    return list;
+                }
+            }
+            // Fallback: lấy ảnh theo biến thể (bảng HinhAnh_SanPhamChiTiet)
             return hinhAnhRepository.findBySanPhamIdOrderByThuTuAsc(sanPhamId);
         } catch (Exception e) {
             System.err.println("Lỗi khi lấy hình ảnh sản phẩm: " + e.getMessage());
@@ -51,12 +67,12 @@ public class HinhAnhService {
         dbPath = dbPath.trim();
 
         // Nếu đã là đường dẫn đầy đủ thì trả về
-        if (dbPath.startsWith("/images/")) {
+    if (dbPath.startsWith("/images/") || dbPath.startsWith("/uploads/")) {
             return dbPath;
         }
 
         // Nếu bắt đầu bằng "images/" thì thêm "/" vào đầu
-        if (dbPath.startsWith("images/")) {
+    if (dbPath.startsWith("images/") || dbPath.startsWith("uploads/")) {
             return "/" + dbPath;
         }
 

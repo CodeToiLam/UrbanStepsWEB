@@ -16,9 +16,14 @@
 <div class="container mt-5">
     <h2 th:text="${sanPham.tenSanPham}">Tên sản phẩm</h2>
     <div class="row">
-        <div class="col-md-6">
-            <img th:src="'/images/' + ${sanPham.idHinhAnhDaiDien.duongDan}" alt="Hình ảnh sản phẩm" class="img-fluid" onerror="this.src='/images/Home/1.jpg';">
-        </div>
+       <div class="col-md-6">
+          <img th:if="${sanPham != null && sanPham.idHinhAnhDaiDien != null}"
+              th:src="${sanPham.idHinhAnhDaiDien.fullImagePath}"
+              alt="Hình ảnh sản phẩm" class="img-fluid"
+              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
+          <img th:unless="${sanPham != null && sanPham.idHinhAnhDaiDien != null}"
+              src="/images/no-image.jpg" alt="No image" class="img-fluid">
+       </div>
         <div class="col-md-6">
             <p><strong>Giá bán:</strong> <span th:text="${#numbers.formatDecimal(sanPham.giaBan, 0, 0)} + ' VNĐ'">0 VNĐ</span></p>
             <p><strong>Mô tả:</strong> <span th:text="${sanPham.moTa}">Mô tả sản phẩm</span></p>

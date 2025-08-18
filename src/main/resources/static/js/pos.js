@@ -19,13 +19,21 @@ function liveSearchProducts() {
                         dropdown.innerHTML = data.map(sp => {
                                 const img = sp.image || '/images/no-image.svg';
                                 const brand = sp.brand ? `<div class="sug-sub">${sp.brand}</div>` : '';
+                                const disabled = sp.inStock === false;
+                                const addBtn = disabled ? `<button class='pos-btn' disabled>Hết hàng</button>`
+                                                        : `<button class='pos-btn' onclick='addToCart(${sp.id}, "${sp.tenSanPham.replace(/"/g,'&quot;')}", ${sp.giaBan || 0})'>Thêm</button>`;
+                                const qtyInput = disabled ? `` : `<input type='number' min='1' value='1' id='qty_${sp.id}' style='width:70px;'>`;
                                 return `
-                                <div class='search-item' onclick='selectSearchProduct(${sp.id}, "${sp.tenSanPham.replace(/"/g,'&quot;')}", ${sp.giaBan || 0})'>
+                                <div class='search-item'>
                                     <img class="sug-img" src="${img}" alt="" onerror="this.src='/images/no-image.svg'"/>
                                     <div class="sug-meta">
                                         <div class="sug-name">${sp.tenSanPham}</div>
                                         ${brand}
                                         <div class="sug-price">${f.format(sp.giaBan || 0)} đ</div>
+                                    </div>
+                                    <div class='sug-action'>
+                                        ${qtyInput}
+                                        ${addBtn}
                                     </div>
                                 </div>`;
                         }).join('');
@@ -71,10 +79,11 @@ function searchProducts() {
                 return;
             }
                         const f = new Intl.NumberFormat('vi-VN');
-                        data.forEach(sp => {
+            data.forEach(sp => {
                                 const div = document.createElement('div');
                                 div.className = 'pos-result-item';
                                 const img = sp.image || '/images/no-image.svg';
+                const disabled = sp.inStock === false;
                                 div.innerHTML = `
                                         <img class="sug-img" src="${img}" alt="" onerror="this.src='/images/no-image.svg'"/>
                                         <div class="sug-meta">
@@ -83,8 +92,8 @@ function searchProducts() {
                                             <div class="sug-price">${f.format(sp.giaBan||0)} đ</div>
                                         </div>
                                         <div class="sug-action">
-                                            <input type='number' min='1' value='1' id='qty_${sp.id}' style='width:70px;'>
-                                            <button class='pos-btn' onclick='addToCart(${sp.id}, "${sp.tenSanPham.replace(/"/g,'&quot;')}", ${sp.giaBan||0})'>Thêm</button>
+                        ${disabled ? '' : `<input type='number' min='1' value='1' id='qty_${sp.id}' style='width:70px;'>`}
+                        ${disabled ? `<button class='pos-btn' disabled>Hết hàng</button>` : `<button class='pos-btn' onclick='addToCart(${sp.id}, \"${sp.tenSanPham.replace(/\"/g,'&quot;')}\", ${sp.giaBan||0})'>Thêm</button>`}
                                         </div>`;
                                 resultsDiv.appendChild(div);
                         });

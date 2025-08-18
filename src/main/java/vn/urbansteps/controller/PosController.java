@@ -30,25 +30,35 @@ public class PosController {
     // Tìm sản phẩm theo tên hoặc mã
     @GetMapping("/products")
     public List<Map<String, Object>> searchProducts(@RequestParam(required = false) String keyword) {
-        // Trả về danh sách biến thể (SanPhamChiTiet) mặc định để có thể thêm vào giỏ
+        // Trả về danh sách biến thể (SanPhamChiTiet). Luôn hiển thị cả biến thể chưa có tồn kho để admin dễ tìm sp mới.
         List<SanPham> products = sanPhamService.timKiemTheoTen(keyword);
-    return products.stream()
+        return products.stream()
                 .flatMap(sp -> {
                     List<SanPhamChiTiet> variants = sanPhamChiTietService.getBySanPhamId(sp.getId());
                     return variants.stream()
-                            .filter(v -> v != null && Boolean.TRUE.equals(v.getTrangThai()) && v.getSoLuong() != null && v.getSoLuong() > 0)
-                            .limit(1) // lấy 1 biến thể mặc định
+                            .filter(v -> v != null && Boolean.TRUE.equals(v.getTrangThai()))
                             .map(v -> {
                                 Map<String, Object> m = new java.util.HashMap<>();
-                                m.put("id", v.getId()); // dùng id biến thể để thêm vào giỏ
-                                m.put("tenSanPham", sp.getTenSanPham());
+                                m.put("id", v.getId()); // id biến thể để thêm vào giỏ
+                                String size = (v.getKichCo() != null ? v.getKichCo().getTenKichCo() : null);
+                                String color = (v.getMauSac() != null ? v.getMauSac().getTenMauSac() : null);
+                                String name = sp.getTenSanPham();
+                                if (size != null || color != null) {
+                                    name = name + " (" + (size != null ? size : "?") + ", " + (color != null ? color : "?") + ")";
+                                }
+                                m.put("tenSanPham", name);
                                 m.put("giaBan", v.getGiaBanThucTe() != null ? v.getGiaBanThucTe() : sp.getGiaBan());
-                m.put("brand", sp.getThuongHieu() != null ? sp.getThuongHieu().getTenThuongHieu() : null);
-                m.put("image", sp.getIdHinhAnhDaiDien() != null && sp.getIdHinhAnhDaiDien().getDuongDan() != null
-                    ? sp.getIdHinhAnhDaiDien().getDuongDan() : null);
+                                m.put("brand", sp.getThuongHieu() != null ? sp.getThuongHieu().getTenThuongHieu() : null);
+                                m.put("image", sp.getIdHinhAnhDaiDien() != null && sp.getIdHinhAnhDaiDien().getDuongDan() != null
+                                        ? sp.getIdHinhAnhDaiDien().getDuongDan() : null);
+                                Integer soLuong = v.getSoLuong();
+                                m.put("inStock", soLuong != null && soLuong > 0);
+                                m.put("soLuong", soLuong == null ? 0 : soLuong);
                                 return m;
                             });
                 })
+                // giới hạn một lượng vừa phải cho dropdown/list
+                .limit(100)
                 .collect(Collectors.toList());
     }
 

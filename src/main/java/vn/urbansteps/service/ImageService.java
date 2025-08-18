@@ -1,22 +1,24 @@
 package vn.urbansteps.service;
 
-// import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
-// import vn.urbansteps.repository.HinhAnhRepository;
+import vn.urbansteps.model.HinhAnhSanPham;
+import vn.urbansteps.repository.HinhAnhSanPhamRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service mới để xử lý tất cả logic ảnh một cách đơn giản và nhất quán
  */
 @Service
 public class ImageService {
-    
-    // @Autowired
-    // private HinhAnhRepository hinhAnhRepository;
+
+    @Autowired
+    private HinhAnhSanPhamRepository hinhAnhSanPhamRepository;
     
     /**
      * Chuẩn hóa đường dẫn ảnh - tất cả ảnh đều có format: /images/brand/product/main.ext
@@ -28,11 +30,16 @@ public class ImageService {
         
         rawPath = rawPath.trim();
         
-        // Nếu đã đúng format thì return
-        if (rawPath.startsWith("/images/")) {
+        // Pass-through for known static roots
+        if (rawPath.startsWith("/images/") || rawPath.startsWith("/uploads/")) {
             return rawPath;
         }
         
+        // Allow relative roots for uploads/images
+        if (rawPath.startsWith("images/") || rawPath.startsWith("uploads/")) {
+            return "/" + rawPath;
+        }
+
         // Loại bỏ "images/" ở đầu nếu có
         if (rawPath.startsWith("images/")) {
             rawPath = rawPath.substring(7);
@@ -58,37 +65,30 @@ public class ImageService {
      */
     public List<HinhAnh> createSimpleGallery(SanPham sanPham) {
         List<HinhAnh> gallery = new ArrayList<>();
-        
+
         if (sanPham == null || sanPham.getId() == null) {
             return gallery;
         }
-        
-    try {
-            
-            // Vì dữ liệu DB mapping sai, tạm thời sử dụng file system
-            gallery = createGalleryFromFileSystem(sanPham);
-            
-            // Nếu vẫn không có ảnh, sử dụng ảnh đại diện
-            if (gallery.isEmpty() && sanPham.getIdHinhAnhDaiDien() != null) {
-                String mainImagePath = getProductMainImage(sanPham);
-                
-                HinhAnh fallbackImage = new HinhAnh();
-                fallbackImage.setId(sanPham.getIdHinhAnhDaiDien().getId());
-                fallbackImage.setDuongDan(mainImagePath);
-                fallbackImage.setMoTa("Main image");
-                fallbackImage.setThuTu(1);
-                fallbackImage.setLaAnhChinh(true);
-                gallery.add(fallbackImage);
-                
-                // fallback main image used
+
+        try {
+            // 1) Ưu tiên lấy gallery từ DB link HinhAnhSanPham (đúng với flow upload hiện tại)
+            List<HinhAnhSanPham> links = hinhAnhSanPhamRepository.findBySanPham_IdOrderByThuTuAsc(sanPham.getId());
+            if (links != null && !links.isEmpty()) {
+                gallery = links.stream()
+                        .map(HinhAnhSanPham::getHinhAnh)
+                        .filter(java.util.Objects::nonNull)
+                        .collect(Collectors.toList());
             }
-            
-            // gallery created
-            
-        } catch (Exception e) {
-            // ignore errors to avoid noisy logs
-        }
-        
+
+            // 2) Fallback: nếu chưa có ảnh gallery thì dùng ảnh đại diện (nếu có)
+            if (gallery.isEmpty() && sanPham.getIdHinhAnhDaiDien() != null) {
+                HinhAnh fallback = sanPham.getIdHinhAnhDaiDien();
+                // Bảo đảm đường dẫn hiển thị đúng
+                fallback.setDuongDan(normalizeImagePath(fallback.getDuongDan()));
+                gallery.add(fallback);
+            }
+        } catch (Exception ignored) {}
+
         return gallery;
     }
     
@@ -111,6 +111,10 @@ public class ImageService {
             if (normalizedPath.contains("/")) {
                 String[] pathParts = normalizedPath.split("/");
                 if (pathParts.length >= 4) { // ["", "images", "brand", "product", "image.jpg"]
+                    // Nếu là uploads => bỏ qua logic này (không suy luận từ filesystem)
+                    if ("uploads".equalsIgnoreCase(pathParts[1])) {
+                        return gallery; // trả về rỗng để fallback dùng ảnh đại diện
+                    }
                     String brand = pathParts[2];
                     String productFolder = pathParts[3];
                     String basePath = "/images/" + brand + "/" + productFolder + "/";
@@ -160,7 +164,7 @@ public class ImageService {
     public void processProductListImages(List<SanPham> products) {
         if (products == null) return;
         
-    // normalize list
+        // normalize list
         
         for (SanPham product : products) {
             if (product.getIdHinhAnhDaiDien() != null) {
@@ -177,7 +181,7 @@ public class ImageService {
             }
         }
         
-    // done
+        // done
     }
     
     /**

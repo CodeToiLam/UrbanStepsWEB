@@ -37,12 +37,16 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Tìm hóa đơn theo khoảng giá
     List<HoaDon> findByTongThanhToanBetweenOrderByCreateAtDesc(BigDecimal minAmount, BigDecimal maxAmount);
 
-    // Thống kê doanh thu theo ngày
-    @Query("SELECT DATE(hd.createAt) as date, SUM(hd.tongThanhToan) as revenue, COUNT(hd) as orderCount " +
-            "FROM HoaDon hd WHERE hd.trangThai IN (3, 5) " +
-            "AND hd.createAt BETWEEN :startDate AND :endDate " +
-            "GROUP BY DATE(hd.createAt) ORDER BY DATE(hd.createAt)")
-    List<Object[]> getDailyRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+            // Thống kê doanh thu theo ngày (SQL Server compatible)
+            @Query(value = "SELECT CAST(hd.create_at AS date) AS d, " +
+                    "SUM(hd.tong_thanh_toan) AS revenue, COUNT(hd.id) AS orderCount " +
+                    "FROM HoaDon hd " +
+                    "WHERE hd.trang_thai IN (3) " +
+                    "AND hd.create_at BETWEEN :startDate AND :endDate " +
+                    "GROUP BY CAST(hd.create_at AS date) " +
+                    "ORDER BY CAST(hd.create_at AS date)",
+                    nativeQuery = true)
+            List<Object[]> getDailyRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     // Thống kê doanh thu theo tháng
     @Query("SELECT YEAR(hd.createAt) as year, MONTH(hd.createAt) as month, " +
@@ -61,12 +65,12 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Đếm hóa đơn theo trạng thái
     long countByTrangThai(Byte trangThai);
 
-    // Tổng doanh thu
-    @Query("SELECT SUM(hd.tongThanhToan) FROM HoaDon hd WHERE hd.trangThai IN (3, 5)")
-    BigDecimal getTotalRevenue();
+        // Tổng doanh thu (chỉ tính đơn đã hoàn thành)
+        @Query("SELECT SUM(hd.tongThanhToan) FROM HoaDon hd WHERE hd.trangThai IN (3)")
+        BigDecimal getTotalRevenueCompleted();
 
-    // Doanh thu theo khoảng thời gian
-    @Query("SELECT SUM(hd.tongThanhToan) FROM HoaDon hd WHERE hd.trangThai IN (3, 5) " +
+        // Doanh thu theo khoảng thời gian (chỉ tính đơn đã hoàn thành)
+        @Query("SELECT SUM(hd.tongThanhToan) FROM HoaDon hd WHERE hd.trangThai IN (3) " +
             "AND hd.createAt BETWEEN :startDate AND :endDate")
     BigDecimal getRevenueByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
@@ -102,6 +106,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Tìm hóa đơn theo mã hóa đơn và số điện thoại khách hàng
     Optional<HoaDon> findByMaHoaDonAndKhachHang_Sdt(String maHoaDon, String sdt);
 
-        // Tìm tất cả hóa đơn theo số điện thoại khách hàng (mới nhất trước)
-        List<HoaDon> findByKhachHang_SdtOrderByCreateAtDesc(String sdt);
+                // Tìm tất cả hóa đơn theo số điện thoại khách hàng (mới nhất trước)
+                List<HoaDon> findByKhachHang_SdtOrderByCreateAtDesc(String sdt);
+
+        // Top N hóa đơn mới nhất
+        List<HoaDon> findTop10ByOrderByCreateAtDesc();
 }

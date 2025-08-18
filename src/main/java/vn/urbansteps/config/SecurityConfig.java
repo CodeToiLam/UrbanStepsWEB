@@ -40,6 +40,8 @@ public class SecurityConfig {
 
                         // Static resources - CSS, JS, Images
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/data/**").permitAll()
+                        // Uploaded files must be publicly readable for product images
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/favicon.ico", "/robots.txt").permitAll()
 
                         // API endpoints - Cho phép guest thao tác giỏ hàng

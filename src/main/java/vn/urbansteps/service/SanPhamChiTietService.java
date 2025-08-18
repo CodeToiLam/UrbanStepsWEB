@@ -21,7 +21,8 @@ public class SanPhamChiTietService {
         if (sanPhamId == null) {
             throw new IllegalArgumentException("SanPhamId cannot be null");
         }
-        return sanPhamChiTietRepository.findBySanPhamIdAndTrangThaiTrue(sanPhamId);
+    // Trả về tất cả biến thể còn hoạt động, kể cả soLuong = 0 để POS có thể thấy sản phẩm mới
+    return sanPhamChiTietRepository.findBySanPhamIdAndTrangThaiTrue(sanPhamId);
     }
 
     public List<String> getKichCosBySanPhamId(Integer sanPhamId) {
@@ -68,6 +69,12 @@ public class SanPhamChiTietService {
 
     public Optional<SanPhamChiTiet> findById(Integer id) {
         return sanPhamChiTietRepository.findById(id);
+    }
+
+    // Kiểm tra tồn tại biến thể theo productId + kichCoId + mauSacId
+    public Optional<SanPhamChiTiet> findBySanPhamIdAndKichCoIdAndMauSacId(Integer sanPhamId, Integer kichCoId, Integer mauSacId) {
+        if (sanPhamId == null || kichCoId == null || mauSacId == null) return Optional.empty();
+        return sanPhamChiTietRepository.findFirstBySanPham_IdAndKichCo_IdAndMauSac_Id(sanPhamId, kichCoId, mauSacId);
     }
 
     public SanPhamChiTiet save(SanPhamChiTiet chiTiet) {

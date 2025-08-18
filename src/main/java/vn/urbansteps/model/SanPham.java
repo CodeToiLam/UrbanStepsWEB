@@ -84,6 +84,10 @@ public class SanPham {
     @Column(name = "so_luong_danh_gia")
     private Integer soLuongDanhGia = 0;
 
+    // Tổng số lượng cấp sản phẩm (có thể đồng bộ = tổng biến thể)
+    @Column(name = "so_luong")
+    private Integer soLuong = 0;
+
     @Column(name = "trang_thai")
     private Boolean trangThai;
 
@@ -148,6 +152,7 @@ public class SanPham {
         if (luotBan == null) luotBan = 0;
         if (diemDanhGia == null) diemDanhGia = BigDecimal.ZERO;
         if (soLuongDanhGia == null) soLuongDanhGia = 0;
+    if (soLuong == null) soLuong = 0;
         if (trangThai == null) trangThai = true;
     }
 

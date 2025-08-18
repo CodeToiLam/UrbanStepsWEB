@@ -54,7 +54,7 @@
     <div class="product-container">
       <div th:each="product : ${flashDealProducts}" class="product-card">
         <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="product-link">
-          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.svg'}" 
+          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.fullImagePath : '/images/no-image.svg'}" 
                th:alt="${product.tenSanPham}"
                onerror="this.src='/images/no-image.svg';"
                class="product-image">
@@ -76,7 +76,7 @@
     <div class="product-container">
       <div th:each="product : ${topPopularProducts}" class="product-card">
         <a th:href="@{/san-pham/chi-tiet/{id}(id=${product.id})}" class="product-link">
-          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.svg'}" 
+          <img th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.fullImagePath : '/images/no-image.svg'}" 
                th:alt="${product.tenSanPham}"
                onerror="this.src='/images/no-image.svg';"
                class="product-image">

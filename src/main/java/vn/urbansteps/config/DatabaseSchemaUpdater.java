@@ -25,6 +25,7 @@ public class DatabaseSchemaUpdater implements CommandLineRunner {
             // Check if gia_cu column exists in SanPhamChiTiet table
             boolean giaCuExists = columnExists("SanPhamChiTiet", "gia_cu");
             boolean ngayThayDoiGiaExists = columnExists("SanPhamChiTiet", "ngay_thay_doi_gia");
+            boolean soLuongSanPhamExists = columnExists("SanPham", "so_luong");
             
             if (!giaCuExists) {
                 logger.info("Adding gia_cu column to SanPhamChiTiet table");
@@ -34,6 +35,11 @@ public class DatabaseSchemaUpdater implements CommandLineRunner {
             if (!ngayThayDoiGiaExists) {
                 logger.info("Adding ngay_thay_doi_gia column to SanPhamChiTiet table");
                 jdbcTemplate.execute("ALTER TABLE SanPhamChiTiet ADD ngay_thay_doi_gia DATETIME NULL");
+            }
+
+            if (!soLuongSanPhamExists) {
+                logger.info("Adding so_luong column to SanPham table");
+                jdbcTemplate.execute("ALTER TABLE SanPham ADD so_luong INT DEFAULT 0");
             }
             
             logger.info("Database schema check completed successfully");

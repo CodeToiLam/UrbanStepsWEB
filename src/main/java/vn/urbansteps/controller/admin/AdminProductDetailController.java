@@ -6,14 +6,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.urbansteps.model.KichCo;
 import vn.urbansteps.model.MauSac;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.model.SanPhamChiTiet;
+import vn.urbansteps.model.HinhAnh;
+import vn.urbansteps.model.HinhAnh_SanPhamChiTiet;
 import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.service.SanPhamService;
 import vn.urbansteps.service.KichCoService;
 import vn.urbansteps.service.MauSacService;
+import vn.urbansteps.service.ImageStorageService;
+import vn.urbansteps.repository.HinhAnhRepository;
+import vn.urbansteps.repository.HinhAnhSanPhamChiTietRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +37,12 @@ public class AdminProductDetailController {
     private KichCoService kichCoService;
     @Autowired
     private MauSacService mauSacService;
+    @Autowired
+    private ImageStorageService imageStorageService;
+    @Autowired
+    private HinhAnhRepository hinhAnhRepository;
+    @Autowired
+    private HinhAnhSanPhamChiTietRepository hinhAnhSanPhamChiTietRepository;
 
     @GetMapping("/san-pham-chi-tiet")
     @PreAuthorize("hasRole('ADMIN')")
@@ -97,7 +109,10 @@ public class AdminProductDetailController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public String saveSanPhamChiTiet(@ModelAttribute SanPhamChiTiet chiTiet, BindingResult result, Model model,
+    public String saveSanPhamChiTiet(@ModelAttribute SanPhamChiTiet chiTiet,
+                                     BindingResult result,
+                                     Model model,
+                                     @RequestParam(value = "variantImages", required = false) MultipartFile[] variantImages,
                                      org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         try {
             if (result.hasErrors()) {
@@ -125,7 +140,27 @@ public class AdminProductDetailController {
             if (existing != null && !existing.getId().equals(chiTiet.getId())) {
                 throw new IllegalStateException("Kích cỡ và màu sắc đã tồn tại cho sản phẩm này.");
             }
-            sanPhamChiTietService.save(chiTiet);
+            // Lưu chi tiết trước để có ID
+            SanPhamChiTiet saved = sanPhamChiTietService.save(chiTiet);
+
+            // Lưu ảnh biến thể nếu được tải lên
+            if (variantImages != null && variantImages.length > 0) {
+                int count = 0;
+                for (MultipartFile f : variantImages) {
+                    if (f == null || f.isEmpty()) continue;
+                    String url = imageStorageService.save(f, "variants");
+                    HinhAnh img = new HinhAnh();
+                    img.setDuongDan(url);
+                    img.setLaAnhChinh(count == 0);
+                    img = hinhAnhRepository.save(img);
+
+                    HinhAnh_SanPhamChiTiet link = new HinhAnh_SanPhamChiTiet();
+                    link.setSanPhamChiTiet(saved);
+                    link.setHinhAnh(img);
+                    hinhAnhSanPhamChiTietRepository.save(link);
+                    count++;
+                }
+            }
             ra.addFlashAttribute("success", "Lưu chi tiết sản phẩm thành công");
             return "redirect:/admin/product-management?selectedSanPhamId=" + chiTiet.getSanPham().getId();
         } catch (Exception e) {

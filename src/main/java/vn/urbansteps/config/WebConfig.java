@@ -1,6 +1,6 @@
 package vn.urbansteps.config;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -14,23 +14,34 @@ import java.util.Locale;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${app.upload.dir:uploads}")
+    private String uploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Serve classpath static assets
         registry.addResourceHandler("/css/**")
                 .addResourceLocations("classpath:/static/css/")
                 .setCachePeriod(0);
-        
+
         registry.addResourceHandler("/js/**")
                 .addResourceLocations("classpath:/static/js/")
                 .setCachePeriod(0);
-        
+
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/")
                 .setCachePeriod(0);
-        
+
         registry.addResourceHandler("/image/**")
                 .addResourceLocations("classpath:/static/image/")
                 .setCachePeriod(0);
+
+        // Serve uploaded files from filesystem
+        String location = "file:" + System.getProperty("user.dir") + "/" + uploadDir + "/";
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(location)
+                .setCachePeriod(3600);
     }
 
     // i18n: use cookie-based resolver to allow manual change via ?lang and persist across sessions

@@ -21,6 +21,12 @@ public class SanPhamService {
     private long lastCacheTime = 0;
     private static final long CACHE_DURATION = 5 * 60 * 1000; // 5 phút
 
+    private void invalidateCache() {
+        cachedActiveProducts = null;
+        lastCacheTime = 0;
+        System.out.println("Invalidated active products cache");
+    }
+
     private List<SanPham> getActiveProductsWithCache() {
         long currentTime = System.currentTimeMillis();
         if (cachedActiveProducts == null || (currentTime - lastCacheTime) > CACHE_DURATION) {
@@ -249,7 +255,9 @@ public class SanPhamService {
         } else {
             sanPham.setUpdateAt(LocalDateTime.now());
         }
-        sanPhamRepository.save(sanPham);
+    sanPhamRepository.save(sanPham);
+    // Bất kỳ thay đổi nào cũng cần làm mới cache để tìm kiếm/lists thấy ngay
+    invalidateCache();
     }
 
     public void softDelete(Integer id) {
@@ -258,6 +266,7 @@ public class SanPhamService {
             sanPham.setDeleteAt(LocalDateTime.now());
             sanPham.setTrangThai(Boolean.FALSE); // Đánh dấu inactive
             sanPhamRepository.save(sanPham);
+            invalidateCache();
         });
     }
 }

@@ -80,13 +80,13 @@
                         <div class="thumbnails-column" th:if="${productImages.size() > 1}">
                             <div class="thumbnails-wrapper">
                                 <div class="thumbnail-scroll-container" id="thumbnailScrollContainer">
-                                    <div th:each="img, imgStat : ${productImages}"
+                    <div th:each="img, imgStat : ${productImages}"
                                          th:class="${imgStat.index == 0 ? 'thumbnail-item active' : 'thumbnail-item'}"
                                          th:data-image="${img.duongDan}"
                                          th:data-index="${imgStat.index}"
                                          onclick="changeMainImage(this)">
                                         <div class="thumbnail-frame">
-                                            <img th:src="${img.duongDan}"
+                        <img th:src="${img.fullImagePath != null ? img.fullImagePath : img.duongDan}"
                                                  th:alt="${product.tenSanPham + ' - Ảnh ' + (imgStat.count)}"
                                                  class="thumbnail-img"
                                                  onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none'; if(window.updateImageCounter) window.updateImageCounter();">
@@ -122,8 +122,8 @@
                                 </div>
 
                                 <!-- Main product image -->
-                                <img id="main-product-image"
-                                     th:src="${productImages[0].duongDan}"
+                          <img id="main-product-image"
+                              th:src="${productImages[0].fullImagePath != null ? productImages[0].fullImagePath : productImages[0].duongDan}"
                                      th:alt="${product.tenSanPham}"
                                      class="main-product-image"
                                      onerror="this.onerror=null; this.src='/images/no-image.jpg';">
@@ -147,15 +147,15 @@
 
                     <!-- Fallback for single image or no images -->
                     <div class="single-image-container" th:if="${productImages == null or #lists.isEmpty(productImages) or productImages.size() == 1}">
-                        <img id="main-product-image-single"
-                             th:if="${productImages != null and !#lists.isEmpty(productImages)}"
-                             th:src="${productImages[0].duongDan}"
+                    <img id="main-product-image-single"
+                        th:if="${productImages != null and !#lists.isEmpty(productImages)}"
+                        th:src="${productImages[0].fullImagePath != null ? productImages[0].fullImagePath : productImages[0].duongDan}"
                              th:alt="${product.tenSanPham}"
                              class="main-product-image"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
                         <img th:unless="${productImages != null and !#lists.isEmpty(productImages)}"
                              id="main-product-image-single"
-                             th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.jpg'}"
+                        th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.fullImagePath : '/images/no-image.jpg'}"
                              th:alt="${product.tenSanPham}"
                              class="main-product-image"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
@@ -302,8 +302,8 @@
             <div class="col-md-3 mb-4" th:each="relatedProduct : ${relatedProducts}">
                 <div class="card product-card h-100">
                     <a th:href="@{/san-pham/chi-tiet/{id}(id=${relatedProduct.id ?: 0})}" class="text-decoration-none">
-                        <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
-                             th:src="${relatedProduct.idHinhAnhDaiDien.duongDan}"
+                    <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
+                        th:src="${relatedProduct.idHinhAnhDaiDien.fullImagePath}"
                              class="card-img-top"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';"
                              th:alt="${relatedProduct.tenSanPham}">
@@ -335,8 +335,8 @@
             <div class="col-md-3 mb-4" th:each="rp : ${recommendedProducts}">
                 <div class="card product-card h-100">
                     <a th:href="@{/san-pham/chi-tiet/{id}(id=${rp.id ?: 0})}" class="text-decoration-none">
-                        <img th:if="${rp.idHinhAnhDaiDien != null}"
-                             th:src="${rp.idHinhAnhDaiDien.duongDan}"
+                    <img th:if="${rp.idHinhAnhDaiDien != null}"
+                        th:src="${rp.idHinhAnhDaiDien.fullImagePath}"
                              class="card-img-top"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';"
                              th:alt="${rp.tenSanPham}">
@@ -415,12 +415,12 @@
             }
         }
 
-        /* Đa ngôn ngữ */
-        const TEXT_CHOOSE_SIZE        = [[#{spct.choose.size}]];
-        const TEXT_CHOOSE_SIZE_COLOR  = [[#{spct.choose.size.color}]];
-        const TEXT_ADD_TO_CART        = [[#{spct.add.to.cart}]];
-        const TEXT_BUY_NOW            = [[#{spct.buy.now}]];
-        const TEXT_OUT_OF_STOCK       = [[#{spct.out.of.stock}]];
+    /* Đa ngôn ngữ (Thymeleaf inline) */
+    const TEXT_CHOOSE_SIZE        = /*[[#{spct.choose.size}]]*/ 'Chọn kích cỡ';
+    const TEXT_CHOOSE_SIZE_COLOR  = /*[[#{spct.choose.size.color}]]*/ 'Chọn kích cỡ và màu';
+    const TEXT_ADD_TO_CART        = /*[[#{spct.add.to.cart}]]*/ 'Thêm vào giỏ';
+    const TEXT_BUY_NOW            = /*[[#{spct.buy.now}]]*/ 'Mua ngay';
+    const TEXT_OUT_OF_STOCK       = /*[[#{spct.out.of.stock}]]*/ 'Hết hàng';
     </script>
 
 
