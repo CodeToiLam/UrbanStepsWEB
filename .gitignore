@@ -35,3 +35,6 @@ hs_err_pid*.log
 
 ### UrbanSteps - Images only ###
 src/main/resources/static/images/
+
+# Ignore entire uploads folder at repository root
+/uploads/
