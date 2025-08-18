@@ -21,38 +21,18 @@
     </div>
 
     <div class="login-container">
-      <div th:if="${loginError}" class="alert alert-danger" style="margin-bottom:16px; border-radius:10px; font-size:1.08rem; box-shadow:0 4px 16px rgba(211,47,47,0.08); border-left:6px solid #d32f2f;">
-        <i class="bi bi-exclamation-circle-fill" style="color:#d32f2f; margin-right:8px;"></i>
-        <span th:text="${loginError}"></span>
-      </div>
-      <div th:if="${loginSuccess}" class="alert alert-success" style="margin-bottom:16px; border-radius:10px; font-size:1.08rem; box-shadow:0 4px 16px rgba(46,204,113,0.08); border-left:6px solid #27ae60;">
-        <i class="bi bi-check-circle-fill" style="color:#27ae60; margin-right:8px;"></i>
-        <span th:text="${loginSuccess}"></span>
-      </div>
       <div class="brand-logo-img">
         <img src="/images/Home/logo.jpg" alt="UrbanSteps" />
       </div>
-  <h1 class="login-title" th:text="#{login.welcome}">Chào mừng trở lại!</h1>
-  <p class="login-subtitle" th:text="#{login.subtitle}">Đăng nhập để tiếp tục mua sắm</p>
+      <h1 class="login-title" th:text="#{login.welcome}">Chào mừng trở lại!</h1>
+      <p class="login-subtitle" th:text="#{login.subtitle}">Đăng nhập để tiếp tục mua sắm</p>
 
-      <!-- Demo Accounts Info -->
-<!--      <div class="demo-accounts">-->
-<!--        <div class="demo-title">🔑 Tài khoản demo:</div>-->
-<!--        <div class="demo-account admin">-->
-<!--          <strong>Admin:</strong> admin / 123-->
-<!--        </div>-->
-<!--        <div class="demo-account user">-->
-<!--          <strong>User:</strong> user1 / 123-->
-<!--        </div>-->
-<!--      </div>-->
-
-  <form th:action="@{/dang-nhap}" method="post">
+      <form th:action="@{/dang-nhap}" method="post">
         <div class="form-group input-icon">
           <i class="bi bi-person-fill"></i>
           <input type="text" id="username" name="taiKhoan" class="form-control"
-         th:placeholder="#{login.username}" placeholder="Tên đăng nhập" required>
+                 th:placeholder="#{login.username}" placeholder="Tên đăng nhập" required>
         </div>
-
 
         <div class="form-group input-icon">
           <i class="bi bi-lock-fill"></i>
@@ -60,6 +40,20 @@
                  th:placeholder="#{login.password}" placeholder="Mật khẩu" required>
         </div>
 
+        <!-- Hiển thị lỗi hoặc thông báo ngay dưới form -->
+        <div th:if="${param.error}"
+             class="alert alert-danger"
+             style="margin-bottom:16px; border-radius:10px; font-size:1.08rem; box-shadow:0 4px 16px rgba(211,47,47,0.08); border-left:6px solid #d32f2f;">
+          <i class="bi bi-exclamation-circle-fill" style="color:#d32f2f; margin-right:8px;"></i>
+          <span th:text="#{login.error}">Sai tài khoản hoặc mật khẩu!</span>
+        </div>
+
+
+        <div th:if="${loginSuccess}" class="alert alert-success"
+             style="margin-top:12px; border-radius:10px; font-size:1rem; box-shadow:0 4px 16px rgba(46,204,113,0.08); border-left:6px solid #27ae60;">
+          <i class="bi bi-check-circle-fill" style="color:#27ae60; margin-right:8px;"></i>
+          <span th:text="${loginSuccess}"></span>
+        </div>
 
         <button type="submit" class="btn-login">
           <i class="bi bi-box-arrow-in-right me-2"></i>

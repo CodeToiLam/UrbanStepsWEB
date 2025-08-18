@@ -90,10 +90,15 @@ public class TaiKhoanController {
     }
 
     @GetMapping("/dang-nhap")
-    public String showLoginForm(Model model, @RequestParam(value = "redirectUrl", required = false) String redirectUrl) {
+    public String showLoginForm(Model model,
+                                @RequestParam(value = "redirectUrl", required = false) String redirectUrl,
+                                @RequestParam(value = "error", required = false) String error) {
         model.addAttribute("taiKhoan", new TaiKhoan());
         if (redirectUrl != null) {
             model.addAttribute("redirectUrl", redirectUrl);
+        }
+        if (error != null) {
+            model.addAttribute("loginError", "Sai tài khoản hoặc mật khẩu!");
         }
         return "dang-nhap";
     }

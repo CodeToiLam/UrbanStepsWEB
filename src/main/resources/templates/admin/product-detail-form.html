@@ -1,58 +1,68 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thêm/Sửa chi tiết sản phẩm</title>
+  <title th:text="#{variant.form.title}">Thêm/Sửa chi tiết sản phẩm</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" th:href="@{/css/admin.css}" />
 </head>
 <body>
 <div class="container mt-4">
-  <h2 class="text-primary"><i class="bi bi-plus-circle"></i> Thêm chi tiết sản phẩm</h2>
+  <h2 class="text-primary">
+    <i class="bi bi-plus-circle"></i>
+    <span th:text="${chiTiet.id != null} ? #{variant.form.editTitle} : #{variant.form.title}"></span>
+  </h2>
+
   <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
   <form th:action="@{/admin/save}" method="post" th:object="${chiTiet}" enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}" />
     <input type="hidden" th:field="*{sanPham.id}" th:value="${sanPham.id} ?: 0" />
 
     <div class="mb-3">
-      <label class="form-label">Kích cỡ</label>
+      <label class="form-label" th:text="#{variant.form.size}"></label>
       <select th:field="*{kichCo}" class="form-select" required>
-        <option value="">Chọn kích cỡ</option>
+        <option value="" th:text="#{variant.form.size.select}"></option>
         <option th:each="kc : ${kichCos}" th:value="${kc.id}" th:text="${kc.tenKichCo}"></option>
       </select>
     </div>
 
-  <div class="mb-3">
-      <label class="form-label">Màu sắc</label>
+    <div class="mb-3">
+      <label class="form-label" th:text="#{variant.form.color}"></label>
       <select th:field="*{mauSac}" class="form-select" required>
-        <option value="">Chọn màu sắc</option>
+        <option value="" th:text="#{variant.form.color.select}"></option>
         <option th:each="ms : ${mauSacs}" th:value="${ms.id}" th:text="${ms.tenMauSac}"></option>
       </select>
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Ảnh biến thể</label>
+      <label class="form-label" th:text="#{variant.form.images}"></label>
       <input type="file" name="variantImages" accept="image/*" multiple class="form-control" />
-      <div class="form-text">Có thể chọn nhiều ảnh; ảnh đầu tiên sẽ là ảnh chính của biến thể.</div>
+      <div class="form-text" th:text="#{variant.form.images.help}"></div>
       <div id="variantPreview" class="image-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:8px; margin-top:8px"></div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Số lượng</label>
+      <label class="form-label" th:text="#{variant.form.quantity}"></label>
       <input type="number" th:field="*{soLuong}" class="form-control" min="0" value="0" required />
     </div>
 
     <div class="mb-3">
-      <label class="form-check-label">Trạng thái</label>
+      <label class="form-check-label" th:text="#{variant.form.status}"></label>
       <div class="form-check">
         <input type="checkbox" th:field="*{trangThai}" class="form-check-input" />
-        <label class="form-check-label">Hoạt động</label>
+        <label class="form-check-label" th:text="#{variant.form.status.active}"></label>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
-    <a th:href="@{/admin/product-management(selectedSanPhamId=*{sanPham.id})}" class="btn btn-secondary ms-2"><i class="bi bi-arrow-left-circle"></i> Quay lại</a>
+    <button type="submit" class="btn btn-primary">
+      <i class="bi bi-save"></i> <span th:text="#{variant.form.save}"></span>
+    </button>
+    <a th:href="@{/admin/product-management(selectedSanPhamId=*{sanPham.id})}" class="btn btn-secondary ms-2">
+      <i class="bi bi-arrow-left-circle"></i> <span th:text="#{variant.form.back}"></span>
+    </a>
   </form>
 </div>
 

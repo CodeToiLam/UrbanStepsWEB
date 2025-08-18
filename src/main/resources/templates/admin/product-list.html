@@ -17,32 +17,32 @@
     <div class="product-list-header">
         <div class="header-title">
             <i class="bi bi-list-ul"></i>
-            <span>Danh sách sản phẩm</span>
+            <span th:text="#{admin.productManagement}">Danh sách sản phẩm</span>
         </div>
         <div class="header-actions">
-            <a href="/admin/products/add" class="btn btn-primary" title="Thêm sản phẩm mới"><i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm</a>
-            <a href="/admin/product-management" class="btn btn-outline-primary" title="Quản lý chi tiết"><i class="bi bi-grid-1x2-fill"></i> Quản lý chi tiết</a>
+            <a href="/admin/products/add" class="btn btn-primary" title="Thêm sản phẩm mới"><i class="bi bi-plus-circle-fill"></i> <span th:text="#{product.add}"></span></a>
+            <a href="/admin/product-management" class="btn btn-outline-primary" title="Quản lý chi tiết"><i class="bi bi-grid-1x2-fill"></i> <span th:text="#{product.detail.manage}"></span></a>
         </div>
     </div>
     <form th:action="@{/admin/products}" method="get" class="filter-bar">
-        <span class="filter-label"><i class="bi bi-filter"></i> Lọc trạng thái</span>
+        <span class="filter-label"><i class="bi bi-filter" th:text="#{product.filter.status}"></i></span>
         <select name="trangThai" class="status-filter form-select" onchange="this.form.submit()">
-            <option value="">Tất cả</option>
-            <option th:value="true" th:selected="${activeFilter == true}">Hoạt động</option>
-            <option th:value="false" th:selected="${activeFilter == false}">Ngừng hoạt động</option>
+            <option value="" th:text="#{product.list.filter.all}">Tất cả</option>
+            <option th:value="true" th:selected="${activeFilter == true}" th:text="#{discount.active}">Hoạt động</option>
+            <option th:value="false" th:selected="${activeFilter == false}" th:text="#{discount.filter.inactive}">Ngừng hoạt động</option>
         </select>
     </form>
 
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Mã sản phẩm</th>
-            <th>Tên sản phẩm</th>
-            <th>Giá bán</th>
-            <th>Tồn kho</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
+            <th th:text="#{product.id}">ID</th>
+            <th th:text="#{product.code}">Mã sản phẩm</th>
+            <th th:text="#{product.name}">Tên sản phẩm</th>
+            <th th:text="#{product.salePrice}">Giá bán</th>
+            <th th:text="#{product.detail.stock}">Tồn kho</th>
+            <th th:text="#{product.status}">Trạng thái</th>
+            <th th:text="#{product.table.actions}">Hành động</th>
         </tr>
         </thead>
         <tbody>
@@ -52,7 +52,11 @@
             <td th:text="${p.tenSanPham}"></td>
             <td th:text="${p.giaBan != null ? p.giaBan + ' VNĐ' : 'N/A'}">Giá sản phẩm</td>
             <td th:text="${stockTotals != null ? stockTotals[p.id] : 0}"></td>
-            <td th:text="${p.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
+            <td th:switch="${p.trangThai}">
+                <span th:case="true" th:text="#{product.status.active}"></span>
+                <span th:case="false" th:text="#{product.status.inactive}"></span>
+            </td>
+
             <td>
                 <a th:href="@{/admin/products/{id}(id=${p.id})}" class="btn btn-info btn-sm me-1" title="Xem"><i class="bi bi-eye-fill"></i></a>
                 <a th:href="@{/admin/products/edit/{id}(id=${p.id})}" class="btn btn-warning btn-sm me-1" title="Sửa"><i class="bi bi-pen-fill"></i></a>

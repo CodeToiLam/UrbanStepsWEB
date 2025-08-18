@@ -4,58 +4,73 @@
     <title th:text="${title} ?: 'Admin Panel'"></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
     <link rel="stylesheet" th:href="@{/css/admin-thongke.css}">
-  <meta name="_csrf_parameter" th:content="${_csrf?.parameterName}">
-  <meta name="_csrf" th:content="${_csrf?.token}">
-  <meta name="_csrf_header" th:content="${_csrf?.headerName}">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="_csrf_parameter" th:content="${_csrf?.parameterName}">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Cho phép các trang con import thêm CSS riêng nếu cần -->
-  <th:block layout:fragment="head"></th:block>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Cho phép các trang con import thêm CSS riêng nếu cần -->
+    <th:block layout:fragment="head"></th:block>
 </head>
 <body>
 <header class="admin-main-header">
-  <div class="admin-header-bar">
-    <div class="admin-header-title">Admin-UrbanSteps</div>
-    <div class="admin-header-actions">
-      <span>Xin chào Admin!</span>
-      <form th:action="@{/dang-xuat}" method="post" style="display: inline; margin-left: 10px;">
-        <button type="submit" class="logout-btn">Đăng xuất</button>
-      </form>
+    <div class="admin-header-bar d-flex justify-content-between align-items-center">
+        <div class="admin-header-title">Admin-UrbanSteps</div>
+
+        <div class="admin-header-actions d-flex align-items-center gap-3">
+            <span class="admin-welcome" th:text="#{admin.welcome}"></span>
+            <!-- Language Switcher Select -->
+            <select class="form-select form-select-sm lang-select"
+                    onchange="location.href='?lang=' + this.value">
+                <option value="vi" th:selected="${#locale.language == 'vi'}">🇻🇳 [[#{lang.vi}]]</option>
+                <option value="en" th:selected="${#locale.language == 'en'}">🇬🇧 [[#{lang.en}]]</option>
+            </select>
+
+            <!-- Logout -->
+            <form th:action="@{/dang-xuat}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn" th:text="#{admin.logout}"></button>
+            </form>
+        </div>
     </div>
-  </div>
+
 </header>
 
-<div class="admin-layout">
-  <nav class="admin-sidebar">
-    <h5>Xin chào Admin!</h5>
-    <ul>
-  <li><a href="/admin/quan-ly-san-pham"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a></li>
-      <li><a href="/admin/thong-ke"><i class="fa-solid fa-chart-bar"></i> Thống kê</a></li>
-  <li><a href="/admin/quan-ly-phieu-giam-gia"><i class="bi bi-tag-fill"></i> Quản lý phiếu giảm giá</a></li>
-  <li><a href="/admin/quan-ly-don-hang"><i class="fa-solid fa-clipboard-list"></i> Quản lý đơn hàng</a></li>
-  <li><a href="/admin/quan-ly-yeu-cau-tra-hang"><i class="bi bi-arrow-return-left"></i> Quản lý yêu cầu trả hàng</a></li>
-  <li><a href="/admin/ban-hang-tai-quay"><i class="fa-solid fa-cash-register"></i> Bán hàng tại quầy (POS)</a></li>
-  <li><a href="/admin/nhat-ky-admin"><i class="bi bi-activity"></i> Nhật ký admin</a></li>
-      <li><a href="/"><i class="bi bi-house"></i> Về trang chủ</a></li>
-    </ul>
-  </nav>
-  <main class="admin-main-content">
-  <!-- Global alerts for admin pages -->
-  <div th:replace="~{layout/_alerts :: alerts}"></div>
-  <div layout:fragment="content">
-      <!-- Nội dung trang con sẽ được nhúng ở đây -->
-    </div>
-  </main>
+
+<div class="admin-layout d-flex">
+    <nav class="admin-sidebar">
+        <h5 th:text="#{admin.welcome}"></h5>
+        <ul>
+            <li><a href="/admin/quan-ly-san-pham"><i class="bi bi-box-seam"></i> <span th:text="#{admin.productManagement}"></span></a></li>
+            <li><a href="/admin/thong-ke"><i class="fa-solid fa-chart-bar"></i> <span th:text="#{admin.statistics}"></span></a></li>
+            <li><a href="/admin/quan-ly-san-pham-chi-tiet"><i class="bi bi-grid-1x2"></i> <span th:text="#{admin.productDetailManagement}"></span></a></li>
+            <li><a href="/admin/quan-ly-phieu-giam-gia"><i class="bi bi-tag-fill"></i> <span th:text="#{admin.discountManagement}"></span></a></li>
+            <li><a href="/admin/quan-ly-don-hang"><i class="fa-solid fa-clipboard-list"></i> <span th:text="#{admin.orderManagement}"></span></a></li>
+            <li><a href="/admin/quan-ly-yeu-cau-tra-hang"><i class="bi bi-arrow-return-left"></i> <span th:text="#{admin.returnRequestManagement}"></span></a></li>
+            <li><a href="/admin/ban-hang-tai-quay"><i class="fa-solid fa-cash-register"></i> <span th:text="#{admin.posSales}"></span></a></li>
+            <li><a href="/admin/nhat-ky-admin"><i class="bi bi-activity"></i> <span th:text="#{admin.adminLog}"></span></a></li>
+            <li><a href="/"><i class="bi bi-house"></i> <span th:text="#{admin.home}"></span></a></li>
+        </ul>
+    </nav>
+    <main class="admin-main-content flex-grow-1">
+        <!-- Global alerts for admin pages -->
+        <div th:replace="~{layout/_alerts :: alerts}"></div>
+        <div layout:fragment="content">
+            <!-- Nội dung trang con sẽ được nhúng ở đây -->
+        </div>
+    </main>
 </div>
 
-<footer class="admin-footer">
-  <p>© 2025 UrbanSteps. All rights reserved.</p>
+<footer class="admin-footer text-center py-3">
+    <p th:text="#{footer.copyright}"></p>
 </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/admin.js}"></script>
 <th:block layout:fragment="scripts"></th:block>

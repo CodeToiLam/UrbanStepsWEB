@@ -344,17 +344,22 @@ body {
 .admin-header-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+    flex-wrap: nowrap;
 }
 .logout-btn {
-    background: #e74c3c;
-    color: #fff;
+    display: inline-flex;    /* luôn inline, không xuống hàng */
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 6px;
     border: none;
-    padding: 8px 24px;
-    border-radius: 8px;
-    font-size: 1rem;
+    background: #dc3545;
+    color: #fff;
+
     cursor: pointer;
-    transition: background 0.2s;
+    white-space: nowrap;
 }
 .logout-btn:hover {
     background: #c0392b;
@@ -532,4 +537,16 @@ body {
   background: #e3f2fd;
   color: #1976d2;
   border: 1.5px solid #90caf9;
+}
+.admin-welcome {
+    flex: 1;                  /* chiếm chỗ còn lại */
+    min-width: 120px;         /* không nhỏ hơn 120px */
+    max-width: 250px;         /* không to quá */
+    white-space: normal;      /* cho phép xuống dòng */
+    word-break: break-word;   /* tự động ngắt từ */
+}
+
+.admin-header-actions form {
+    margin: 0;
+    padding: 0;
 }

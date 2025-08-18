@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 
 <head>
-    <title layout:fragment="title">Đăng Ký - UrbanSteps</title>
+    <title layout:fragment="title" th:text="#{register.title}">Đăng Ký - UrbanSteps</title>
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" type="text/css" href="/css/dang-nhap.css">
     </th:block>
@@ -14,7 +14,7 @@
     <div class="login-wrapper">
         <div class="back-to-home">
             <a th:href="@{/}">
-                <i class="bi bi-arrow-left"></i> Trang chủ
+                <i class="bi bi-arrow-left"></i> <span th:text="#{register.backHome}">Trang chủ</span>
             </a>
         </div>
 
@@ -22,8 +22,8 @@
             <div class="brand-logo">
                 <i class="bi bi-person-plus"></i>
             </div>
-            <h1 class="login-title">Tạo tài khoản mới</h1>
-            <p class="login-subtitle">Đăng ký để bắt đầu mua sắm với UrbanSteps</p>
+            <h1 class="login-title" th:text="#{register.newAccount}">Tạo tài khoản mới</h1>
+            <p class="login-subtitle" th:text="#{register.subtitle}">Đăng ký để bắt đầu mua sắm với UrbanSteps</p>
 
             <form th:action="@{/tai-khoan/dang-ky}" method="post" th:object="${taiKhoan}">
 
@@ -31,8 +31,9 @@
                 <div class="form-group input-icon">
                     <i class="bi bi-person-fill"></i>
                     <input type="text" id="username" name="taiKhoan" class="form-control"
-                           placeholder="Nhập tên đăng nhập" th:value="*{taiKhoan}" pattern=".{8,12}" required
-                           title="Tên đăng nhập phải từ 8 đến 12 ký tự">
+                           th:placeholder="#{register.username.placeholder}"
+                           th:value="*{taiKhoan}" pattern=".{8,12}" required
+                           th:title="#{register.username.rule}">
                     <p class="text-danger mt-1" th:if="${usernameError}" th:text="${usernameError}"></p>
                 </div>
 
@@ -40,7 +41,8 @@
                 <div class="form-group input-icon">
                     <i class="bi bi-envelope-fill"></i>
                     <input type="email" id="email" name="email" class="form-control"
-                           placeholder="Nhập email" th:value="*{email}" required>
+                           th:placeholder="#{register.email.placeholder}"
+                           th:value="*{email}" required>
                     <p class="text-danger mt-1" th:if="${emailError}" th:text="${emailError}"></p>
                 </div>
 
@@ -48,8 +50,9 @@
                 <div class="form-group input-icon">
                     <i class="bi bi-lock-fill"></i>
                     <input type="password" id="password" name="matKhau" class="form-control"
-                           placeholder="Nhập mật khẩu" pattern=".{8,12}" required
-                           title="Mật khẩu phải từ 8 đến 12 ký tự">
+                           th:placeholder="#{register.password.placeholder}"
+                           pattern=".{8,12}" required
+                           th:title="#{register.password.rule}">
                     <p class="text-danger mt-1" th:if="${passwordError}" th:text="${passwordError}"></p>
                 </div>
 
@@ -57,18 +60,19 @@
                 <div class="form-group input-icon">
                     <i class="bi bi-lock-fill"></i>
                     <input type="password" id="confirm-password" name="confirm-password" class="form-control"
-                           placeholder="Xác nhận mật khẩu" required>
+                           th:placeholder="#{register.confirmPassword.placeholder}" required>
                     <p class="text-danger mt-1" th:if="${confirmError}" th:text="${confirmError}"></p>
                 </div>
 
                 <!-- Nút đăng ký -->
                 <button type="submit" class="btn-login">
-                    <i class="bi bi-person-plus me-2"></i> Đăng Ký
+                    <i class="bi bi-person-plus me-2"></i> <span th:text="#{register.button}">Đăng Ký</span>
                 </button>
             </form>
 
             <div class="register-link">
-                Đã có tài khoản? <a th:href="@{/dang-nhap}">Đăng Nhập</a>
+                <span th:text="#{register.alreadyHaveAccount}">Đã có tài khoản?</span>
+                <a th:href="@{/dang-nhap}" th:text="#{register.loginLink}">Đăng Nhập</a>
             </div>
         </div>
     </div>

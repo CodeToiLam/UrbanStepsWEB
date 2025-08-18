@@ -12,17 +12,18 @@
 <div layout:fragment="content">
     <div class="dashboard">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">Dashboard</h1>
+            <h1 class="dashboard-title" th:text="#{dashboard.heading}">Dashboard</h1>
+
             <div class="date-range-picker">
                 <select id="timePeriod">
-                    <option value="today">Hôm nay</option>
-                    <option value="week">7 ngày qua</option>
-                    <option value="month" selected>30 ngày qua</option>
-                    <option value="quarter">3 tháng qua</option>
-                    <option value="year">Năm nay</option>
+                    <option value="today" th:text="#{time.today}">Hôm nay</option>
+                    <option value="week" th:text="#{time.week}">7 ngày qua</option>
+                    <option value="month" th:text="#{time.month}" selected>30 ngày qua</option>
+                    <option value="quarter" th:text="#{time.quarter}">3 tháng qua</option>
+                    <option value="year" th:text="#{time.year}">Năm nay</option>
                 </select>
                 <button onclick="refreshData()" class="btn btn-primary btn-sm">
-                    <i class="fa fa-refresh"></i> Làm mới
+                    <i class="fa fa-refresh"></i> <span th:text="#{dashboard.refresh}">Làm mới</span>i
                 </button>
             </div>
         </div>
@@ -30,46 +31,34 @@
         <!-- Thống kê tổng quan -->
         <div class="stats-grid">
             <div class="stat-card revenue">
-                <div class="stat-header">
-                    <div class="stat-title">Tổng doanh thu</div>
-                </div>
+                <div class="stat-title" th:text="#{stats.revenue}">Tổng doanh thu</div>
                 <div class="stat-value" id="tongDoanhThu">₫0</div>
                 <div class="stat-change positive" id="doanhThuChange">
-                    <div class="arrow"></div>
-                    <span>+0% so với tháng trước</span>
+                    <span th:text="#{stats.revenueChange}">+0% so với tháng trước</span>
                 </div>
             </div>
-            
+
             <div class="stat-card orders">
-                <div class="stat-header">
-                    <div class="stat-title">Tổng đơn hàng</div>
-                </div>
+                <div class="stat-title" th:text="#{stats.orders}">Tổng đơn hàng</div>
                 <div class="stat-value" id="tongDonHang">0</div>
                 <div class="stat-change positive" id="donHangChange">
-                    <div class="arrow"></div>
-                    <span>+0% so với tháng trước</span>
+                    <span th:text="#{stats.ordersChange}">+0% so với tháng trước</span>
                 </div>
             </div>
-            
+
             <div class="stat-card products">
-                <div class="stat-header">
-                    <div class="stat-title">Sản phẩm</div>
-                </div>
+                <div class="stat-title" th:text="#{stats.products}">Sản phẩm</div>
                 <div class="stat-value" id="tongSanPham">0</div>
                 <div class="stat-change positive" id="sanPhamChange">
-                    <div class="arrow"></div>
-                    <span>Tổng sản phẩm trong kho</span>
+                    <span th:text="#{stats.productsChange}">Tổng sản phẩm trong kho</span>
                 </div>
             </div>
-            
+
             <div class="stat-card customers">
-                <div class="stat-header">
-                    <div class="stat-title">Khách hàng</div>
-                </div>
+                <div class="stat-title" th:text="#{stats.customers}">Khách hàng</div>
                 <div class="stat-value" id="tongKhachHang">0</div>
                 <div class="stat-change positive" id="khachHangChange">
-                    <div class="arrow"></div>
-                    <span>+0% khách hàng mới</span>
+                    <span th:text="#{stats.customersChange}">+0% khách hàng mới</span>
                 </div>
             </div>
         </div>
@@ -78,8 +67,8 @@
         <div class="charts-grid">
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3 class="chart-title">Doanh thu theo thời gian</h3>
-                    <span class="chart-period">30 ngày qua</span>
+                    <h3 class="chart-title" th:text="#{chart.revenue}">Doanh thu theo thời gian</h3>
+                    <span class="chart-period" th:text="#{chart.revenue.period}">30 ngày qua</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="revenueChart"></canvas>
@@ -88,8 +77,8 @@
             
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3 class="chart-title">Trạng thái đơn hàng</h3>
-                    <span class="chart-period">Hiện tại</span>
+                    <h3 class="chart-title" th:text="#{chart.orders}">Trạng thái đơn hàng</h3>
+                    <span class="chart-period" th:text="#{chart.orders.period}">Hiện tại</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="orderStatusChart"></canvas>
@@ -102,14 +91,14 @@
         <div class="tables-grid">
             <div class="table-card">
                 <div class="table-header">
-                    <h3 class="table-title">Top sản phẩm bán chạy</h3>
+                    <h3 class="table-title" th:text="#{table.topProducts}">Top sản phẩm bán chạy</h3>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Sản phẩm</th>
-                            <th>Đã bán</th>
-                            <th>Doanh thu</th>
+                            <th th:text="#{table.product}">Sản phẩm</th>
+                            <th th:text="#{table.sold}">Đã bán</th>
+                            <th th:text="#{table.revenue}">Doanh thu</th>
                         </tr>
                     </thead>
                     <tbody id="topSanPhamBanChay">
@@ -120,15 +109,15 @@
             
             <div class="table-card">
                 <div class="table-header">
-                    <h3 class="table-title">Đơn hàng gần đây</h3>
+                    <h3 class="table-title" th:text="#{table.recentOrders}">Đơn hàng gần đây</h3>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>Giá trị</th>
-                            <th>Trạng thái</th>
+                            <th th:text="#{table.orderCode}">Mã đơn</th>
+                            <th th:text="#{table.customer}">Khách hàng</th>
+                            <th th:text="#{table.value}">Giá trị</th>
+                            <th th:text="#{table.status}">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody id="donHangGanDay">
