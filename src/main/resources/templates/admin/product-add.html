@@ -91,7 +91,7 @@
             </ul>
         </div>
         <label th:text="#{product.status}">Trạng thái:</label>
-        <input type="checkbox" th:field="*{trangThai}"><br>
+        <input type="checkbox" th:field="*{trangThai}" th:text="#{product.active}"><br>
         <hr>
         <div class="text-muted" style="margin:8px 0 14px"
              th:text="#{product.afterSaveNote}">
@@ -104,9 +104,13 @@
                class="btn btn-outline-primary" th:text="#{product.manageVariants}">
                 Quản lý biến thể
             </a>
+            <a th:href="@{/admin/products}"
+               class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left-circle"></i> <span th:text="#{button.back}">Quay lại</span>
+            </a>
         </div>
     </form>
-    <a th:href="@{/admin/products}" th:text="#{button.back}">Quay lại</a>
+
 </div>
 <script src="/js/admin/product-add.js"></script>
 </body>

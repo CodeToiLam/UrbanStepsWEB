@@ -107,7 +107,7 @@
                                 <i class="bi bi-search"></i> <span th:text="#{button.search}">Tìm kiếm</span>
                             </button>
                             <a th:href="@{/admin/quan-ly-yeu-cau-tra-hang}" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise"></i> <span th:text="#{button.reset}">Đặt lại</span>
+                                <i class="bi bi-arrow-clockwise"></i> <span th:text="#{button.resetnew}">Đặt lại</span>
                             </a>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                     </thead>
                     <tbody>
                     <tr th:if="${requests == null or requests.content == null or requests.content.isEmpty()}">
-                        <td colspan="7" class="text-center text-muted py-4">Chưa có yêu cầu trả hàng</td>
+                        <td colspan="7" class="text-center text-muted py-4" th:text="#{empty.no.requests}">Chưa có yêu cầu trả hàng</td>
                     </tr>
                     <tr th:each="request : ${requests.content}" th:id="'request-' + ${request.id}">
                         <td><strong th:text="'#' + ${request.id}">#1</strong></td>

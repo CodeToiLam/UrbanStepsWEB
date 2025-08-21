@@ -4,25 +4,25 @@
       layout:decorate="~{layout/main}">
 <head>
     <title th:text="${title}">Chi tiết đơn hàng</title>
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         .order-detail-page {
             padding: 40px 0;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             min-height: 70vh;
         }
-        
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         .back-button {
             margin-bottom: 30px;
         }
-        
+
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -35,15 +35,15 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-        
+
         .btn-back:hover {
             background: #5a6268;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             color: white;
             text-decoration: none;
         }
-        
+
         .order-header {
             background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
@@ -51,20 +51,20 @@
             padding: 30px;
             margin-bottom: 30px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
         }
-        
+
         .order-header h1 {
             margin: 0 0 10px 0;
             font-size: 2rem;
         }
-        
+
         .order-header .order-code {
             font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 10px;
         }
-        
+
         .order-status {
             display: inline-block;
             padding: 8px 16px;
@@ -74,40 +74,67 @@
             text-transform: uppercase;
             margin-top: 10px;
         }
-        
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-confirmed { background-color: #cce5ff; color: #004085; }
-        .status-shipping { background-color: #d4edda; color: #155724; }
-        .status-completed { background-color: #d1ecf1; color: #0c5460; }
-        .status-cancelled { background-color: #f8d7da; color: #721c24; }
-    .status-paid { background-color: #d4edda; color: #155724; }
-    .status-returned { background-color: #ffe8e8; color: #721c24; }
-        
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-shipping {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-returned {
+            background-color: #ffe8e8;
+            color: #721c24;
+        }
+
         .order-timeline {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             padding: 30px;
             margin-bottom: 30px;
         }
-        
+
         .timeline-header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         .timeline-header h2 {
             color: #2c3e50;
             margin-bottom: 10px;
         }
-        
+
         .timeline-steps {
             display: flex;
             justify-content: space-between;
             position: relative;
             margin: 40px 0;
         }
-        
+
         .timeline-line {
             position: absolute;
             top: 20px;
@@ -117,7 +144,7 @@
             background: #e9ecef;
             z-index: 1;
         }
-        
+
         .timeline-progress {
             position: absolute;
             top: 20px;
@@ -127,7 +154,7 @@
             z-index: 2;
             transition: width 0.5s ease;
         }
-        
+
         .timeline-step {
             display: flex;
             flex-direction: column;
@@ -136,7 +163,7 @@
             z-index: 3;
             flex: 1;
         }
-        
+
         .step-circle {
             width: 40px;
             height: 40px;
@@ -148,49 +175,49 @@
             margin-bottom: 15px;
             transition: all 0.3s ease;
         }
-        
+
         .step-circle.active {
             background: #28a745;
             color: white;
             box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
         }
-        
+
         .step-circle.inactive {
             background: #e9ecef;
             color: #6c757d;
         }
-        
+
         .step-circle.cancelled {
             background: #dc3545;
             color: white;
         }
-        
+
         .step-label {
             text-align: center;
             font-size: 0.9rem;
             color: #6c757d;
             font-weight: 500;
         }
-        
+
         .step-label.active {
             color: #28a745;
             font-weight: 600;
         }
-        
+
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
         }
-        
+
         .info-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             padding: 25px;
         }
-        
+
         .info-card h3 {
             color: #2c3e50;
             margin: 0 0 20px 0;
@@ -199,7 +226,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -207,35 +234,35 @@
             padding: 12px 0;
             border-bottom: 1px solid #f8f9fa;
         }
-        
+
         .info-row:last-child {
             border-bottom: none;
         }
-        
+
         .info-label {
             color: #6c757d;
             font-weight: 500;
         }
-        
+
         .info-value {
             color: #2c3e50;
             font-weight: 600;
         }
-        
+
         .products-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-bottom: 30px;
         }
-        
+
         .section-header {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 20px 25px;
             border-bottom: 1px solid #dee2e6;
         }
-        
+
         .section-header h3 {
             margin: 0;
             color: #2c3e50;
@@ -244,27 +271,27 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .product-item {
             padding: 20px 25px;
             border-bottom: 1px solid #f8f9fa;
             transition: background-color 0.2s ease;
         }
-        
+
         .product-item:hover {
             background-color: #f8f9fa;
         }
-        
+
         .product-item:last-child {
             border-bottom: none;
         }
-        
+
         .product-info {
             display: flex;
             align-items: center;
             gap: 20px;
         }
-        
+
         .product-image {
             width: 80px;
             height: 80px;
@@ -272,26 +299,26 @@
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
-        
+
         .product-details h4 {
             margin: 0 0 8px 0;
             color: #2c3e50;
             font-size: 1.1rem;
         }
-        
+
         .product-attributes {
             color: #6c757d;
             font-size: 0.9rem;
             margin-bottom: 10px;
         }
-        
+
         .product-pricing {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 15px;
         }
-        
+
         .quantity {
             background: #f8f9fa;
             padding: 5px 12px;
@@ -299,19 +326,19 @@
             font-weight: 600;
             color: #495057;
         }
-        
+
         .price {
             font-weight: 600;
             color: #007bff;
             font-size: 1.1rem;
         }
-        
+
         .order-summary {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 25px;
             border-top: 3px solid #007bff;
         }
-        
+
         .summary-row {
             display: flex;
             justify-content: space-between;
@@ -319,7 +346,7 @@
             padding: 10px 0;
             font-size: 1.1rem;
         }
-        
+
         .summary-row.total {
             border-top: 2px solid #007bff;
             margin-top: 15px;
@@ -328,15 +355,15 @@
             font-size: 1.3rem;
             color: #007bff;
         }
-        
+
         .order-actions {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             padding: 25px;
             text-align: center;
         }
-        
+
         .btn {
             display: inline-block;
             padding: 12px 24px;
@@ -349,29 +376,29 @@
             transition: all 0.3s ease;
             margin: 0 10px;
         }
-        
+
         .btn-danger {
             background: #dc3545;
             color: white;
         }
-        
+
         .btn-danger:hover {
             background: #c82333;
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
-        
+
         .btn-warning {
             background: #ffc107;
             color: #212529;
         }
-        
+
         .btn-warning:hover {
             background: #e0a800;
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
         }
-        
+
         /* Action buttons styling */
         .action-buttons {
             display: flex;
@@ -380,7 +407,7 @@
             flex-wrap: wrap;
             margin-top: 20px;
         }
-        
+
         .action-buttons .btn {
             min-width: 160px;
             padding: 14px 28px;
@@ -391,98 +418,98 @@
             letter-spacing: 0.5px;
             border: 2px solid transparent;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .action-buttons .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
-        
+
         .action-buttons .btn-warning {
             background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
             color: #212529;
             border-color: #ffc107;
         }
-        
+
         .action-buttons .btn-warning:hover {
             background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%);
             border-color: #ffb300;
             color: #000;
         }
-        
+
         .action-buttons .btn-danger {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
             border-color: #dc3545;
         }
-        
+
         .action-buttons .btn-danger:hover {
             background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
             border-color: #c82333;
         }
-        
+
         .action-buttons .btn i {
             margin-right: 8px;
             font-size: 1.2rem;
         }
-        
+
         .alert {
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
         }
-        
+
         .alert-success {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
         }
-        
+
         .alert-danger {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
         }
-        
+
         @media (max-width: 768px) {
             .info-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .timeline-steps {
                 flex-direction: column;
                 gap: 20px;
             }
-            
+
             .timeline-line,
             .timeline-progress {
                 display: none;
             }
-            
+
             .timeline-step {
                 flex-direction: row;
                 justify-content: flex-start;
                 gap: 15px;
             }
-            
+
             .step-circle {
                 margin-bottom: 0;
             }
-            
+
             .product-info {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
-            
+
             .product-pricing {
                 width: 100%;
                 margin-top: 10px;
             }
-            
+
             .container {
                 padding: 0 15px;
             }
@@ -500,18 +527,19 @@
                     Quay lại danh sách đơn hàng
                 </a>
             </div>
-            
+
             <!-- Thông báo -->
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-            
+
             <!-- Header đơn hàng -->
             <div class="order-header">
                 <h1><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h1>
                 <div class="order-code" th:text="${order.maHoaDon}">HD20240802_ABC123</div>
-                <div>Ngày đặt: <span th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">02/08/2024 10:30</span></div>
-                                <span class="order-status" th:text="${order.trangThaiText}"
-                                            th:classappend="
+                <div>Ngày đặt: <span
+                        th:text="${#temporals.format(order.createAt, 'dd/MM/yyyy HH:mm')}">02/08/2024 10:30</span></div>
+                <span class="order-status" th:text="${order.trangThaiText}"
+                      th:classappend="
                                                 ${order.trangThai == 0} ? ' status-pending' :
                                                 (${order.trangThai == 1} ? ' status-confirmed' :
                                                 (${order.trangThai == 2} ? ' status-shipping' :
@@ -520,62 +548,63 @@
                                                 (${order.trangThai == 6} ? ' status-returned' : '')))))">
                                         Trạng thái
                                 </span>
-                                <div class="action-buttons">
-                                    <!-- Return request button (for completed orders only, and no pending return request) -->
-                                    <a th:if="${order.trangThai == 3} and ${order.trangThai != 6} and ${hasPendingReturn} == false"
-                                       th:href="@{/don-hang/{id}/return-request(id=${order.id})}"
-                                       class="btn btn-warning">
-                                        <i class="fas fa-undo"></i> Yêu cầu trả hàng
-                                    </a>
-                                    
-                                    <!-- Cancel order button (for pending and confirmed orders) -->
-                                    <button th:if="${order.trangThai == 0 || order.trangThai == 1}" 
-                                            class="btn btn-danger"
-                                            onclick="confirmCancelOrder()">
-                                        <i class="fas fa-times"></i> Hủy đơn hàng
-                                    </button>
-                                </div>
+                <div class="action-buttons">
+                    <!-- Return request button (for completed orders only, and no pending return request) -->
+                    <a th:if="${order.trangThai == 3} and ${order.trangThai != 6} and ${hasPendingReturn} == false"
+                       th:href="@{/don-hang/{id}/return-request(id=${order.id})}"
+                       class="btn btn-warning">
+                        <i class="fas fa-undo"></i> Yêu cầu trả hàng
+                    </a>
+
+                    <!-- Cancel order button (for pending and confirmed orders) -->
+                    <button th:if="${order.trangThai == 0 || order.trangThai == 1}"
+                            class="btn btn-danger"
+                            onclick="confirmCancelOrder()">
+                        <i class="fas fa-times"></i> Hủy đơn hàng
+                    </button>
+                </div>
             </div>
-            
+
             <!-- Timeline trạng thái -->
-          <!-- Metadata for client-side eligibility calculation -->
-          <div id="orderMeta"
-              th:attr="data-status=${order.trangThai}, data-completed-at=${order.updateAt != null ? #temporals.format(order.updateAt, 'yyyy-MM-dd HH:mm:ss') : ''}">
-          </div>
+            <!-- Metadata for client-side eligibility calculation -->
+            <div id="orderMeta"
+                 th:attr="data-status=${order.trangThai}, data-completed-at=${order.updateAt != null ? #temporals.format(order.updateAt, 'yyyy-MM-dd HH:mm:ss') : ''}">
+            </div>
 
             <div class="order-timeline" th:unless="${order.trangThai == 4}">
                 <div class="timeline-header">
                     <h2><i class="fas fa-route"></i> Tiến trình đơn hàng</h2>
                     <p style="color: #6c757d;">Theo dõi trạng thái đơn hàng của bạn</p>
                 </div>
-                
+
                 <div class="timeline-steps">
                     <div class="timeline-line"></div>
                     <div class="timeline-progress"
                          th:style="'width: ' + (${order.trangThai >= 3} ? '100%' : (${order.trangThai >= 2} ? '75%' : (${order.trangThai >= 1} ? '50%' : '25%')))"
                     ></div>
-                    
+
                     <div class="timeline-step">
                         <div th:class="${order.trangThai >= 0 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-clipboard-list"></i>
                         </div>
                         <div th:class="${order.trangThai >= 0 ? 'step-label active' : 'step-label'}">Đã đặt hàng</div>
                     </div>
-                    
+
                     <div class="timeline-step">
                         <div th:class="${order.trangThai >= 1 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-check"></i>
                         </div>
                         <div th:class="${order.trangThai >= 1 ? 'step-label active' : 'step-label'}">Đã xác nhận</div>
                     </div>
-                    
+
                     <div class="timeline-step">
                         <div th:class="${order.trangThai >= 2 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-truck"></i>
                         </div>
-                        <div th:class="${order.trangThai >= 2 ? 'step-label active' : 'step-label'}">Đang giao hàng</div>
+                        <div th:class="${order.trangThai >= 2 ? 'step-label active' : 'step-label'}">Đang giao hàng
+                        </div>
                     </div>
-                    
+
                     <div class="timeline-step">
                         <div th:class="${order.trangThai >= 3 ? 'step-circle active' : 'step-circle inactive'}">
                             <i class="fas fa-star"></i>
@@ -584,23 +613,25 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Thông tin đã hủy -->
             <div class="order-timeline" th:if="${order.trangThai == 4}">
                 <div class="timeline-header">
                     <h2><i class="fas fa-times-circle"></i> Đơn hàng đã bị hủy</h2>
-                    <p style="color: #dc3545;">Đơn hàng này đã được hủy vào ngày <span th:text="${#temporals.format(order.updateAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <p style="color: #dc3545;">Đơn hàng này đã được hủy vào ngày <span
+                            th:text="${#temporals.format(order.updateAt, 'dd/MM/yyyy HH:mm')}"></span></p>
                 </div>
-                
+
                 <div style="text-align: center; padding: 40px;">
-                    <div class="step-circle cancelled" style="margin: 0 auto 20px; width: 80px; height: 80px; font-size: 2rem;">
+                    <div class="step-circle cancelled"
+                         style="margin: 0 auto 20px; width: 80px; height: 80px; font-size: 2rem;">
                         <i class="fas fa-times"></i>
                     </div>
                     <h3 style="color: #dc3545; margin-bottom: 15px;">Đơn hàng đã hủy</h3>
                     <p style="color: #6c757d;">Bạn có thể đặt hàng mới hoặc liên hệ với chúng tôi nếu cần hỗ trợ.</p>
                 </div>
             </div>
-            
+
             <!-- Thông tin đơn hàng -->
             <div class="info-grid">
                 <!-- Thông tin khách hàng -->
@@ -623,7 +654,7 @@
                         <span class="info-value" th:text="${order.diaChiGiaoHang}">123 Đường ABC, Quận 1, TP.HCM</span>
                     </div>
                 </div>
-                
+
                 <!-- Thông tin thanh toán -->
                 <div class="info-card">
                     <h3><i class="fas fa-credit-card"></i> Thông tin thanh toán</h3>
@@ -633,11 +664,13 @@
                     </div>
                     <div class="info-row" th:if="${order.tienMat != null && order.tienMat > 0}">
                         <span class="info-label">Tiền mặt:</span>
-                        <span class="info-value" th:text="${#numbers.formatDecimal(order.tienMat, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
+                        <span class="info-value"
+                              th:text="${#numbers.formatDecimal(order.tienMat, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
                     </div>
                     <div class="info-row" th:if="${order.tienChuyenKhoan != null && order.tienChuyenKhoan > 0}">
                         <span class="info-label">Chuyển khoản:</span>
-                        <span class="info-value" th:text="${#numbers.formatDecimal(order.tienChuyenKhoan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
+                        <span class="info-value"
+                              th:text="${#numbers.formatDecimal(order.tienChuyenKhoan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">500,000 VNĐ</span>
                     </div>
                     <div class="info-row" th:if="${order.ghiChu}">
                         <span class="info-label">Ghi chú:</span>
@@ -645,22 +678,25 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Danh sách sản phẩm -->
             <div class="products-section">
                 <div class="section-header">
-                    <h3><i class="fas fa-box"></i> Sản phẩm đã đặt (<span th:text="${order.hoaDonChiTietList.size()}">3</span> sản phẩm)</h3>
+                    <h3><i class="fas fa-box"></i> Sản phẩm đã đặt (<span
+                            th:text="${order.hoaDonChiTietList.size()}">3</span> sản phẩm)</h3>
                 </div>
-                
+
                 <div class="product-item" th:each="item : ${order.hoaDonChiTietList}">
                     <div class="product-info">
-                    <img th:src="${item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null && item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null && item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan != null} ? ${item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan} : @{/images/no-image.jpg}"
-                        alt="Product Image" class="product-image">
+                        <img th:src="${item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null && item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien != null && item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan != null} ? ${item.sanPhamChiTiet.sanPham.idHinhAnhDaiDien.duongDan} : @{/images/no-image.jpg}"
+                             alt="Product Image" class="product-image">
                         <div class="product-details">
                             <h4 th:text="${item.sanPhamChiTiet.sanPham.tenSanPham}">Giày thể thao Nike Air Max</h4>
                             <div class="product-attributes">
-                                <span><i class="fas fa-palette"></i> Màu: <strong th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}">Đỏ</strong></span> | 
-                                <span><i class="fas fa-ruler"></i> Size: <strong th:text="${item.sanPhamChiTiet.kichCo.tenKichCo}">42</strong></span>
+                                <span><i class="fas fa-palette"></i> Màu: <strong
+                                        th:text="${item.sanPhamChiTiet.mauSac.tenMauSac}">Đỏ</strong></span> |
+                                <span><i class="fas fa-ruler"></i> Size: <strong
+                                        th:text="${item.sanPhamChiTiet.kichCo.tenKichCo}">42</strong></span>
                             </div>
                             <div class="return-eligibility" style="font-size:12px;color:#6c757d;margin-top:6px;">
                                 <i class="fas fa-undo"></i>
@@ -670,12 +706,29 @@
                                 <div>
                                     <span class="quantity"><i class="fas fa-times"></i> <span th:text="${item.soLuong}">2</span></span>
                                 </div>
-                                <div class="price" th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">2,000,000 VNĐ</div>
+                                <div class="price"
+                                     th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                    2,000,000 VNĐ
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div th:if="${order.trangThai == 3}">
+                        <!-- Nếu chưa đánh giá -->
+                        <a th:if="${!@danhGiaSanPhamService.kiemTraDaDanhGia(currentUserId, item.id)}"
+                           th:href="@{/don-hang/danh-gia/{hoaDonChiTietId}(hoaDonChiTietId=${item.id})}"
+                           class="btn btn-outline-primary">
+                            Đánh giá sản phẩm
+                        </a>
+
+                        <!-- Nếu đã đánh giá -->
+                        <span th:if="${@danhGiaSanPhamService.kiemTraDaDanhGia(currentUserId, item.id)}"
+                              class="badge bg-success">
+                            Đã đánh giá
+                        </span>
+                    </div>
                 </div>
-                
+
                 <!-- Tổng kết đơn hàng -->
                 <div class="order-summary">
                     <div class="summary-row">
@@ -684,7 +737,8 @@
                     </div>
                     <div class="summary-row" th:if="${order.tienGiam != null && order.tienGiam > 0}">
                         <span>Giảm giá:</span>
-                        <span style="color: #dc3545;" th:text="'-' + ${#numbers.formatDecimal(order.tienGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">-250,000 VNĐ</span>
+                        <span style="color: #dc3545;"
+                              th:text="'-' + ${#numbers.formatDecimal(order.tienGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">-250,000 VNĐ</span>
                     </div>
                     <div class="summary-row total">
                         <span>Tổng thanh toán:</span>
@@ -692,49 +746,54 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Form ẩn để hủy đơn hàng -->
-            <form id="cancelOrderForm" th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post" style="display: none;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <form id="cancelOrderForm" th:action="@{/don-hang/huy/{id}(id=${order.id})}" method="post"
+                  style="display: none;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             </form>
 
-                                        <script th:inline="javascript">
-                            // Cancel order functionality
-                            function confirmCancelOrder() {
-                                if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.')) {
-                                    document.getElementById('cancelOrderForm').submit();
-                                }
+            <script th:inline="javascript">
+                // Cancel order functionality
+                function confirmCancelOrder() {
+                    if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.')) {
+                        document.getElementById('cancelOrderForm').submit();
+                    }
+                }
+
+                // Compute return eligibility per item (7-day window after completion)
+                (function () {
+                    try {
+                        var meta = document.getElementById('orderMeta');
+                        if (!meta) return;
+                        var status = parseInt(meta.getAttribute('data-status') || '0', 10);
+                        var completedAtStr = meta.getAttribute('data-completed-at');
+                        var items = document.querySelectorAll('.return-eligibility .eligibility-text');
+                        if (!items || items.length === 0) return;
+                        if (status !== 3 || !completedAtStr) {
+                            items.forEach(function (el) {
+                                el.textContent = 'Chỉ áp dụng khi đơn đã hoàn thành';
+                            });
+                            return;
+                        }
+                        var completedAt = new Date(completedAtStr.replace(' ', 'T'));
+                        var deadline = new Date(completedAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        var now = new Date();
+                        var deadlineText = deadline.toLocaleDateString('vi-VN');
+                        items.forEach(function (el) {
+                            if (now <= deadline) {
+                                el.textContent = 'Đủ điều kiện trả đến ' + deadlineText;
+                                el.parentElement.style.color = '#28a745';
+                            } else {
+                                el.textContent = 'Hết hạn trả (đến ' + deadlineText + ')';
+                                el.parentElement.style.color = '#dc3545';
                             }
-                            // Compute return eligibility per item (7-day window after completion)
-                            (function() {
-                                try {
-                                    var meta = document.getElementById('orderMeta');
-                                    if (!meta) return;
-                                    var status = parseInt(meta.getAttribute('data-status') || '0', 10);
-                                    var completedAtStr = meta.getAttribute('data-completed-at');
-                                    var items = document.querySelectorAll('.return-eligibility .eligibility-text');
-                                    if (!items || items.length === 0) return;
-                                    if (status !== 3 || !completedAtStr) {
-                                        items.forEach(function(el){ el.textContent = 'Chỉ áp dụng khi đơn đã hoàn thành'; });
-                                        return;
-                                    }
-                                    var completedAt = new Date(completedAtStr.replace(' ', 'T'));
-                                    var deadline = new Date(completedAt.getTime() + 7*24*60*60*1000);
-                                    var now = new Date();
-                                    var deadlineText = deadline.toLocaleDateString('vi-VN');
-                                    items.forEach(function(el){
-                                        if (now <= deadline) {
-                                            el.textContent = 'Đủ điều kiện trả đến ' + deadlineText;
-                                            el.parentElement.style.color = '#28a745';
-                                        } else {
-                                            el.textContent = 'Hết hạn trả (đến ' + deadlineText + ')';
-                                            el.parentElement.style.color = '#dc3545';
-                                        }
-                                    });
-                                } catch(e) { /* silent */ }
-                            })();
-                            </script>
-            
+                        });
+                    } catch (e) { /* silent */
+                    }
+                })();
+            </script>
+
             <!-- Hỗ trợ khách hàng -->
             <div class="order-actions">
                 <h3 style="margin-bottom: 20px;"><i class="fas fa-headset"></i> Cần hỗ trợ?</h3>
@@ -742,14 +801,17 @@
                     Nếu bạn có bất kỳ thắc mắc nào về đơn hàng này, vui lòng liên hệ với chúng tôi.
                 </p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="tel:1900123456" class="btn" style="background: #28a745; color: white; text-decoration: none;">
+                    <a href="tel:1900123456" class="btn"
+                       style="background: #28a745; color: white; text-decoration: none;">
                         <i class="fas fa-phone"></i> Gọi điện: 1900 123 456
                     </a>
-                    <a href="mailto:support@urbansteps.vn" class="btn" style="background: #17a2b8; color: white; text-decoration: none;">
+                    <a href="mailto:support@urbansteps.vn" class="btn"
+                       style="background: #17a2b8; color: white; text-decoration: none;">
                         <i class="fas fa-envelope"></i> Email: support@urbansteps.vn
                     </a>
                 </div>
             </div>
+
 
             <!-- Chính sách trả hàng (hiển thị khi đơn đã hoàn thành) -->
             <div class="order-actions" th:if="${order.trangThai == 3}">
@@ -762,10 +824,18 @@
                 <details style="margin-bottom:12px;">
                     <summary style="cursor:pointer;color:#007bff;">Xem chi tiết chính sách</summary>
                     <div style="color:#6c757d;margin-top:8px;">
-                        <div style="margin-bottom:6px;"><strong>Quy trình:</strong> Tạo yêu cầu → Xác nhận → Gửi hàng về kho → Kiểm tra → Hoàn tiền.</div>
-                        <div style="margin-bottom:6px;"><strong>Phí vận chuyển:</strong> Lỗi nhà sản xuất/giao sai hàng: chúng tôi chịu phí. Đổi ý: khách chịu phí gửi hàng.</div>
-                        <div style="margin-bottom:6px;"><strong>Thời gian hoàn tiền:</strong> 3–7 ngày làm việc tùy phương thức thanh toán.</div>
-                        <div><strong>Không hỗ trợ:</strong> Hàng đã qua sử dụng/hư hại do người dùng; sản phẩm giảm giá sâu thuộc diện không đổi trả; hàng vệ sinh cá nhân.</div>
+                        <div style="margin-bottom:6px;"><strong>Quy trình:</strong> Tạo yêu cầu → Xác nhận → Gửi hàng về
+                            kho → Kiểm tra → Hoàn tiền.
+                        </div>
+                        <div style="margin-bottom:6px;"><strong>Phí vận chuyển:</strong> Lỗi nhà sản xuất/giao sai hàng:
+                            chúng tôi chịu phí. Đổi ý: khách chịu phí gửi hàng.
+                        </div>
+                        <div style="margin-bottom:6px;"><strong>Thời gian hoàn tiền:</strong> 3–7 ngày làm việc tùy
+                            phương thức thanh toán.
+                        </div>
+                        <div><strong>Không hỗ trợ:</strong> Hàng đã qua sử dụng/hư hại do người dùng; sản phẩm giảm giá
+                            sâu thuộc diện không đổi trả; hàng vệ sinh cá nhân.
+                        </div>
                     </div>
                 </details>
                 <div th:if="${hasPendingReturn}">

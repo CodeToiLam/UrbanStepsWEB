@@ -1,73 +1,69 @@
 <!DOCTYPE html>
-<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
 <head>
+  <title th:text="${chiTiet.id != null} ? #{variant.form.editTitle} : #{variant.form.title}"></title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="#{variant.form.title}">Thêm/Sửa chi tiết sản phẩm</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" th:href="@{/css/admin.css}" />
+  <link rel="stylesheet" type="text/css" href="/css/admin.css">
+  <link rel="stylesheet" type="text/css" href="/css/admin-product-form.css">
+  <link rel="stylesheet" type="text/css" href="/css/admin-product-add.css">
 </head>
 <body>
-<div class="container mt-4">
-  <h2 class="text-primary">
-    <i class="bi bi-plus-circle"></i>
-    <span th:text="${chiTiet.id != null} ? #{variant.form.editTitle} : #{variant.form.title}"></span>
-  </h2>
-
-  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+<div layout:fragment="content" class="admin-product-form">
+  <h1 th:text="${chiTiet.id != null} ? #{variant.form.editTitle} : #{variant.form.title}"></h1>
+  <p th:if="${error}" class="error" th:text="${error}"></p>
 
   <form th:action="@{/admin/save}" method="post" th:object="${chiTiet}" enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}" />
     <input type="hidden" th:field="*{sanPham.id}" th:value="${sanPham.id} ?: 0" />
 
-    <div class="mb-3">
-      <label class="form-label" th:text="#{variant.form.size}"></label>
-      <select th:field="*{kichCo}" class="form-select" required>
-        <option value="" th:text="#{variant.form.size.select}"></option>
-        <option th:each="kc : ${kichCos}" th:value="${kc.id}" th:text="${kc.tenKichCo}"></option>
-      </select>
-    </div>
+    <!-- Kích cỡ -->
+    <label class="form-label" th:text="#{variant.form.size}"></label>
+    <select th:field="*{kichCo}" class="form-select" required>
+      <option value="" th:text="#{variant.form.size.select}"></option>
+      <option th:each="kc : ${kichCos}" th:value="${kc.id}" th:text="${kc.tenKichCo}"></option>
+    </select><br>
 
-    <div class="mb-3">
-      <label class="form-label" th:text="#{variant.form.color}"></label>
-      <select th:field="*{mauSac}" class="form-select" required>
-        <option value="" th:text="#{variant.form.color.select}"></option>
-        <option th:each="ms : ${mauSacs}" th:value="${ms.id}" th:text="${ms.tenMauSac}"></option>
-      </select>
-    </div>
+    <!-- Màu sắc -->
+    <label class="form-label" th:text="#{variant.form.color}"></label>
+    <select th:field="*{mauSac}" class="form-select" required>
+      <option value="" th:text="#{variant.form.color.select}"></option>
+      <option th:each="ms : ${mauSacs}" th:value="${ms.id}" th:text="${ms.tenMauSac}"></option>
+    </select><br>
 
-    <div class="mb-3">
-      <label class="form-label" th:text="#{variant.form.images}"></label>
-      <input type="file" name="variantImages" accept="image/*" multiple class="form-control" />
-      <div class="form-text" th:text="#{variant.form.images.help}"></div>
-      <div id="variantPreview" class="image-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:8px; margin-top:8px"></div>
-    </div>
+    <!-- Ảnh biến thể -->
+    <label class="form-label" th:text="#{variant.form.images}"></label>
+    <input type="file" name="variantImages" accept="image/*" multiple class="form-control" />
+    <div class="form-text" th:text="#{variant.form.images.help}"></div>
+    <div id="variantPreview" class="image-grid"></div><br>
 
-    <div class="mb-3">
-      <label class="form-label" th:text="#{variant.form.quantity}"></label>
-      <input type="number" th:field="*{soLuong}" class="form-control" min="0" value="0" required />
-    </div>
+    <!-- Số lượng -->
+    <label class="form-label" th:text="#{variant.form.quantity}"></label>
+    <input type="number" th:field="*{soLuong}" class="form-control" min="0" value="0" required
+           style="max-width:240px" placeholder="0"><br>
 
-    <div class="mb-3">
-      <label class="form-check-label" th:text="#{variant.form.status}"></label>
-      <div class="form-check">
-        <input type="checkbox" th:field="*{trangThai}" class="form-check-input" />
-        <label class="form-check-label" th:text="#{variant.form.status.active}"></label>
-      </div>
-    </div>
+    <!-- Trạng thái -->
+    <label th:text="#{variant.form.status}"></label>
+    <input type="checkbox" th:field="*{trangThai}">
+    <span th:text="#{variant.form.status.active}"></span><br>
 
-    <button type="submit" class="btn btn-primary">
-      <i class="bi bi-save"></i> <span th:text="#{variant.form.save}"></span>
-    </button>
-    <a th:href="@{/admin/product-management(selectedSanPhamId=*{sanPham.id})}" class="btn btn-secondary ms-2">
-      <i class="bi bi-arrow-left-circle"></i> <span th:text="#{variant.form.back}"></span>
-    </a>
+    <hr>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-save"></i> <span th:text="#{variant.form.save}"></span>
+      </button>
+      <a th:href="@{/admin/product-management(selectedSanPhamId=*{sanPham.id})}"
+         class="btn btn-outline-primary">
+        <i class="bi bi-arrow-left-circle"></i> <span th:text="#{variant.form.back}"></span>
+      </a>
+    </div>
   </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/admin.js}"></script>
+<script src="/js/admin.js"></script>
 <script>
   // Preview selected variant images
   document.addEventListener('DOMContentLoaded', function(){
@@ -79,10 +75,8 @@
       Array.from(input.files || []).forEach(f => {
         const url = URL.createObjectURL(f);
         const d = document.createElement('div');
-        d.style.border = '1px solid #e5e7eb';
-        d.style.borderRadius = '8px';
-        d.style.overflow = 'hidden';
-        d.innerHTML = `<img src="${url}" style="width:100%;height:100px;object-fit:cover"/>`;
+        d.classList.add("preview-img");
+        d.innerHTML = `<img src="${url}" style="width:100%;height:100px;object-fit:cover;border:1px solid #eee;border-radius:8px"/>`;
         grid.appendChild(d);
       });
     });

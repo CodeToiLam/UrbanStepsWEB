@@ -23,10 +23,10 @@ public class OrderTrackingController {
 
     @Autowired
     private HoaDonService hoaDonService;
-    
+
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
-    
+
     @Autowired
     private KhachHangRepository khachHangRepository;
 
@@ -36,7 +36,7 @@ public class OrderTrackingController {
     @GetMapping("/don-hang")
     public String donHang(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             // User đã đăng nhập - hiển thị đơn hàng của họ
             String username = auth.getName();
@@ -44,11 +44,11 @@ public class OrderTrackingController {
             if (taiKhoanOpt.isEmpty()) {
                 taiKhoanOpt = taiKhoanRepository.findByEmail(username);
             }
-            
+
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
                 Optional<KhachHang> khachHangOpt = khachHangRepository.findByTaiKhoan(taiKhoan);
-                
+
                 if (khachHangOpt.isPresent()) {
                     KhachHang khachHang = khachHangOpt.get();
                     List<HoaDon> orders = hoaDonService.getOrdersByKhachHangId(khachHang.getId());
@@ -65,11 +65,11 @@ public class OrderTrackingController {
             // User chưa đăng nhập - hiển thị form tra cứu
             model.addAttribute("isLoggedIn", false);
         }
-        
+
         model.addAttribute("title", "Theo dõi đơn hàng");
         return "don-hang";
     }
-    
+
     @PostMapping("/don-hang/tra-cuu")
     public String traCuuDonHangTheoMaVaSdt(@RequestParam String maHoaDon,
                                            @RequestParam String sdt,
@@ -82,10 +82,10 @@ public class OrderTrackingController {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng với thông tin đã nhập. Vui lòng kiểm tra lại mã đơn hàng và số điện thoại!");
                 return "redirect:/don-hang";
             }
-            
+
             HoaDon order = orderOpt.get();
             List<HoaDon> orders = List.of(order); // Chỉ hiển thị đơn hàng được tìm thấy
-            
+
             model.addAttribute("orders", orders);
             model.addAttribute("lookupPhone", sdt);
             model.addAttribute("lookupOrderCode", maHoaDon);
@@ -97,48 +97,51 @@ public class OrderTrackingController {
             return "redirect:/don-hang";
         }
     }
-    
+
     @GetMapping("/don-hang/chi-tiet/{id}")
     public String chiTietDonHang(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
             redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập để xem chi tiết đơn hàng!");
             return "redirect:/dang-nhap";
         }
-        
+
         try {
             String username = auth.getName();
             Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
             if (taiKhoanOpt.isEmpty()) {
                 taiKhoanOpt = taiKhoanRepository.findByEmail(username);
             }
-            
+
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
                 Optional<KhachHang> khachHangOpt = khachHangRepository.findByTaiKhoan(taiKhoan);
-                
+                model.addAttribute("currentUserId", taiKhoanOpt.get().getId());
+
+
                 if (khachHangOpt.isPresent()) {
                     KhachHang khachHang = khachHangOpt.get();
                     HoaDon hoaDon = hoaDonService.getOrderById(id);
-                    
+
                     // Kiểm tra đơn hàng có thuộc về khách hàng này không
                     if (hoaDon != null && hoaDon.getKhachHang().getId().equals(khachHang.getId())) {
                         model.addAttribute("order", hoaDon);
-            // Flag: order has a pending/processing return request -> hide "return" button
-            long pendingCount = returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.NEW)
-                + returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
-            model.addAttribute("hasPendingReturn", pendingCount > 0);
+
+                        // Flag: order has a pending/processing return request -> hide "return" button
+                        long pendingCount = returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.NEW)
+                                + returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+                        model.addAttribute("hasPendingReturn", pendingCount > 0);
                         model.addAttribute("isLoggedIn", true);
                         model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
                         return "chi-tiet-don-hang";
                     }
                 }
             }
-            
+
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng hoặc bạn không có quyền xem đơn hàng này!");
             return "redirect:/don-hang";
-            
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi xem chi tiết đơn hàng!");
             return "redirect:/don-hang";
@@ -159,10 +162,10 @@ public class OrderTrackingController {
             }
             HoaDon hoaDon = opt.get();
             model.addAttribute("order", hoaDon);
-        // Flag for pending return requests to control button visibility
-        long pendingCount = returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.NEW)
-            + returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
-        model.addAttribute("hasPendingReturn", pendingCount > 0);
+            // Flag for pending return requests to control button visibility
+            long pendingCount = returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.NEW)
+                    + returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+            model.addAttribute("hasPendingReturn", pendingCount > 0);
             model.addAttribute("isLoggedIn", false);
             model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
             return "chi-tiet-don-hang";
@@ -171,31 +174,31 @@ public class OrderTrackingController {
             return "redirect:/don-hang";
         }
     }
-    
+
     @PostMapping("/don-hang/huy/{id}")
     public String huyDonHang(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
             redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập để hủy đơn hàng!");
             return "redirect:/dang-nhap";
         }
-        
+
         try {
             String username = auth.getName();
             Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
             if (taiKhoanOpt.isEmpty()) {
                 taiKhoanOpt = taiKhoanRepository.findByEmail(username);
             }
-            
+
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
                 Optional<KhachHang> khachHangOpt = khachHangRepository.findByTaiKhoan(taiKhoan);
-                
+
                 if (khachHangOpt.isPresent()) {
                     KhachHang khachHang = khachHangOpt.get();
                     HoaDon hoaDon = hoaDonService.getOrderById(id);
-                    
+
                     // Kiểm tra đơn hàng có thuộc về khách hàng này không và có thể hủy không
                     if (hoaDon != null && hoaDon.getKhachHang().getId().equals(khachHang.getId())) {
                         if (hoaDon.canCancel()) {
@@ -205,15 +208,15 @@ public class OrderTrackingController {
                         } else {
                             redirectAttributes.addFlashAttribute("error", "Không thể hủy đơn hàng này!");
                         }
-                        
+
                         return "redirect:/don-hang/chi-tiet/" + id;
                     }
                 }
             }
-            
+
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng hoặc bạn không có quyền hủy đơn hàng này!");
             return "redirect:/don-hang";
-            
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi hủy đơn hàng!");
             return "redirect:/don-hang";

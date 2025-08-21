@@ -32,7 +32,7 @@
                     <i class="bi bi-person-fill"></i>
                     <input type="text" id="username" name="taiKhoan" class="form-control"
                            th:placeholder="#{register.username.placeholder}"
-                           th:value="*{taiKhoan}" pattern=".{8,12}" required
+                           th:value="*{taiKhoan}" pattern=".{6,12}" required
                            th:title="#{register.username.rule}">
                     <p class="text-danger mt-1" th:if="${usernameError}" th:text="${usernameError}"></p>
                 </div>

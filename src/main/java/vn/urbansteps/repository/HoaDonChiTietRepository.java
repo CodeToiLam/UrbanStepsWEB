@@ -78,4 +78,6 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
            "GROUP BY hdct.sanPhamChiTiet.kichCo, hdct.sanPhamChiTiet.mauSac " +
            "ORDER BY SUM(hdct.soLuong) DESC")
     List<Object[]> getVariantStatistics(@Param("sanPhamId") Integer sanPhamId);
+
+
 }

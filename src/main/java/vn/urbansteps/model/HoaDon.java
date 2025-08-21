@@ -151,6 +151,10 @@ public class HoaDon {
     public String getPhuongThucThanhToanText() {
         return PhuongThucThanhToan.fromValue(phuongThucThanhToan != null ? phuongThucThanhToan.intValue() : 1).getDescription();
     }
+    public boolean isHoanThanh() {
+        return this.trangThai != null && this.trangThai == 3;
+    }
+
 
     public Boolean isPending() {
         return trangThai != null && trangThai == 0;

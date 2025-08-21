@@ -1,5 +1,6 @@
 package vn.urbansteps.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -14,6 +15,8 @@ import vn.urbansteps.repository.KhachHangRepository;
 import vn.urbansteps.service.DiaChiGiaoHangService;
 import vn.urbansteps.repository.ReturnRequestRepository;
 
+import java.util.Locale;
+
 @Controller
 @RequestMapping("/tai-khoan")
 public class TaiKhoanController {
@@ -25,6 +28,8 @@ public class TaiKhoanController {
     private DiaChiGiaoHangService diaChiGiaoHangService;
     @Autowired
     private vn.urbansteps.service.PhieuGiamGiaService phieuGiamGiaService;
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private ReturnRequestRepository returnRequestRepository;
@@ -108,7 +113,7 @@ public class TaiKhoanController {
                            @RequestParam String matKhau,
                            @RequestParam("confirm-password") String confirmPassword,
                            Model model,
-                           RedirectAttributes ra) {
+                           RedirectAttributes ra, Locale locale) {
         TaiKhoan tk = new TaiKhoan();
         tk.setTaiKhoan(taiKhoan);
         tk.setEmail(email);
@@ -122,46 +127,46 @@ public class TaiKhoanController {
 
         // Username 6-12 per UI hint
         if (taiKhoan.length() < 6 || taiKhoan.length() > 12) {
-            model.addAttribute("usernameError", "Tên đăng nhập phải từ 6 đến 12 ký tự.");
+            model.addAttribute("usernameError", messageSource.getMessage("login.error.username", null, locale));
             hasError = true;
         }
 
-        // Email whitelist common domains; basic shape check first
         if (!email.matches("^[\\w.+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$") ||
-            !email.matches("^[\\w.+-]+@(?:gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$")) {
-            model.addAttribute("emailError", "Email chỉ được sử dụng các đuôi: gmail, yahoo, outlook, hotmail.");
+                !email.matches("^[\\w.+-]+@(?:gmail\\.com|yahoo\\.com|outlook\\.com|hotmail\\.com)$")) {
+            model.addAttribute("emailError", messageSource.getMessage("login.error.mail", null, locale));
             hasError = true;
         }
 
-        // Password 8-12 and contains at least one letter and one digit
         if (matKhau == null || matKhau.length() < 8 || matKhau.length() > 12 ||
                 !matKhau.matches(".*[A-Za-z].*") || !matKhau.matches(".*[0-9].*")) {
-            model.addAttribute("passwordError", "Mật khẩu 8-12 ký tự, bao gồm chữ và số.");
+            model.addAttribute("passwordError", messageSource.getMessage("login.error.pass", null, locale));
             hasError = true;
         }
 
         if (!matKhau.equals(confirmPassword)) {
-            model.addAttribute("confirmError", "Mật khẩu xác nhận không khớp.");
+            model.addAttribute("confirmError", messageSource.getMessage("login.error.confirm", null, locale));
             hasError = true;
         }
 
         if (taiKhoanService.findByTaiKhoan(taiKhoan) != null) {
-            model.addAttribute("usernameError", "Tài khoản đã tồn tại.");
+            model.addAttribute("usernameError", messageSource.getMessage("login.error.existusername", null, locale));
             hasError = true;
         }
 
         if (taiKhoanService.findByEmail(email) != null) {
-            model.addAttribute("emailError", "Email đã được sử dụng.");
+            model.addAttribute("emailError", messageSource.getMessage("login.error.existmail", null, locale));
             hasError = true;
         }
+
 
         if (hasError) return "dang-ky";
 
         tk.setRole("USER");
     taiKhoanService.registerTaiKhoan(tk);
-    ra.addFlashAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
+    ra.addFlashAttribute("success", messageSource.getMessage("login.success", null, locale));
     return "redirect:/dang-nhap";
     }
+
     @PostMapping("/huy-don-hang")
     public String huyDonHang(@RequestParam("orderId") Integer orderId, Model model) {
         HoaDon hoaDon = hoaDonService.getOrderById(orderId);
