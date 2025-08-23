@@ -713,20 +713,6 @@
                             </div>
                         </div>
                     </div>
-                    <div th:if="${order.trangThai == 3}">
-                        <!-- Nếu chưa đánh giá -->
-                        <a th:if="${!@danhGiaSanPhamService.kiemTraDaDanhGia(currentUserId, item.id)}"
-                           th:href="@{/don-hang/danh-gia/{hoaDonChiTietId}(hoaDonChiTietId=${item.id})}"
-                           class="btn btn-outline-primary">
-                            Đánh giá sản phẩm
-                        </a>
-
-                        <!-- Nếu đã đánh giá -->
-                        <span th:if="${@danhGiaSanPhamService.kiemTraDaDanhGia(currentUserId, item.id)}"
-                              class="badge bg-success">
-                            Đã đánh giá
-                        </span>
-                    </div>
                 </div>
 
                 <!-- Tổng kết đơn hàng -->

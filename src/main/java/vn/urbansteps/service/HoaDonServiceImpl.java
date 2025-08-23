@@ -1,5 +1,6 @@
 package vn.urbansteps.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
+@RequiredArgsConstructor
 @Service
 public class HoaDonServiceImpl implements HoaDonService {
 
@@ -367,4 +370,26 @@ public class HoaDonServiceImpl implements HoaDonService {
         String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         return prefix + "_" + random;
     }
+
+    @Transactional
+    public void xacNhanHoaDon(Integer hoaDonId) {
+        HoaDon hoaDon = hoaDonRepository.findById(hoaDonId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        for (HoaDonChiTiet chiTiet : hoaDon.getHoaDonChiTietList()) {
+            SanPhamChiTiet spct = chiTiet.getSanPhamChiTiet();
+            int soLuongDat = chiTiet.getSoLuong();
+            if (spct.getSoLuong() < soLuongDat) {
+                throw new RuntimeException("Sản phẩm " +
+                        spct.getSanPham().getTenSanPham() +
+                        " không đủ số lượng tồn kho!");
+            }
+            spct.setSoLuong(spct.getSoLuong() - soLuongDat);
+            sanPhamChiTietRepository.save(spct);
+        }
+        // Đổi từ enum sang byte value khi set trạng thái
+        hoaDon.setTrangThai((byte) HoaDon.TrangThaiHoaDon.DA_XAC_NHAN.getValue());; // Cập nhật trạng thái hóa đơn
+        hoaDonRepository.save(hoaDon);
+    }
+
 }

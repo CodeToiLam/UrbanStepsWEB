@@ -30,4 +30,7 @@ public interface HoaDonService {
 
     // Trả hàng toàn bộ các dòng: hoàn hết số lượng các dòng còn lại
     HoaDon returnAllItems(Integer orderId, String note);
+
+    void xacNhanHoaDon(Integer hoaDonId);
+
 }

@@ -18,9 +18,6 @@
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
 
-
-
-
         <!-- Thẻ tóm tắt -->
         <div class="summary-cards">
             <div class="summary-card">
@@ -58,13 +55,20 @@
                         <select id="status" name="status" class="form-control">
                             <option value="" th:text="#{order.all}">Tất cả</option>
                             <option value="0" th:selected="${status == 0}" th:text="#{order.pending}">Chờ xử lý</option>
-                            <option value="1" th:selected="${status == 1}" th:text="#{order.confirmed}">Đã xác nhận</option>
-                            <option value="2" th:selected="${status == 2}" th:text="#{order.shipping}">Đang giao</option>
-                            <option value="3" th:selected="${status == 3}" th:text="#{order.completed}">Hoàn thành</option>
+                            <option value="1" th:selected="${status == 1}" th:text="#{order.confirmed}">Đã xác nhận
+                            </option>
+                            <option value="2" th:selected="${status == 2}" th:text="#{order.shipping}">Đang giao
+                            </option>
+                            <option value="3" th:selected="${status == 3}" th:text="#{order.completed}">Hoàn thành
+                            </option>
                             <option value="4" th:selected="${status == 4}" th:text="#{order.cancelled}">Đã hủy</option>
                             <option value="6" th:selected="${status == 6}" th:text="#{order.returned}">Trả hàng</option>
-                            <option value="7" th:selected="${status == 7}" th:text="#{order.return.processing}">Xử lý trả hàng</option>
-                            <option value="8" th:selected="${status == 8}" th:text="#{order.return.failed}">Trả hàng thất bại</option>
+                            <option value="7" th:selected="${status == 7}" th:text="#{order.return.processing}">Xử lý
+                                trả hàng
+                            </option>
+                            <option value="8" th:selected="${status == 8}" th:text="#{order.return.failed}">Trả hàng
+                                thất bại
+                            </option>
                         </select>
                     </div>
 
@@ -75,7 +79,8 @@
 
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <a th:href="@{/admin/order-management}" class="btn btn-secondary" th:text="#{order.filter.clear}">Xóa bộ lọc</a>
+                        <a th:href="@{/admin/order-management}" class="btn btn-secondary"
+                           th:text="#{order.filter.clear}">Xóa bộ lọc</a>
                     </div>
                 </div>
             </form>
@@ -104,7 +109,9 @@
                     <td th:text="${order.khachHang.sdt}">0123456789</td>
                     <td th:text="${order.phuongThucThanhToanText}">COD</td>
                     <td class="col-address"><span th:text="${order.diaChiGiaoHang} ?: '—'"></span></td>
-                    <td><strong th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</strong></td>
+                    <td><strong
+                            th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000
+                        VNĐ</strong></td>
                     <td>
                             <span class="status-badge"
                                   th:classappend="${order.trangThai == 0} ? ' status-pending' :
@@ -121,7 +128,8 @@
                     <td class="col-actions">
                         <div class="action-buttons toolbar">
                             <div class="tool-group">
-                                <a th:href="@{/admin/order-detail/{id}(id=${order.id})}" class="btn btn-primary btn-sm" th:text="#{order.detail}">Chi tiết</a>
+                                <a th:href="@{/admin/order-detail/{id}(id=${order.id})}" class="btn btn-primary btn-sm"
+                                   th:text="#{order.detail}">Chi tiết</a>
                                 <form th:if="${order.trangThai != 4}"
                                       th:action="@{/admin/order/cancel/{id}(id=${order.id})}"
                                       method="post" style="display: inline; margin-left: 5px;">
@@ -137,19 +145,38 @@
                                     </span>
                             </div>
                             <form th:action="@{/admin/order/update-status-form}" method="post" class="tool-group">
-                                <input type="hidden" name="orderId" th:value="${order.id}" />
-                                <input type="hidden" name="redirect" th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}" />
+                                <input type="hidden" name="orderId" th:value="${order.id}"/>
+                                <input type="hidden" name="redirect"
+                                       th:value="@{/admin/order-management(page=${currentPage},search=${search},status=${status})}"/>
                                 <select name="newStatus" class="form-control status-select">
-                                    <option th:value="0" th:selected="${order.trangThai==0}" th:text="#{order.pending}">Chờ xử lý</option>
-                                    <option th:value="1" th:selected="${order.trangThai==1}" th:text="#{order.confirmed}">Xác nhận đơn hàng</option>
-                                    <option th:value="2" th:selected="${order.trangThai==2}" th:text="#{order.shipping}">Giao hàng</option>
-                                    <option th:value="3" th:selected="${order.trangThai==3}" th:text="#{order.completed}">Hoàn thành</option>
-                                    <option th:value="4" th:selected="${order.trangThai==4}" th:text="#{order.cancelled}">Đã hủy</option>
-                                    <option th:value="6" th:selected="${order.trangThai==6}" th:text="#{order.returned}">Trả hàng</option>
-                                    <option th:value="7" th:selected="${order.trangThai==7}" th:text="#{order.return.processing}">Xử lý trả hàng</option>
-                                    <option th:value="8" th:selected="${order.trangThai==8}" th:text="#{order.return.failed}">Trả hàng thất bại</option>
+                                    <option th:value="0" th:selected="${order.trangThai==0}" th:text="#{order.pending}">
+                                        Chờ xử lý
+                                    </option>
+                                    <option th:value="1" th:selected="${order.trangThai==1}"
+                                            th:text="#{order.confirmed}">Xác nhận đơn hàng
+                                    </option>
+                                    <option th:value="2" th:selected="${order.trangThai==2}"
+                                            th:text="#{order.shipping}">Giao hàng
+                                    </option>
+                                    <option th:value="3" th:selected="${order.trangThai==3}"
+                                            th:text="#{order.completed}">Hoàn thành
+                                    </option>
+                                    <option th:value="4" th:selected="${order.trangThai==4}"
+                                            th:text="#{order.cancelled}">Đã hủy
+                                    </option>
+                                    <option th:value="6" th:selected="${order.trangThai==6}"
+                                            th:text="#{order.returned}">Trả hàng
+                                    </option>
+                                    <option th:value="7" th:selected="${order.trangThai==7}"
+                                            th:text="#{order.return.processing}">Xử lý trả hàng
+                                    </option>
+                                    <option th:value="8" th:selected="${order.trangThai==8}"
+                                            th:text="#{order.return.failed}">Trả hàng thất bại
+                                    </option>
                                 </select>
-                                <button type="submit" class="btn btn-success btn-sm" th:text="#{order.update}">Cập nhật</button>
+                                <button type="submit" class="btn btn-success btn-sm" th:text="#{order.update}">Cập
+                                    nhật
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -182,3 +209,9 @@
                th:href="@{/admin/order-management(page=${currentPage+1}, search=${search}, status=${status})}"
                th:text="#{order.page.next}">Sau &raquo;</a>
         </div>
+    </div>
+</div>
+
+<script th:src="@{/js/order-management.js}"></script>
+</body>
+</html>

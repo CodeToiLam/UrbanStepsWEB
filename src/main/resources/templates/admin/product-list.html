@@ -50,7 +50,11 @@
             <td th:text="${p.id}"></td>
             <td th:text="${p.maSanPham} ?: 'N/A'"></td>
             <td th:text="${p.tenSanPham}"></td>
-            <td th:text="${p.giaBan != null ? p.giaBan + ' VNĐ' : 'N/A'}">Giá sản phẩm</td>
+            <td th:text="${p.giaBan != null
+                ? #numbers.formatDecimal(p.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ'
+                : 'N/A'}">
+                Giá sản phẩm
+            </td>
             <td th:text="${stockTotals != null ? stockTotals[p.id] : 0}"></td>
             <td th:switch="${p.trangThai}">
                 <span th:case="true" th:text="#{product.status.active}"></span>

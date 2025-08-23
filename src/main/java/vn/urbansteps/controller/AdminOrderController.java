@@ -88,6 +88,9 @@ public class AdminOrderController {
             byte prevStatus = hoaDon.getTrangThai();
             hoaDon.setTrangThai(newStatus);
             hoaDonService.save(hoaDon);
+            if (prevStatus == 0 && newStatus == 1) {
+                hoaDonService.xacNhanHoaDon(orderId);
+            }
             // Nếu chuyển sang Hoàn thành (3) từ trạng thái khác, cộng lượt bán cho từng dòng
             if (prevStatus != 3 && newStatus == 3) {
                 try {

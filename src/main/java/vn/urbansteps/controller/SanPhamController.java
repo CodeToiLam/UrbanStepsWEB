@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpSession;
 import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.model.SanPhamChiTiet;
-import vn.urbansteps.service.DanhGiaSanPhamService;
 import vn.urbansteps.service.ImageService;
 import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.service.SanPhamService;
@@ -29,8 +28,6 @@ public class SanPhamController {
     private SanPhamChiTietService sanPhamChiTietService;
     @Autowired
     private ImageService imageService;
-    @Autowired
-    private DanhGiaSanPhamService danhGiaSanPhamService;
 
     @GetMapping("/san-pham")
     public String danhSach(
@@ -125,13 +122,6 @@ public class SanPhamController {
 
                 System.out.println("Đã tạo gallery với " + productImages.size() + " ảnh cho sản phẩm ID: " + id);
 
-                // Lấy danh sách đánh giá
-                var danhGiaList = danhGiaSanPhamService.getDanhGiaTheoSanPham(id);
-                model.addAttribute("danhGiaList", danhGiaList);
-
-                // Điểm trung bình
-                BigDecimal diemTrungBinh = danhGiaSanPhamService.getDiemTrungBinhTheoSanPham(id);
-                model.addAttribute("diemTrungBinh", diemTrungBinh);
                 try {
                     // Lấy thông tin chi tiết sản phẩm - đặt trong try-catch riêng
                     List<String> kichCos = sanPhamChiTietService.getKichCosBySanPhamId(id);
