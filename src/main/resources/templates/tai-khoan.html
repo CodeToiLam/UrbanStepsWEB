@@ -257,7 +257,7 @@
                                         </td>
                                         <td>
                                             <span class="fw-semibold text-primary"
-                                                  th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 0) + 'đ'}"></span>
+                                                  th:text="${#numbers.formatDecimal(order.tongThanhToan, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
                                         </td>
                                         <td>
                                             <div class="d-flex gap-1 flex-wrap">

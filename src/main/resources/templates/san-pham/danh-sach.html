@@ -43,9 +43,13 @@
         class="text-muted text-decoration-line-through me-2"
         th:text="${#numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">0đ</span>
       <span class="product-price fw-bold text-danger mb-0"
-        th:text="${(product.laSale == true and product.phanTramGiam != null and product.phanTramGiam > 0) ?
-          #numbers.formatDecimal(product.giaSauGiam, 0, 0) + 'đ' :
-          #numbers.formatDecimal(product.giaBan, 0, 0) + 'đ'}">Giá</span>
+            th:text="${(product.laSale == true
+            and product.phanTramGiam != null
+            and product.phanTramGiam > 0)
+            ? (#numbers.formatDecimal(product.giaSauGiam, 0, 'COMMA', 0, 'POINT') + 'đ')
+            : (#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT') + 'đ')}">Giá
+      </span>
+
     </div>
       </div>
     </div>
