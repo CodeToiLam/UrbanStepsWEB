@@ -25,6 +25,12 @@ public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
     @Autowired
+    private vn.urbansteps.service.TaiKhoanService taiKhoanService;
+    @Autowired
+    private vn.urbansteps.repository.KhachHangRepository khachHangRepository;
+    @Autowired
+    private vn.urbansteps.repository.HoaDonChiTietRepository hoaDonChiTietRepository;
+    @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
     @Autowired
     private ImageService imageService;
@@ -67,14 +73,14 @@ public class SanPhamController {
                 // Xử lý ảnh đại diện
                 imageService.processProductImage(sanPham);
 
-                // Parse external marketplace URLs from description
-                // Supported formats:
-                //   - Lines starting with: "Shopee: <url>", "Lazada: <url>", "Facebook: <url>"
-                //   - Any pasted URLs that contain these domains
+                // Phân tích URL các sàn bán hàng từ phần mô tả
+                // Định dạng hỗ trợ:
+                //   - Dòng bắt đầu bằng: "Shopee: <url>", "Lazada: <url>", "Facebook: <url>"
+                //   - Hoặc bất kỳ URL nào chứa các domain trên
                 try {
                     String desc = sanPham.getMoTa();
                     if (desc != null) {
-                        // 1) Keyed lines
+                        // 1) Dòng có tiền tố (keyed lines)
                         String[] lines = desc.split("\n");
                         for (String line : lines) {
                             String l = line.trim();
@@ -91,7 +97,7 @@ public class SanPhamController {
                             }
                         }
 
-                        // 2) Fallback: detect any URLs for known domains
+                        // 2) Dự phòng: dò tìm bất kỳ URL nào thuộc domain đã biết
                         if (sanPham.getShopeeUrl() == null || sanPham.getLazadaUrl() == null || sanPham.getFacebookShopUrl() == null) {
                             java.util.regex.Matcher matcher = java.util.regex.Pattern
                                     .compile("(https?://[^\\s]+)")
@@ -113,7 +119,7 @@ public class SanPhamController {
                 
                 model.addAttribute("product", sanPham);
 
-                // Log thông tin sản phẩm để kiểm tra
+                // Ghi log thông tin sản phẩm để kiểm tra
                 System.out.println("Hiển thị chi tiết sản phẩm ID: " + id + ", Tên: " + sanPham.getTenSanPham());
 
                 // Tạo gallery ảnh đơn giản
@@ -123,56 +129,21 @@ public class SanPhamController {
                 System.out.println("Đã tạo gallery với " + productImages.size() + " ảnh cho sản phẩm ID: " + id);
 
                 try {
-                    // Lấy thông tin chi tiết sản phẩm - đặt trong try-catch riêng
+                    // Lấy thông tin chi tiết sản phẩm - đặt trong khối try-catch riêng
                     List<String> kichCos = sanPhamChiTietService.getKichCosBySanPhamId(id);
                     List<String> mauSacs = sanPhamChiTietService.getMauSacsBySanPhamId(id);
                     Map<String, Map<String, Integer>> tonKhoMap = sanPhamChiTietService.getTonKhoBySanPhamId(id);
-
-                    // Lấy danh sách variants để truyền vào JavaScript
+                    
+                    // Lấy danh sách variants để truyền cho JavaScript
                     List<SanPhamChiTiet> variants = sanPhamChiTietService.getBySanPhamId(id);
 
-                    // Fallback nếu kichCos/mauSacs rỗng: suy ra từ danh sách variants
-                    if (kichCos == null || kichCos.isEmpty()) {
-                        kichCos = variants.stream()
-                                .filter(v -> v.getKichCo() != null && v.getKichCo().getTenKichCo() != null)
-                                .map(v -> v.getKichCo().getTenKichCo())
-                                .distinct()
-                                .sorted()
-                                .toList();
-                    }
-                    if (mauSacs == null || mauSacs.isEmpty()) {
-                        mauSacs = variants.stream()
-                                .filter(v -> v.getMauSac() != null && v.getMauSac().getTenMauSac() != null)
-                                .map(v -> v.getMauSac().getTenMauSac())
-                                .distinct()
-                                .sorted()
-                                .toList();
-                    }
-                    if (tonKhoMap == null || tonKhoMap.isEmpty()) {
-                        Map<String, Map<String, Integer>> derived = new HashMap<>();
-                        for (SanPhamChiTiet v : variants) {
-                            if (v.getKichCo() == null || v.getMauSac() == null) continue;
-                            String kc = v.getKichCo().getTenKichCo();
-                            String ms = v.getMauSac().getTenMauSac();
-                            if (kc == null || ms == null) continue;
-                            derived.computeIfAbsent(kc, k -> new HashMap<>())
-                                   .put(ms, v.getSoLuong() == null ? 0 : v.getSoLuong());
-                        }
-                        tonKhoMap = derived;
-                    }
-
-                    // Không nạp toàn bộ danh mục kích cỡ/màu nếu chưa có biến thể để tránh hiển thị sai.
-
-                    // Tạo danh sách variants đơn giản cho JavaScript
+                    // Tạo danh sách variants đơn giản cho JavaScript (tránh lỗi khi Jackson serialize)
                     List<Map<String, Object>> variantsForJS = new ArrayList<>();
                     for (SanPhamChiTiet variant : variants) {
                         Map<String, Object> variantMap = new HashMap<>();
                         variantMap.put("id", variant.getId());
-                        // Truyền tên kích cỡ/màu sắc dạng chuỗi để JS xử lý ổn định
-                        String kc = (variant.getKichCo() != null) ? variant.getKichCo().getTenKichCo() : null;
-                        String ms = (variant.getMauSac() != null) ? variant.getMauSac().getTenMauSac() : null;
-                        variantMap.put("kichCo", kc);
-                        variantMap.put("mauSac", ms);
+                        variantMap.put("kichCo", variant.getKichCo());
+                        variantMap.put("mauSac", variant.getMauSac());
                         variantMap.put("soLuong", variant.getSoLuong());
                         variantsForJS.add(variantMap);
                     }
@@ -214,7 +185,7 @@ public class SanPhamController {
                     model.addAttribute("relatedProducts", new ArrayList<>());
                 }
 
-                // Track recently viewed in session (max 8)
+                // Ghi lại danh sách sản phẩm vừa xem trong session (tối đa 8)
                 try {
                     @SuppressWarnings("unchecked")
                     java.util.LinkedList<Integer> recent = (java.util.LinkedList<Integer>) session.getAttribute("recentlyViewed");
@@ -225,19 +196,68 @@ public class SanPhamController {
                     session.setAttribute("recentlyViewed", recent);
                 } catch (Exception ignored) {}
 
-                // Provide simple recommendations based on recently viewed list
+                // Sinh gợi ý: khi đã đăng nhập ưu tiên sản phẩm đã mua cùng thương hiệu;
+                // nếu không thì hiển thị sản phẩm HOT. Nếu không có mua hàng thì dùng sản phẩm đã xem, sau đó mới đến HOT.
                 try {
-                    @SuppressWarnings("unchecked")
-                    java.util.LinkedList<Integer> recent = (java.util.LinkedList<Integer>) session.getAttribute("recentlyViewed");
-                    if (recent != null && !recent.isEmpty()) {
-                        List<SanPham> recs = sanPhamService.getAllProducts().stream()
-                                .filter(sp -> !sp.getId().equals(id) && recent.contains(sp.getId()))
-                                .limit(8)
-                                .collect(java.util.stream.Collectors.toList());
-                        imageService.processProductListImages(recs);
-                        model.addAttribute("recommendedProducts", recs);
+                    // xác định username (từ session hoặc SecurityContext)
+                    String username = (String) session.getAttribute("username");
+                    if (username == null) {
+                        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+                            username = auth.getName();
+                            session.setAttribute("username", username);
+                        }
                     }
-                } catch (Exception ignored) {}
+
+                    List<SanPham> recs = new ArrayList<>();
+
+                    if (username != null) {
+                        // đã đăng nhập: lấy KhachHang và các mục đã mua
+                        vn.urbansteps.model.TaiKhoan tk = taiKhoanService.findByTaiKhoan(username);
+                        if (tk != null) {
+                            var khOpt = khachHangRepository.findByTaiKhoan(tk);
+                            if (khOpt.isPresent()) {
+                                Integer khId = khOpt.get().getId();
+                                List<vn.urbansteps.model.HoaDonChiTiet> purchases = hoaDonChiTietRepository.findByCustomerId(khId);
+                                // thu thập sản phẩm đã mua có cùng thương hiệu với sản phẩm hiện tại
+                                if (purchases != null && !purchases.isEmpty() && sanPham.getThuongHieu() != null) {
+                                    java.util.Set<Integer> seen = new java.util.LinkedHashSet<>();
+                                    for (vn.urbansteps.model.HoaDonChiTiet hdct : purchases) {
+                                        try {
+                                            var sp = hdct.getSanPhamChiTiet() != null ? hdct.getSanPhamChiTiet().getSanPham() : null;
+                                            if (sp != null && sp.getId() != null && !sp.getId().equals(id)
+                                                    && sp.getThuongHieu() != null
+                                                    && sp.getThuongHieu().getId().equals(sanPham.getThuongHieu().getId())) {
+                                                seen.add(sp.getId());
+                                            }
+                                            if (seen.size() >= 8) break;
+                                        } catch (Exception ignored) {}
+                                    }
+                                    if (!seen.isEmpty()) {
+                                        recs = sanPhamService.getAllProducts().stream()
+                                                .filter(sp -> seen.contains(sp.getId()))
+                                                .limit(8)
+                                                .collect(java.util.stream.Collectors.toList());
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Nếu vẫn rỗng thì trực tiếp dùng sản phẩm HOT (bỏ fallback recent view)
+                    if (recs.isEmpty()) {
+                        recs = sanPhamService.getHotProducts();
+                        // remove current product if present and limit to 8
+                        recs = recs.stream().filter(sp -> !sp.getId().equals(id)).limit(8).collect(java.util.stream.Collectors.toList());
+                    }
+
+                    imageService.processProductListImages(recs);
+                    model.addAttribute("recommendedProducts", recs);
+                } catch (Exception e) {
+                    System.err.println("Lỗi khi tạo gợi ý sản phẩm: " + e.getMessage());
+                    e.printStackTrace();
+                    model.addAttribute("recommendedProducts", new ArrayList<>());
+                }
 
                 return "san-pham/chi-tiet";
             } else {

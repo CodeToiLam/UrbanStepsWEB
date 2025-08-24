@@ -28,7 +28,9 @@
         <label class="form-label" th:text="#{product.salePrice}">Giá bán:</label>
         <input type="number" step="0.01" th:field="*{giaBan}" required><br>
         <label th:text="#{product.quantity}">Số lượng (tổng SP):</label>
-        <input type="number" min="0" th:field="*{soLuong}" class="form-control" style="max-width:240px" placeholder="0"><br>
+        <input type="number" min="0" th:value="${totalStock != null ? totalStock : 0}" class="form-control" style="max-width:240px" placeholder="0" readonly>
+        <div class="form-text text-muted">Tổng tồn kho được tính từ các biến thể của sản phẩm; quản lý số lượng chi tiết ở trang biến thể sau khi lưu.</div>
+        <br>
         <!-- Chọn trước Kích cỡ và Màu sắc để tạo biến thể nhanh sau khi lưu -->
         <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;">
             <div>
@@ -89,6 +91,59 @@
                     </div>
                 </li>
             </ul>
+        </div>
+        <!-- Variants summary (hiển thị khi sửa) giống nền tảng lớn: editable table -> gửi bulk update -->
+        <div th:if="${sanPham.id != null}" class="variants-summary" style="margin-top:18px">
+            <h4>Biến thể (Tóm tắt)</h4>
+            <form th:action="@{'/admin/products/' + ${sanPham.id} + '/variants/bulk'}" method="post" enctype="multipart/form-data" id="variantsBulkForm">
+                <input type="hidden" name="rowCount" id="rowCount" value="0" />
+                <table class="table table-sm table-bordered" style="max-width:900px">
+                    <thead>
+                    <tr>
+                        <th>Kích cỡ</th>
+                        <th>Màu sắc</th>
+                        <th style="width:120px">Số lượng</th>
+                        <th style="width:160px">Giá bán</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody id="variantsTableBody">
+                    <tr th:each="ct,iterStat : ${chiTiets}">
+                        <td>
+                            <span th:text="${ct.kichCo != null ? ct.kichCo.tenKichCo : '-'}"></span>
+                            <input type="hidden" name="rowKcIds" th:value="${ct.kichCo != null ? ct.kichCo.id : ''}" />
+                        </td>
+                        <td>
+                            <span th:text="${ct.mauSac != null ? ct.mauSac.tenMauSac : '-'}"></span>
+                            <input type="hidden" name="rowMsIds" th:value="${ct.mauSac != null ? ct.mauSac.id : ''}" />
+                        </td>
+                        <td>
+                            <input type="number" name="rowQtys" min="0" class="form-control form-control-sm" th:value="${ct.soLuong != null ? ct.soLuong : 0}" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="rowPrices" class="form-control form-control-sm" th:value="${ct.giaBanLe != null ? ct.giaBanLe : ''}" />
+                        </td>
+                        <td>
+                            <select name="rowStatus" class="form-select form-select-sm">
+                                <option th:selected="${ct.trangThai == true}" value="1">Hoạt động</option>
+                                <option th:selected="${ct.trangThai == false}" value="0">Tạm ẩn</option>
+                            </select>
+                        </td>
+                        <td style="width:120px">
+                            <input type="hidden" name="rowIds" th:value="${ct.id}" />
+                            <button type="button" class="btn btn-success btn-sm save-variant" th:attr="data-id=${ct.id}">Lưu</button>
+                        </td>
+                    </tr>
+                    <tr th:if="${chiTiets == null or #lists.isEmpty(chiTiets)}">
+                        <td colspan="6" class="text-muted">Chưa có biến thể — bạn có thể tạo nhanh bằng cách chọn kích cỡ và màu sắc phía trên.</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="submit" id="saveVariantsBtn" class="btn btn-primary btn-sm">Lưu biến thể</button>
+                    <a th:href="@{'/admin/products/' + ${sanPham.id} + '/variants'}" class="btn btn-outline-secondary btn-sm">Quản lý chi tiết</a>
+                </div>
+            </form>
         </div>
         <label th:text="#{product.status}">Trạng thái:</label>
         <input type="checkbox" th:field="*{trangThai}" th:text="#{product.active}"><br>

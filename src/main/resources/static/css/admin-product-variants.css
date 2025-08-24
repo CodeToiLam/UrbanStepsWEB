@@ -13,3 +13,11 @@
 .btn-primary { background:#2563eb; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
 .btn-primary:hover { background:#1e40af; }
 .form-select, .form-control { width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; }
+/* Helper / guidance styles */
+.helper-box{background:#fff7e6;border-left:4px solid #ffc107;padding:12px;margin:10px 0;border-radius:6px}
+.helper-box h4{margin:0 0 6px 0;font-size:1rem}
+.helper-step{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
+.helper-step .step-num{background:#2563eb;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.variant-chip{display:inline-block;background:#eef2ff;padding:6px 10px;border-radius:999px;margin-right:6px;font-weight:600}
+.empty-note{color:#6b7280;font-size:0.95rem}
+.notice{padding:8px;border-radius:6px;background:#f1f5f9;border:1px solid #e2e8f0;color:#334155}

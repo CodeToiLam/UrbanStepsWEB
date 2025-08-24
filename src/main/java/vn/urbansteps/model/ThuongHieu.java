@@ -19,4 +19,6 @@ public class ThuongHieu {
 
     @Column(name = "ten_thuong_hieu", nullable = false)
     private String tenThuongHieu;
+    @Column(name = "gia_multiplier")
+    private java.math.BigDecimal giaMultiplier = java.math.BigDecimal.ONE;
 }

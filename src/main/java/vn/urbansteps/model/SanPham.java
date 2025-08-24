@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -84,7 +86,6 @@ public class SanPham {
     @Column(name = "so_luong_danh_gia")
     private Integer soLuongDanhGia = 0;
 
-    // Tổng số lượng cấp sản phẩm (có thể đồng bộ = tổng biến thể)
     @Column(name = "so_luong")
     private Integer soLuong = 0;
 
@@ -109,6 +110,9 @@ public class SanPham {
 
     @Transient
     private String facebookShopUrl;
+
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DanhGiaSanPham> danhGia = new ArrayList<>();
 
     // Utility methods
     public BigDecimal getGiaSauGiam() {

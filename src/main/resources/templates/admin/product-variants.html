@@ -20,6 +20,14 @@
   <a th:href="@{/admin/products}" class="btn-link" th:text="#{variant.back}">← Quay lại danh sách</a>
 
   <h3 th:text="#{variant.bulkCreate}">Tạo biến thể hàng loạt</h3>
+  <div class="helper-box">
+    <h4>Hướng dẫn nhanh</h4>
+    <div class="helper-step"><div class="step-num">1</div><div>Chọn một hoặc nhiều <strong>Kích cỡ</strong> ở cột bên trái.</div></div>
+    <div class="helper-step"><div class="step-num">2</div><div>Chọn một hoặc nhiều <strong>Màu sắc</strong> ở cột bên phải.</div></div>
+    <div class="helper-step"><div class="step-num">3</div><div>Nhấn nút <strong>"Tạo tổ hợp"</strong> để xem danh sách cặp Kích cỡ × Màu sắc. Sau đó chỉnh Số lượng / Giá / Thêm Ảnh cho từng dòng.</div></div>
+    <div class="helper-step"><div class="step-num">4</div><div>Nhấn <strong>Lưu các biến thể</strong> để lưu vào cơ sở dữ liệu.</div></div>
+    <div class="small-muted" style="margin-top:8px">Gợi ý: nếu chưa biết bắt đầu, thử chọn 1 màu và 3 kích cỡ rồi Tạo tổ hợp.</div>
+  </div>
   <div class="grid-2">
     <div>
       <label th:text="#{variant.size.select}">Chọn nhiều kích cỡ:</label>

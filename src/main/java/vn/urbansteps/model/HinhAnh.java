@@ -40,16 +40,41 @@ public class HinhAnh {
 
     public String getFullImagePath() {
         if (this.duongDan == null) return "/images/no-image.jpg";
-        String p = this.duongDan.trim();
-        // Pass-through for known static roots
-    if (p.startsWith("/images/") || p.startsWith("/uploads/")) {
-            return p;
+
+        // Kiểm tra và đảm bảo đường dẫn đúng định dạng
+        try {
+            String p = this.duongDan.trim();
+            if (p.startsWith("/uploads/")) {
+                // try prefering static images copy if exists
+                String rest = p.substring("/uploads/".length());
+                java.nio.file.Path imagesPath = java.nio.file.Paths.get(System.getProperty("user.dir"))
+                        .resolve("src/main/resources/static/images").resolve(rest.replace('/', java.io.File.separatorChar));
+                if (java.nio.file.Files.exists(imagesPath)) {
+                    return "/images/" + rest;
+                }
+                    java.nio.file.Path projectRoot = java.nio.file.Paths.get(System.getProperty("user.dir"));
+                    java.nio.file.Path[] candidates = new java.nio.file.Path[] {
+                            projectRoot.resolve("src/main/resources/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            projectRoot.resolve("target/classes/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            projectRoot.resolve("uploads").resolve(rest.replace('/', java.io.File.separatorChar))
+                    };
+                    for (java.nio.file.Path candidate : candidates) {
+                        if (java.nio.file.Files.exists(candidate)) {
+                            if (candidate.toString().contains(java.io.File.separator + "images" + java.io.File.separator) || candidate.toString().contains("/images/")) {
+                                return "/images/" + rest;
+                            }
+                            return p; // return original uploads path if that's the one that exists
+                        }
+                    }
+            }
+            if (p.startsWith("/images/")) return p;
+            if (p.startsWith("images/")) return "/" + p;
+            return "/images/" + p;
+        } catch (Exception ignored) {
+            if (this.duongDan.startsWith("/images/")) return this.duongDan;
+            if (this.duongDan.startsWith("images/")) return "/" + this.duongDan;
+            return "/images/" + this.duongDan;
         }
-    if (p.startsWith("images/") || p.startsWith("uploads/")) {
-            return "/" + p;
-        }
-        // Default legacy fallback
-        return "/images/" + p;
     }
 
 }

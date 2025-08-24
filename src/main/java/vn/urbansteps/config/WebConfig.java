@@ -37,11 +37,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/image/")
                 .setCachePeriod(0);
 
-        // Serve uploaded files from filesystem
-        String location = "file:" + System.getProperty("user.dir") + "/" + uploadDir + "/";
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(location)
-                .setCachePeriod(3600);
+    // Serve uploaded files from both classpath static/uploads (if files were placed there)
+    // and from filesystem uploads folder (app.upload.dir) so the app can find uploads saved
+    // by different code paths (some controllers save under src/main/resources/static/uploads,
+    // others write to <projectRoot>/uploads/).
+    String locationFs = "file:" + System.getProperty("user.dir") + "/" + uploadDir + "/";
+    String classpathUploads = "classpath:/static/uploads/";
+    registry.addResourceHandler("/uploads/**")
+        .addResourceLocations(classpathUploads, locationFs)
+        .setCachePeriod(3600);
     }
 
     // i18n: use cookie-based resolver to allow manual change via ?lang and persist across sessions

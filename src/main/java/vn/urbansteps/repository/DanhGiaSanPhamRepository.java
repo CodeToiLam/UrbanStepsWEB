@@ -62,4 +62,7 @@ public interface DanhGiaSanPhamRepository extends JpaRepository<DanhGiaSanPham, 
 
     // Đánh giá mới nhất
     List<DanhGiaSanPham> findTop10ByTrangThaiOrderByCreateAtDesc(Boolean trangThai);
+    
+       // Find reviews for a product without filtering by trangThai (fallback)
+       List<DanhGiaSanPham> findBySanPham_IdOrderByCreateAtDesc(Integer sanPhamId);
 }

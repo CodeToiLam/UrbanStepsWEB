@@ -28,6 +28,7 @@
       <p class="login-subtitle" th:text="#{login.subtitle}">Đăng nhập để tiếp tục mua sắm</p>
 
       <form th:action="@{/dang-nhap}" method="post">
+        <input type="hidden" name="redirectUrl" th:value="${redirectUrl}">
         <div class="form-group input-icon">
           <i class="bi bi-person-fill"></i>
           <input type="text" id="username" name="taiKhoan" class="form-control"

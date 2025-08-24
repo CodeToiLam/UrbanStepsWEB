@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,6 @@ import vn.urbansteps.service.SanPhamChiTietService;
 import vn.urbansteps.repository.HinhAnhRepository;
 import vn.urbansteps.repository.KichCoRepository;
 import vn.urbansteps.repository.MauSacRepository;
-import vn.urbansteps.repository.HinhAnhSanPhamChiTietRepository;
 import vn.urbansteps.repository.HinhAnhSanPhamRepository;
 import vn.urbansteps.service.ImageStorageService;
 import vn.urbansteps.model.HinhAnhSanPham;
@@ -48,12 +48,11 @@ public class AdminProductController {
     @Autowired
     private MauSacRepository mauSacRepository;
     @Autowired
-    private HinhAnhSanPhamChiTietRepository hinhAnhSanPhamChiTietRepository;
-    @Autowired
     private HinhAnhSanPhamRepository hinhAnhSanPhamRepository;
     @Autowired
     private ImageStorageService imageStorageService;
-    // Aspect-based logging in place; no direct service injection needed here
+    @Autowired
+    private vn.urbansteps.service.ProductImageService productImageService;
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
@@ -95,6 +94,8 @@ public class AdminProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public String showAddProductForm(Model model) {
     model.addAttribute("sanPham", new SanPham());
+        // tổng tồn kho mặc định là 0 khi thêm sản phẩm mới
+        model.addAttribute("totalStock", 0);
         // Bổ sung danh sách kích cỡ và màu sắc để chọn trước khi tạo biến thể
         model.addAttribute("kichCos", kichCoRepository.findAll());
         model.addAttribute("mauSacs", mauSacRepository.findAll());
@@ -103,6 +104,7 @@ public class AdminProductController {
 
     @PostMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public String addProduct(@ModelAttribute SanPham sanPham,
                              @RequestParam(value = "mainImage", required = false) MultipartFile mainImage,
                              @RequestParam(value = "detailImages", required = false) MultipartFile[] detailImages,
@@ -111,62 +113,19 @@ public class AdminProductController {
                              @RequestParam(value = "defaultVariantQty", required = false) Integer defaultVariantQty,
                              Model model) {
         try {
-            // 1) Lưu sản phẩm trước để có ID
+            // 1) Chuẩn bị sản phẩm và lưu để có ID
+            if (sanPham.getMaSanPham() == null || sanPham.getMaSanPham().trim().isEmpty()) {
+                String prefix = (sanPham.getThuongHieu() != null && sanPham.getThuongHieu().getTenThuongHieu() != null)
+                        ? sanPham.getThuongHieu().getTenThuongHieu().replaceAll("\\s+", "").toUpperCase()
+                        : "SP";
+                String code = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                sanPham.setMaSanPham(prefix + "-" + code);
+            }
             sanPhamService.save(sanPham);
 
-            // 2) Xử lý upload ảnh đại diện nếu có
-            if (mainImage != null && !mainImage.isEmpty()) {
-                String url = imageStorageService.save(mainImage, "products");
-                // Tạo bản ghi HinhAnh và gán cho sản phẩm
-                HinhAnh hinh = new HinhAnh();
-                hinh.setDuongDan(url);
-                hinh.setLaAnhChinh(true);
-                hinh = hinhAnhRepository.save(hinh);
-
-                sanPham.setIdHinhAnhDaiDien(hinh);
-                sanPhamService.save(sanPham); // cập nhật lại sản phẩm với ảnh đại diện
-
-                // thêm ảnh đại diện vào gallery (tùy chọn)
-                HinhAnhSanPham link = new HinhAnhSanPham();
-                link.setSanPham(sanPham);
-                link.setHinhAnh(hinh);
-                link.setLaAnhChinh(true);
-                link.setThuTu(0);
-                hinhAnhSanPhamRepository.save(link);
-            }
-
-            // 2b) Ảnh chi tiết sản phẩm (gallery)
-            if (detailImages != null && detailImages.length > 0) {
-                System.out.println("[ADD PRODUCT] detailImages length = " + detailImages.length);
-                int order = 1; // 0 đã dùng cho ảnh đại diện nếu có
-                int saved = 0;
-                int idx = 0;
-                for (MultipartFile f : detailImages) {
-                    if (f == null || f.isEmpty()) { idx++; continue; }
-                    String url = imageStorageService.save(f, "products");
-                    HinhAnh img = new HinhAnh();
-                    img.setDuongDan(url);
-                    img.setLaAnhChinh(false);
-                    img = hinhAnhRepository.save(img);
-
-                    boolean makePrimary = (sanPham.getIdHinhAnhDaiDien() == null && idx == 0 && (mainImage == null || mainImage.isEmpty()));
-
-                    HinhAnhSanPham link = new HinhAnhSanPham();
-                    link.setSanPham(sanPham);
-                    link.setHinhAnh(img);
-                    link.setLaAnhChinh(makePrimary);
-                    link.setThuTu(makePrimary ? 0 : order++);
-                    hinhAnhSanPhamRepository.save(link);
-
-                    if (makePrimary) {
-                        sanPham.setIdHinhAnhDaiDien(img);
-                        sanPhamService.save(sanPham);
-                    }
-                    saved++;
-                    idx++;
-                }
-                System.out.println("[ADD PRODUCT] saved detail images = " + saved);
-            }
+            // 2) Handle images using ProductImageService (centralized, safer)
+            productImageService.addMainImage(sanPham, mainImage);
+            productImageService.addDetailImages(sanPham, detailImages);
 
             // 3) Nếu admin đã chọn sẵn kích cỡ/màu sắc ở form, tự động tạo các biến thể (soLuong=0 hoặc default)
             if (preKcIds != null && !preKcIds.isEmpty() && preMsIds != null && !preMsIds.isEmpty()) {
@@ -180,25 +139,27 @@ public class AdminProductController {
                                 .findBySanPhamIdAndKichCoIdAndMauSacId(sanPham.getId(), kcId, msId)
                                 .isPresent();
                         if (exists) continue;
-                        SanPhamChiTiet ct = new SanPhamChiTiet();
+            SanPhamChiTiet ct = new SanPhamChiTiet();
                         ct.setSanPham(sanPham);
-                        ct.setKichCo(kichCoRepository.findById(kcId).orElse(null));
-                        ct.setMauSac(mauSacRepository.findById(msId).orElse(null));
-                        ct.setSoLuong(initQty);
+            vn.urbansteps.model.KichCo kc = kichCoRepository.findById(kcId).orElse(null);
+            vn.urbansteps.model.MauSac ms = mauSacRepository.findById(msId).orElse(null);
+            ct.setKichCo(kc);
+            ct.setMauSac(ms);
+            ct.setSoLuong(initQty);
+            // set price from product with brand multiplier if available
+            try {
+                java.math.BigDecimal base = sanPham.getGiaSauGiam() != null ? sanPham.getGiaSauGiam() : sanPham.getGiaBan();
+                java.math.BigDecimal mult = (sanPham.getThuongHieu() != null && sanPham.getThuongHieu().getGiaMultiplier() != null)
+                    ? sanPham.getThuongHieu().getGiaMultiplier() : java.math.BigDecimal.ONE;
+                if (base != null) ct.setGiaBanLe(base.multiply(mult));
+            } catch (Exception ignored) {}
+            // sku generation removed (not required for this graduation project)
                         ct.setTrangThai(true);
                         sanPhamChiTietService.save(ct);
                         created++;
                     }
                 }
                 System.out.println("[ADD PRODUCT] auto created variants: " + created);
-                // Sau khi tạo biến thể, đồng bộ soLuong tổng = tổng biến thể (nếu có)
-                try {
-                    List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(sanPham.getId());
-                    int sum = 0;
-                    for (SanPhamChiTiet ct : cts) sum += ct.getSoLuong() == null ? 0 : ct.getSoLuong();
-                    sanPham.setSoLuong(sum);
-                    sanPhamService.save(sanPham);
-                } catch (Exception ignored) {}
             }
 
             // Hoàn tất tạo sản phẩm: chuyển hướng sang trang quản lý biến thể riêng
@@ -215,6 +176,14 @@ public class AdminProductController {
             if (!qs.isEmpty()) {
                 redirectUrl.append("?").append(String.join("&", qs));
             }
+            // Sau khi tạo và tự động tạo biến thể (nếu có), cập nhật tổng tồn kho từ biến thể
+            try {
+                List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(sanPham.getId());
+                int total = 0;
+                for (SanPhamChiTiet ct : cts) total += (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                sanPham.setSoLuong(total);
+                sanPhamService.save(sanPham);
+            } catch (Exception ignored) {}
             return redirectUrl.toString();
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
@@ -250,6 +219,22 @@ public class AdminProductController {
                 // Load gallery links ordered by thuTu for drag-drop UI
                 List<vn.urbansteps.model.HinhAnhSanPham> gallery = hinhAnhSanPhamRepository.findBySanPham_IdOrderByThuTuAsc(id);
                 model.addAttribute("gallery", gallery);
+                // tính tổng tồn kho từ các biến thể
+                try {
+                    List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(id);
+                    int total = 0;
+                    for (SanPhamChiTiet ct : cts) total += (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                    model.addAttribute("totalStock", total);
+                    // expose variants to template so admin sees a summary like big platforms
+                    model.addAttribute("chiTiets", cts);
+                    // đồng bộ soLuong trên SanPham
+                    SanPham sp = sanPham.get();
+                    sp.setSoLuong(total);
+                    sanPhamService.save(sp);
+                } catch (Exception ignored) {
+                    model.addAttribute("totalStock", 0);
+                    model.addAttribute("chiTiets", java.util.Collections.emptyList());
+                }
             } else {
                 model.addAttribute("error", "Sản phẩm không tồn tại");
             }
@@ -351,8 +336,7 @@ public class AdminProductController {
             existing.setMoTa(sanPham.getMoTa());
             existing.setGiaNhap(sanPham.getGiaNhap());
             existing.setGiaBan(sanPham.getGiaBan());
-            // Số lượng tổng sản phẩm cấp SP (độc lập với biến thể)
-            existing.setSoLuong(sanPham.getSoLuong());
+            // Số lượng tổng sản phẩm cấp SP được quản lý qua biến thể; không cập nhật trực tiếp ở đây.
             existing.setTrangThai(sanPham.getTrangThai());
             if (existing.getMaSanPham() == null || existing.getMaSanPham().trim().isEmpty()) {
                 existing.setMaSanPham("SP_DEFAULT_" + id);
@@ -414,6 +398,14 @@ public class AdminProductController {
                     hinhAnhSanPhamRepository.save(link);
                 }
             }
+            // Sau khi cập nhật, đồng bộ tổng tồn kho từ biến thể
+            try {
+                List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(id);
+                int total = 0;
+                for (SanPhamChiTiet ct : cts) total += (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                existing.setSoLuong(total);
+                sanPhamService.save(existing);
+            } catch (Exception ignored) {}
             // log by aspect
             return "redirect:/admin/products";
         } catch (Exception e) {
@@ -514,6 +506,8 @@ public class AdminProductController {
                                      @RequestParam("rowMsIds") List<Integer> rowMsIds,
                                      @RequestParam("rowQtys") List<Integer> rowQtys,
                                      @RequestParam(value = "rowPrices", required = false) List<java.math.BigDecimal> rowPrices,
+                                     @RequestParam(value = "rowIds", required = false) List<Integer> rowIds,
+                                     @RequestParam(value = "rowStatus", required = false) List<Integer> rowStatus,
                                      @RequestParam Map<String, Object> params,
                                      org.springframework.web.multipart.MultipartHttpServletRequest request) {
         try {
@@ -525,6 +519,7 @@ public class AdminProductController {
                 Integer msId = rowMsIds.get(i);
                 Integer qty = rowQtys.get(i);
                 java.math.BigDecimal price = (rowPrices != null && rowPrices.size() > i) ? rowPrices.get(i) : null;
+                Integer status = (rowStatus != null && rowStatus.size() > i) ? rowStatus.get(i) : null;
 
                 // Nếu biến thể đã tồn tại => cập nhật số lượng và giá như các nền tảng lớn
                 java.util.Optional<SanPhamChiTiet> existedOpt = sanPhamChiTietService
@@ -533,6 +528,7 @@ public class AdminProductController {
                 if (existedOpt.isPresent()) {
                     ct = existedOpt.get();
                     ct.setSoLuong(qty == null ? (ct.getSoLuong() == null ? 0 : ct.getSoLuong()) : qty);
+                    if (status != null) ct.setTrangThai(status == 1);
                     if (price != null) {
                         // dùng updatePrice để lưu lịch sử giá cũ
                         ct.updatePrice(price);
@@ -542,10 +538,21 @@ public class AdminProductController {
                 } else {
                     ct = new SanPhamChiTiet();
                     ct.setSanPham(sp);
-                    ct.setKichCo(kichCoRepository.findById(kcId).orElse(null));
-                    ct.setMauSac(mauSacRepository.findById(msId).orElse(null));
+                    vn.urbansteps.model.KichCo kc = kichCoRepository.findById(kcId).orElse(null);
+                    vn.urbansteps.model.MauSac ms = mauSacRepository.findById(msId).orElse(null);
+                    ct.setKichCo(kc);
+                    ct.setMauSac(ms);
                     ct.setSoLuong(qty == null ? 0 : qty);
                     if (price != null) ct.setGiaBanLe(price);
+                    else {
+                        try {
+                            java.math.BigDecimal base = sp.getGiaSauGiam() != null ? sp.getGiaSauGiam() : sp.getGiaBan();
+                            java.math.BigDecimal mult = (sp.getThuongHieu() != null && sp.getThuongHieu().getGiaMultiplier() != null)
+                                    ? sp.getThuongHieu().getGiaMultiplier() : java.math.BigDecimal.ONE;
+                            if (base != null) ct.setGiaBanLe(base.multiply(mult));
+                        } catch (Exception ignored) {}
+                    }
+                    // sku generation removed (not required for this graduation project)
                     ct.setTrangThai(true);
                     ct = sanPhamChiTietService.save(ct);
                 }
@@ -554,26 +561,55 @@ public class AdminProductController {
                 String field = "rowImages_" + i;
                 if (request != null) {
                     List<org.springframework.web.multipart.MultipartFile> files = request.getFiles(field);
-                    int vOrder = 0;
-                    for (org.springframework.web.multipart.MultipartFile f : files) {
-                        if (f == null || f.isEmpty()) continue;
-                        String url = imageStorageService.save(f, "variants");
-                        HinhAnh img = new HinhAnh();
-                        img.setDuongDan(url);
-                        img.setLaAnhChinh(vOrder == 0);
-                        img = hinhAnhRepository.save(img);
-
-                        vn.urbansteps.model.HinhAnh_SanPhamChiTiet link = new vn.urbansteps.model.HinhAnh_SanPhamChiTiet();
-                        link.setSanPhamChiTiet(ct);
-                        link.setHinhAnh(img);
-                        hinhAnhSanPhamChiTietRepository.save(link);
-                        vOrder++;
+                    if (files != null && !files.isEmpty()) {
+                        // delegate to service that creates HinhAnh and HinhAnh_SanPhamChiTiet links
+                        productImageService.addVariantImages(ct, files);
                     }
                 }
             }
+            // sau khi xử lý bulk, cập nhật tổng tồn kho cho sản phẩm
+            try {
+                List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(id);
+                int total = 0;
+                for (SanPhamChiTiet ct : cts) total += (ct.getSoLuong() == null ? 0 : ct.getSoLuong());
+                SanPham sp2 = sanPhamService.findById(id).orElse(null);
+                if (sp2 != null) { sp2.setSoLuong(total); sanPhamService.save(sp2); }
+            } catch (Exception ignored) {}
             return "redirect:/admin/products/edit/" + id;
         } catch (Exception e) {
             return "redirect:/admin/products/edit/" + id + "?error=true";
+        }
+    }
+
+    // Update single variant via ajax
+    @PostMapping("/products/{id}/variants/{variantId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public ResponseEntity<?> updateSingleVariant(@PathVariable Integer id, @PathVariable Integer variantId,
+                                                 @RequestParam(value = "soLuong", required = false) Integer soLuong,
+                                                 @RequestParam(value = "giaBanLe", required = false) java.math.BigDecimal giaBanLe,
+                                                 @RequestParam(value = "trangThai", required = false) Integer trangThai) {
+        try {
+            Optional<SanPhamChiTiet> opt = sanPhamChiTietService.findById(variantId);
+            if (opt.isEmpty() || opt.get().getSanPham() == null || !opt.get().getSanPham().getId().equals(id)) {
+                return ResponseEntity.badRequest().body("Invalid variantId");
+            }
+            SanPhamChiTiet ct = opt.get();
+            if (soLuong != null) ct.setSoLuong(soLuong);
+            if (giaBanLe != null) ct.updatePrice(giaBanLe);
+            if (trangThai != null) ct.setTrangThai(trangThai == 1);
+            sanPhamChiTietService.save(ct);
+            // update product totalStock
+            try {
+                List<SanPhamChiTiet> cts = sanPhamChiTietService.getBySanPhamId(id);
+                int total = 0;
+                for (SanPhamChiTiet c : cts) total += (c.getSoLuong() == null ? 0 : c.getSoLuong());
+                SanPham sp = sanPhamService.findById(id).orElse(null);
+                if (sp != null) { sp.setSoLuong(total); sanPhamService.save(sp); }
+            } catch (Exception ignored) {}
+            return ResponseEntity.ok(Map.of("status","ok"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

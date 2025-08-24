@@ -85,12 +85,7 @@
                                                     <strong th:text="#{cart.color}"></strong> <span th:text="${item.mauSac != null ? item.mauSac : 'N/A'}">Đen</span>
                                                 </span>
                                             </div>
-                                            <div class="product-sku">
-                                                <small class="text-muted">
-                                                    <span th:text="#{cart.code}"></span>
-                                                    <span th:text="${(item.sanPhamChiTiet != null && item.sanPhamChiTiet.sanPham != null) ? item.sanPhamChiTiet.sanPham.maSanPham : 'N/A'}">ABC123</span>
-                                                </small>
-                                            </div>
+                                            <!-- product code displayed in product details above; SKU removed -->
 
                                         </div>
                                     </div>

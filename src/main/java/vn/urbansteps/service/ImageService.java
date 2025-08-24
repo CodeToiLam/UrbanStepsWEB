@@ -1,24 +1,22 @@
 package vn.urbansteps.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.urbansteps.model.HinhAnh;
 import vn.urbansteps.model.SanPham;
-import vn.urbansteps.model.HinhAnhSanPham;
-import vn.urbansteps.repository.HinhAnhSanPhamRepository;
+// import vn.urbansteps.repository.HinhAnhRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service mới để xử lý tất cả logic ảnh một cách đơn giản và nhất quán
  */
 @Service
 public class ImageService {
-
-    @Autowired
-    private HinhAnhSanPhamRepository hinhAnhSanPhamRepository;
+    
+    // @Autowired
+    // private HinhAnhRepository hinhAnhRepository;
     
     /**
      * Chuẩn hóa đường dẫn ảnh - tất cả ảnh đều có format: /images/brand/product/main.ext
@@ -30,22 +28,66 @@ public class ImageService {
         
         rawPath = rawPath.trim();
         
-        // Pass-through for known static roots
+        // Nếu đã đúng format thì return
+        // If already absolute under /images/ or /uploads/ return as-is (but try to map uploads->images when possible)
         if (rawPath.startsWith("/images/") || rawPath.startsWith("/uploads/")) {
+            // If path is under /uploads/, try to see if the same file exists under any known images location and prefer that
+            try {
+                if (rawPath.startsWith("/uploads/")) {
+                    String rest = rawPath.substring("/uploads/".length());
+
+                    // candidate locations to look for the file
+                    java.nio.file.Path projectRoot = java.nio.file.Paths.get(System.getProperty("user.dir"));
+                    java.nio.file.Path[] candidates = new java.nio.file.Path[] {
+                            projectRoot.resolve("src/main/resources/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            projectRoot.resolve("target/classes/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            // also check if uploads folder itself contains the file (in case web path should remain /uploads/)
+                            projectRoot.resolve("uploads").resolve(rest.replace('/', java.io.File.separatorChar))
+                    };
+
+                    for (java.nio.file.Path p : candidates) {
+                        if (java.nio.file.Files.exists(p)) {
+                            // prefer /images/ when we found a copy under images
+                            if (p.toString().contains(java.io.File.separator + "images" + java.io.File.separator) || p.toString().contains("/images/")) {
+                                return "/images/" + rest;
+                            }
+                            // otherwise return original uploads path if that's the one that exists
+                            return rawPath;
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+
             return rawPath;
         }
-        
-        // Allow relative roots for uploads/images
+
+        // If starts with images/ or uploads/ (without leading slash) add slash and return
         if (rawPath.startsWith("images/") || rawPath.startsWith("uploads/")) {
-            return "/" + rawPath;
+            String candidate = "/" + rawPath;
+            // same uploads -> images mapping for non-leading-slash case
+            if (candidate.startsWith("/uploads/")) {
+                try {
+                    String rest = candidate.substring("/uploads/".length());
+                    java.nio.file.Path projectRoot = java.nio.file.Paths.get(System.getProperty("user.dir"));
+                    java.nio.file.Path[] candidates = new java.nio.file.Path[] {
+                            projectRoot.resolve("src/main/resources/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            projectRoot.resolve("target/classes/static/images").resolve(rest.replace('/', java.io.File.separatorChar)),
+                            projectRoot.resolve("uploads").resolve(rest.replace('/', java.io.File.separatorChar))
+                    };
+                    for (java.nio.file.Path p : candidates) {
+                        if (java.nio.file.Files.exists(p)) {
+                            if (p.toString().contains(java.io.File.separator + "images" + java.io.File.separator) || p.toString().contains("/images/")) {
+                                return "/images/" + rest;
+                            }
+                            return candidate; // prefer uploads path if uploads folder contains it
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+            return candidate;
         }
 
-        // Loại bỏ "images/" ở đầu nếu có
-        if (rawPath.startsWith("images/")) {
-            rawPath = rawPath.substring(7);
-        }
-        
-        // Thêm /images/ vào đầu
+        // Otherwise default to images/ namespace (legacy data)
         return "/images/" + rawPath;
     }
     
@@ -65,30 +107,37 @@ public class ImageService {
      */
     public List<HinhAnh> createSimpleGallery(SanPham sanPham) {
         List<HinhAnh> gallery = new ArrayList<>();
-
+        
         if (sanPham == null || sanPham.getId() == null) {
             return gallery;
         }
-
-        try {
-            // 1) Ưu tiên lấy gallery từ DB link HinhAnhSanPham (đúng với flow upload hiện tại)
-            List<HinhAnhSanPham> links = hinhAnhSanPhamRepository.findBySanPham_IdOrderByThuTuAsc(sanPham.getId());
-            if (links != null && !links.isEmpty()) {
-                gallery = links.stream()
-                        .map(HinhAnhSanPham::getHinhAnh)
-                        .filter(java.util.Objects::nonNull)
-                        .collect(Collectors.toList());
-            }
-
-            // 2) Fallback: nếu chưa có ảnh gallery thì dùng ảnh đại diện (nếu có)
+        
+    try {
+            
+            // Vì dữ liệu DB mapping sai, tạm thời sử dụng file system
+            gallery = createGalleryFromFileSystem(sanPham);
+            
+            // Nếu vẫn không có ảnh, sử dụng ảnh đại diện
             if (gallery.isEmpty() && sanPham.getIdHinhAnhDaiDien() != null) {
-                HinhAnh fallback = sanPham.getIdHinhAnhDaiDien();
-                // Bảo đảm đường dẫn hiển thị đúng
-                fallback.setDuongDan(normalizeImagePath(fallback.getDuongDan()));
-                gallery.add(fallback);
+                String mainImagePath = getProductMainImage(sanPham);
+                
+                HinhAnh fallbackImage = new HinhAnh();
+                fallbackImage.setId(sanPham.getIdHinhAnhDaiDien().getId());
+                fallbackImage.setDuongDan(mainImagePath);
+                fallbackImage.setMoTa("Main image");
+                fallbackImage.setThuTu(1);
+                fallbackImage.setLaAnhChinh(true);
+                gallery.add(fallbackImage);
+                
+                // fallback main image used
             }
-        } catch (Exception ignored) {}
-
+            
+            // gallery created
+            
+        } catch (Exception e) {
+            // ignore errors to avoid noisy logs
+        }
+        
         return gallery;
     }
     
@@ -111,10 +160,6 @@ public class ImageService {
             if (normalizedPath.contains("/")) {
                 String[] pathParts = normalizedPath.split("/");
                 if (pathParts.length >= 4) { // ["", "images", "brand", "product", "image.jpg"]
-                    // Nếu là uploads => bỏ qua logic này (không suy luận từ filesystem)
-                    if ("uploads".equalsIgnoreCase(pathParts[1])) {
-                        return gallery; // trả về rỗng để fallback dùng ảnh đại diện
-                    }
                     String brand = pathParts[2];
                     String productFolder = pathParts[3];
                     String basePath = "/images/" + brand + "/" + productFolder + "/";
@@ -164,7 +209,7 @@ public class ImageService {
     public void processProductListImages(List<SanPham> products) {
         if (products == null) return;
         
-        // normalize list
+    // normalize list
         
         for (SanPham product : products) {
             if (product.getIdHinhAnhDaiDien() != null) {
@@ -181,7 +226,7 @@ public class ImageService {
             }
         }
         
-        // done
+    // done
     }
     
     /**

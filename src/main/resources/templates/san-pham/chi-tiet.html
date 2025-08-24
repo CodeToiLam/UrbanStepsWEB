@@ -80,13 +80,13 @@
                         <div class="thumbnails-column" th:if="${productImages.size() > 1}">
                             <div class="thumbnails-wrapper">
                                 <div class="thumbnail-scroll-container" id="thumbnailScrollContainer">
-                    <div th:each="img, imgStat : ${productImages}"
+                                    <div th:each="img, imgStat : ${productImages}"
                                          th:class="${imgStat.index == 0 ? 'thumbnail-item active' : 'thumbnail-item'}"
                                          th:data-image="${img.duongDan}"
                                          th:data-index="${imgStat.index}"
                                          onclick="changeMainImage(this)">
                                         <div class="thumbnail-frame">
-                        <img th:src="${img.fullImagePath != null ? img.fullImagePath : img.duongDan}"
+                                            <img th:src="${img.duongDan}"
                                                  th:alt="${product.tenSanPham + ' - Ảnh ' + (imgStat.count)}"
                                                  class="thumbnail-img"
                                                  onerror="this.style.display='none'; this.parentElement.parentElement.style.display='none'; if(window.updateImageCounter) window.updateImageCounter();">
@@ -122,8 +122,8 @@
                                 </div>
 
                                 <!-- Main product image -->
-                          <img id="main-product-image"
-                              th:src="${productImages[0].fullImagePath != null ? productImages[0].fullImagePath : productImages[0].duongDan}"
+                                <img id="main-product-image"
+                                     th:src="${productImages[0].duongDan}"
                                      th:alt="${product.tenSanPham}"
                                      class="main-product-image"
                                      onerror="this.onerror=null; this.src='/images/no-image.jpg';">
@@ -147,15 +147,15 @@
 
                     <!-- Fallback for single image or no images -->
                     <div class="single-image-container" th:if="${productImages == null or #lists.isEmpty(productImages) or productImages.size() == 1}">
-                    <img id="main-product-image-single"
-                        th:if="${productImages != null and !#lists.isEmpty(productImages)}"
-                        th:src="${productImages[0].fullImagePath != null ? productImages[0].fullImagePath : productImages[0].duongDan}"
+                        <img id="main-product-image-single"
+                             th:if="${productImages != null and !#lists.isEmpty(productImages)}"
+                             th:src="${productImages[0].duongDan}"
                              th:alt="${product.tenSanPham}"
                              class="main-product-image"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
                         <img th:unless="${productImages != null and !#lists.isEmpty(productImages)}"
                              id="main-product-image-single"
-                        th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.fullImagePath : '/images/no-image.jpg'}"
+                             th:src="${product.idHinhAnhDaiDien != null ? product.idHinhAnhDaiDien.duongDan : '/images/no-image.jpg'}"
                              th:alt="${product.tenSanPham}"
                              class="main-product-image"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';">
@@ -185,9 +185,30 @@
             <div class="col-md-6">
                 <h1 class="product-title" th:text="${product.tenSanPham}">Tên sản phẩm</h1>
 
-            <div class="product-code mb-3">
-                <span th:text="#{spct.detail.code}"></span>
-                <span th:text="${product.maSanPham}" class="code">SP001</span>
+                <style>
+                    /* Make brand more prominent when displayed under product code */
+                    .product-info .info-value {
+                        font-size: 1.05rem;
+                        font-weight: 600;
+                        color: #2c3e50;
+                        margin-left: 6px;
+                    }
+                    /* Ensure review list area stands out */
+                    #review-list p { margin: 0.25rem 0; }
+                    .review-stars .review-star { color: #ccc; font-size:1.1rem; margin-right:4px; }
+                    .review-stars .review-star.filled, #star-rating .star.filled { color: #f5b301; }
+                    #star-rating .star { color: #ccc; font-size:22px; margin-right:6px; }
+                </style>
+
+            <div class="product-meta d-flex align-items-center mb-3">
+                <div class="product-code d-flex align-items-center me-4">
+                    <span class="me-2 text-muted" th:text="#{spct.detail.code}">Mã Sản Phẩm:</span>
+                    <span th:text="${product.maSanPham}" class="code">SP001</span>
+                </div>
+                <div class="product-brand" th:if="${product.thuongHieu != null}">
+                    <span class="info-label text-muted me-2" th:text="#{spct.brand}">Thương hiệu</span>
+                    <span class="info-value" th:text="${product.thuongHieu.tenThuongHieu}">Nike</span>
+                </div>
             </div>
 
         <div class="product-price mb-4">
@@ -285,13 +306,50 @@
                 <p th:text="${product.moTa}">Mô tả sản phẩm sẽ hiển thị ở đây...</p>
             </div>
 
-            <!-- Thông tin thương hiệu và xuất xứ -->
-            <div class="product-info">
-                <div class="info-item" th:if="${product.thuongHieu != null}">
-                    <span class="info-label" th:text="#{spct.brand}"></span>
-                    <span class="info-value" th:text="${product.thuongHieu.tenThuongHieu}">Nike</span>
+            <!-- Đánh giá sản phẩm -->
+            <div id="review-section" class="product-reviews mb-5" th:attr="data-product-id=${product.id}">
+                <h5 th:text="#{product.detail.reviews}">Đánh giá sản phẩm</h5>
+                <div id="product-rating-summary" class="mb-2 d-flex align-items-center gap-2">
+                    <span th:if="${product.diemDanhGia != null}" class="average-rating" th:text="${product.diemDanhGia}">0</span>
+                    <span th:if="${product.soLuongDanhGia != null}" class="review-count" th:text="'(' + ${product.soLuongDanhGia} + ' đánh giá)'"></span>
+                </div>
+                <div id="review-message"></div>
+                <div id="review-form-area" class="mt-3">
+                    <form id="review-form" th:if="${#authentication.name != 'anonymousUser'}" class="review-box">
+                        <div class="box-header">
+                            <div id="star-rating" class="review-stars" style="cursor:pointer; user-select:none;">
+                                <span class="star" data-value="1">☆</span>
+                                <span class="star" data-value="2">☆</span>
+                                <span class="star" data-value="3">☆</span>
+                                <span class="star" data-value="4">☆</span>
+                                <span class="star" data-value="5">☆</span>
+                            </div>
+                            <input type="hidden" name="diemDanhGia" value="5">
+                        </div>
+                        <textarea name="noiDung" placeholder="Viết bình luận của bạn..." required></textarea>
+                        <button type="submit" class="review-submit-btn" title="Gửi đánh giá">➤</button>
+                    </form>
+                    <div th:unless="${#authentication.name != 'anonymousUser'}">
+                        <p><a th:href="@{/dang-nhap(redirectUrl='/san-pham/chi-tiet/' + ${product.id})}">Đăng nhập</a> để gửi đánh giá.</p>
+                    </div>
+                </div>
+                <div id="review-list" class="mt-4">
+                    <div th:each="review : ${product.danhGia}" class="review-item">
+                            <div class="avatar" th:text="${review.taiKhoan != null ? (review.taiKhoan.hoTenTaiKhoan != null ? #strings.substring(review.taiKhoan.hoTenTaiKhoan, 0,1) : (review.taiKhoan.taiKhoan != null ? #strings.substring(review.taiKhoan.taiKhoan,0,1) : 'A')) : 'A'}">A</div>
+                        <div class="meta">
+                            <div class="name" th:text="${review.taiKhoan != null ? (review.taiKhoan.hoTenTaiKhoan != null ? review.taiKhoan.hoTenTaiKhoan : review.taiKhoan.taiKhoan) : 'Ẩn danh'}">Tên người dùng</div>
+                            <div class="time" th:text="${review.createAt != null ? #temporals.format(review.createAt, 'dd/MM/yyyy') : ''}">01/01/2025</div>
+                            <div class="review-stars">
+                                <span th:each="star : ${#numbers.sequence(1, 5)}" class="review-star"
+                                      th:classappend="${star <= review.diemDanhGia} ? ' filled' : ''">☆</span>
+                            </div>
+                            <p th:text="${review.noiDung}">Nội dung đánh giá</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- duplicate brand block removed -->
         </div>
     </div>
 
@@ -302,8 +360,8 @@
             <div class="col-md-3 mb-4" th:each="relatedProduct : ${relatedProducts}">
                 <div class="card product-card h-100">
                     <a th:href="@{/san-pham/chi-tiet/{id}(id=${relatedProduct.id ?: 0})}" class="text-decoration-none">
-                    <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
-                        th:src="${relatedProduct.idHinhAnhDaiDien.fullImagePath}"
+                        <img th:if="${relatedProduct.idHinhAnhDaiDien != null}"
+                             th:src="${relatedProduct.idHinhAnhDaiDien.duongDan}"
                              class="card-img-top"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';"
                              th:alt="${relatedProduct.tenSanPham}">
@@ -335,8 +393,8 @@
             <div class="col-md-3 mb-4" th:each="rp : ${recommendedProducts}">
                 <div class="card product-card h-100">
                     <a th:href="@{/san-pham/chi-tiet/{id}(id=${rp.id ?: 0})}" class="text-decoration-none">
-                    <img th:if="${rp.idHinhAnhDaiDien != null}"
-                        th:src="${rp.idHinhAnhDaiDien.fullImagePath}"
+                        <img th:if="${rp.idHinhAnhDaiDien != null}"
+                             th:src="${rp.idHinhAnhDaiDien.duongDan}"
                              class="card-img-top"
                              onerror="this.onerror=null; this.src='/images/no-image.jpg';"
                              th:alt="${rp.tenSanPham}">
@@ -365,6 +423,7 @@
 <!-- Include JavaScript file -->
 <th:block layout:fragment="extra-js">
     <script src="/js/chi-tiet-san-pham.js"></script>
+    <script src="/js/product-review.js"></script>
     <script th:inline="javascript">
         // Pass all necessary data to JavaScript
         window.productId = /*[[${product.id}]]*/ null;
@@ -415,7 +474,7 @@
             }
         }
 
-    /* Đa ngôn ngữ (Thymeleaf inline) */
+    /* Đa ngôn ngữ */
     const TEXT_CHOOSE_SIZE        = /*[[#{spct.choose.size}]]*/ 'Chọn kích cỡ';
     const TEXT_CHOOSE_SIZE_COLOR  = /*[[#{spct.choose.size.color}]]*/ 'Chọn kích cỡ và màu';
     const TEXT_ADD_TO_CART        = /*[[#{spct.add.to.cart}]]*/ 'Thêm vào giỏ';

@@ -42,6 +42,8 @@ public class SanPhamChiTiet {
     private MauSac mauSac;
       @Column(name = "so_luong")
     private Integer soLuong;
+
+    // sku field removed per project requirements (simplified for graduation project)
     
     @Column(name = "gia_ban_le")
     private BigDecimal giaBanLe;

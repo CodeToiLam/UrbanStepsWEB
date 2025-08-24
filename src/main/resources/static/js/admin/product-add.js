@@ -71,5 +71,42 @@
         }
       });
     }
+
+    // variants bulk form: set rowCount before submit
+    const variantsForm = document.getElementById('variantsBulkForm');
+    if(variantsForm){
+      variantsForm.addEventListener('submit', (ev)=>{
+        const tbody = document.getElementById('variantsTableBody');
+        if(!tbody) return;
+        const rows = Array.from(tbody.querySelectorAll('tr')).filter(r=>r.querySelector('input[name="rowKcIds"]'));
+        const count = rows.length;
+        const rowCountInput = document.getElementById('rowCount');
+        if(rowCountInput) rowCountInput.value = count;
+        // ensure that selects with name rowStatus are transformed into values suitable for controller
+        // controller expects rowKcIds,rowMsIds,rowQtys,rowPrices (lists). rowStatus is optional; backend ignores unknown params.
+      });
+    }
+    // inline save per variant
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.save-variant'); if(!btn) return;
+      const tr = btn.closest('tr'); if(!tr) return;
+      const variantId = btn.dataset.id;
+      const qtyInput = tr.querySelector('input[name="rowQtys"]');
+      const priceInput = tr.querySelector('input[name="rowPrices"]');
+      const statusSelect = tr.querySelector('select[name="rowStatus"]');
+      const productId = document.querySelector('#productGallery') ? document.querySelector('#productGallery').dataset.productId : null;
+      const data = new URLSearchParams();
+      if(qtyInput) data.append('soLuong', qtyInput.value);
+      if(priceInput) data.append('giaBanLe', priceInput.value);
+      if(statusSelect) data.append('trangThai', statusSelect.value);
+      if(!productId || !variantId) { alert('Không xác định sản phẩm/biến thể'); return; }
+      fetch(`/admin/products/${productId}/variants/${variantId}`,{
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: data.toString()
+      }).then(r=>{ if(!r.ok) throw new Error('Update failed'); return r.json(); })
+        .then(j=>{
+          // reload page to refresh totals or update totalStock if returned
+          location.reload();
+        }).catch(err=>{ console.error(err); alert('Lưu biến thể thất bại'); });
+    });
   });
 })();

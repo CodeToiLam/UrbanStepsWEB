@@ -1,6 +1,8 @@
 package vn.urbansteps.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,9 @@ public class OrderTrackingController {
 
     @Autowired
     private ReturnRequestRepository returnRequestRepository;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping("/don-hang")
     public String donHang(Model model) {
@@ -65,7 +70,7 @@ public class OrderTrackingController {
             // User chưa đăng nhập - hiển thị form tra cứu
             model.addAttribute("isLoggedIn", false);
         }
-
+        
         model.addAttribute("title", "Theo dõi đơn hàng");
         return "don-hang";
     }
@@ -90,7 +95,8 @@ public class OrderTrackingController {
             model.addAttribute("lookupPhone", sdt);
             model.addAttribute("lookupOrderCode", maHoaDon);
             model.addAttribute("isLoggedIn", false);
-            model.addAttribute("title", "Đơn hàng " + maHoaDon);
+            String title = messageSource.getMessage("order.view.detail", null, LocaleContextHolder.getLocale()) + " " + maHoaDon;
+            model.addAttribute("title", title);
             return "don-hang";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tra cứu đơn hàng!");
@@ -101,12 +107,12 @@ public class OrderTrackingController {
     @GetMapping("/don-hang/chi-tiet/{id}")
     public String chiTietDonHang(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+        
         if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
             redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập để xem chi tiết đơn hàng!");
             return "redirect:/dang-nhap";
         }
-
+        
         try {
             String username = auth.getName();
             Optional<TaiKhoan> taiKhoanOpt = taiKhoanRepository.findByTaiKhoan(username);
@@ -117,23 +123,21 @@ public class OrderTrackingController {
             if (taiKhoanOpt.isPresent()) {
                 TaiKhoan taiKhoan = taiKhoanOpt.get();
                 Optional<KhachHang> khachHangOpt = khachHangRepository.findByTaiKhoan(taiKhoan);
-                model.addAttribute("currentUserId", taiKhoanOpt.get().getId());
-
-
+                
                 if (khachHangOpt.isPresent()) {
                     KhachHang khachHang = khachHangOpt.get();
                     HoaDon hoaDon = hoaDonService.getOrderById(id);
 
                     // Kiểm tra đơn hàng có thuộc về khách hàng này không
-                    if (hoaDon != null && hoaDon.getKhachHang().getId().equals(khachHang.getId())) {
+                    if (hoaDon != null && hoaDon.getKhachHang() != null && hoaDon.getKhachHang().getId().equals(khachHang.getId())) {
                         model.addAttribute("order", hoaDon);
-
-                        // Flag: order has a pending/processing return request -> hide "return" button
-                        long pendingCount = returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.NEW)
-                                + returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
-                        model.addAttribute("hasPendingReturn", pendingCount > 0);
+            // Flag: order has a pending/processing return request -> hide "return" button
+            long pendingCount = returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.NEW)
+                + returnRequestRepository.countByOrderIdAndStatus(id, vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
+            model.addAttribute("hasPendingReturn", pendingCount > 0);
                         model.addAttribute("isLoggedIn", true);
-                        model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
+                        String title = messageSource.getMessage("order.view.detail", null, LocaleContextHolder.getLocale()) + " #" + hoaDon.getMaHoaDon();
+                        model.addAttribute("title", title);
                         return "chi-tiet-don-hang";
                     }
                 }
@@ -141,7 +145,7 @@ public class OrderTrackingController {
 
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng hoặc bạn không có quyền xem đơn hàng này!");
             return "redirect:/don-hang";
-
+            
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi xem chi tiết đơn hàng!");
             return "redirect:/don-hang";
@@ -167,14 +171,15 @@ public class OrderTrackingController {
                     + returnRequestRepository.countByOrderIdAndStatus(hoaDon.getId(), vn.urbansteps.model.ReturnRequest.Status.PROCESSING);
             model.addAttribute("hasPendingReturn", pendingCount > 0);
             model.addAttribute("isLoggedIn", false);
-            model.addAttribute("title", "Chi tiết đơn hàng #" + hoaDon.getMaHoaDon());
+            String title = messageSource.getMessage("order.view.detail", null, LocaleContextHolder.getLocale()) + " #" + hoaDon.getMaHoaDon();
+            model.addAttribute("title", title);
             return "chi-tiet-don-hang";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tra cứu đơn hàng!");
             return "redirect:/don-hang";
         }
     }
-
+    
     @PostMapping("/don-hang/huy/{id}")
     public String huyDonHang(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -208,7 +213,7 @@ public class OrderTrackingController {
                         } else {
                             redirectAttributes.addFlashAttribute("error", "Không thể hủy đơn hàng này!");
                         }
-
+                        
                         return "redirect:/don-hang/chi-tiet/" + id;
                     }
                 }
