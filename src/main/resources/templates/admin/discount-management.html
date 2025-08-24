@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html th:lang="${#locale}" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-admin}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="#{discount.title}">Quản lý phiếu giảm giá</title>
+    <title>Quản lý phiếu giảm giá</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/discount-management.css}" />
@@ -14,50 +14,42 @@
 <div layout:fragment="content">
     <div class="admin-container">
         <div class="admin-header">
-            <div class="admin-title"><i class="bi bi-tag-fill"></i> <span th:text="#{discount.title}"></span></div>
+            <div class="admin-title"><i class="bi bi-tag-fill"></i> Quản lý phiếu giảm giá</div>
             <div class="admin-actions">
-                <a th:href="@{/admin/discount-add}" th:title="#{discount.add}" >
-                    <i class="bi bi-plus-circle"></i> <span th:text="#{discount.add.short}"></span>
-                </a>
+                <a th:href="@{/admin/discount-add}" title="Thêm phiếu giảm giá"><i class="bi bi-plus-circle"></i> Thêm phiếu</a>
             </div>
         </div>
-
-        <!-- Bộ lọc -->
-        <form th:action="@{/admin/discount-management}" method="get" class="admin-filter-form"
-              style="margin-bottom: 18px; display: flex; align-items: center; gap: 12px;">
+        <form th:action="@{/admin/discount-management}" method="get" class="admin-filter-form" style="margin-bottom: 18px; display: flex; align-items: center; gap: 12px;">
             <label for="filter" style="color: var(--admin-primary); font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 0;">
-                <i class="bi bi-funnel"></i> <span th:text="#{discount.filter.status}"></span>
+                <i class="bi bi-funnel"></i> Lọc trạng thái
             </label>
-            <select name="filter" id="filter" onchange="this.form.submit()"
-                    style="width: 220px; border-radius: 8px; border: 1.5px solid #b0bec5; padding: 8px 14px; font-size: 1.05rem;">
-                <option th:value="all" th:selected="${filter == 'all'}" th:text="#{discount.filter.all}"></option>
-                <option th:value="active" th:selected="${filter == 'active'}" th:text="#{discount.filter.active}"></option>
-                <option th:value="expiring" th:selected="${filter == 'expiring'}" th:text="#{discount.filter.expiring}"></option>
-                <option th:value="inactive" th:selected="${filter == 'inactive'}" th:text="#{discount.filter.inactive}"></option>
+            <select name="filter" id="filter" onchange="this.form.submit()" style="width: 220px; border-radius: 8px; border: 1.5px solid #b0bec5; padding: 8px 14px; font-size: 1.05rem;">
+                <option th:value="all" th:selected="${filter == 'all'}">Tất cả</option>
+                <option th:value="active" th:selected="${filter == 'active'}">Đang hoạt động</option>
+                <option th:value="expiring" th:selected="${filter == 'expiring'}">Sắp hết hạn</option>
+                <option th:value="inactive" th:selected="${filter == 'inactive'}">Ngừng hoạt động</option>
             </select>
         </form>
-
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-        <!-- Danh sách -->
         <div class="admin-list-box">
             <table class="admin-table">
                 <thead>
                 <tr>
-                    <th th:text="#{common.index}">STT</th>
-                    <th th:text="#{discount.code}">Mã phiếu</th>
-                    <th th:text="#{discount.name}">Tên phiếu</th>
-                    <th th:text="#{discount.desc}">Mô tả</th>
-                    <th th:text="#{discount.quantity}">Số lượng</th>
-                    <th th:text="#{discount.used}">Số lượng đã sử dụng</th>
-                    <th th:text="#{discount.start}">Ngày bắt đầu</th>
-                    <th th:text="#{discount.end}">Ngày kết thúc</th>
-                    <th th:text="#{discount.min}">Giảm tối thiểu</th>
-                    <th th:text="#{discount.max}">Giảm tối đa</th>
-                    <th th:text="#{discount.applyAll}">Áp dụng tất cả</th>
-                    <th th:text="#{discount.status}">Trạng thái</th>
-                    <th th:text="#{common.action}">Hành động</th>
+                    <th>STT</th>
+                    <th>Mã phiếu</th>
+                    <th>Tên phiếu</th>
+                    <th>Mô tả</th>
+                    <th>Số lượng</th>
+                    <th>Số lượng đã sử dụng</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Giảm tối thiểu</th>
+                    <th>Giảm tối đa</th>
+                    <th>Áp dụng tất cả</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -65,40 +57,33 @@
                     <td th:text="${iterStat.index + 1}"></td>
                     <td th:text="${pg.maPhieuGiamGia}"></td>
                     <td th:text="${pg.tenPhieuGiamGia}"></td>
-                    <td th:text="${pg.moTa} ?: #{common.na}"></td>
+                    <td th:text="${pg.moTa} ?: 'N/A'"></td>
                     <td th:text="${pg.soLuong} ?: '0'"></td>
                     <td th:text="${pg.soLuongDaSuDung} ?: '0'"></td>
-                    <td th:text="${#temporals.format(pg.ngayBatDau, 'dd/MM/yyyy HH:mm')} ?: #{common.na}"></td>
-                    <td th:text="${#temporals.format(pg.ngayKetThuc, 'dd/MM/yyyy HH:mm')} ?: #{common.na}"></td>
+                    <td th:text="${#temporals.format(pg.ngayBatDau, 'dd/MM/yyyy HH:mm')} ?: 'N/A'"></td>
+                    <td th:text="${#temporals.format(pg.ngayKetThuc, 'dd/MM/yyyy HH:mm')} ?: 'N/A'"></td>
                     <td th:text="${pg.giaTriGiam} ?: '0'"></td>
                     <td th:text="${pg.giamToiDa} ?: '0'"></td>
-                    <td th:text="${pg.apDungChoTatCa ? #{common.yes} : #{common.no}}"></td>
-                    <td th:text="${pg.trangThai ? #{discount.active} : #{discount.inactive}}"></td>
+                    <td th:text="${pg.apDungChoTatCa ? 'Có' : 'Không'}"></td>
+                    <td th:text="${pg.trangThai ? 'Hoạt động' : 'Ngừng'}"></td>
                     <td class="action-column">
-                        <a th:href="@{/admin/discount-edit/{id}(id=${pg.id})}" class="admin-icon-btn" th:title="#{common.edit}">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                        <a th:href="@{/admin/discount-delete/{id}(id=${pg.id})}" class="admin-icon-btn"
-                           th:onclick="'return confirm(\'' + #{discount.confirm.disable} + '\')'"
-                           th:title="#{common.delete}">
-                            <i class="fa-solid fa-trash"></i>
-                        </a>
+                        <a th:href="@{/admin/discount-edit/{id}(id=${pg.id})}" class="admin-icon-btn" title="Sửa phiếu giảm giá"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a th:href="@{/admin/discount-delete/{id}(id=${pg.id})}" class="admin-icon-btn" onclick="return confirm('Bạn có chắc chắn muốn vô hiệu hóa phiếu này?')" title="Vô hiệu hóa phiếu giảm giá"><i class="fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-
         <div th:if="${discounts == null or #lists.isEmpty(discounts)}" class="alert alert-warning">
-            <i class="bi bi-exclamation-triangle"></i> <span th:text="#{discount.empty}"></span>
+            <i class="bi bi-exclamation-triangle"></i> Không có phiếu giảm giá nào.
         </div>
 
-        <h3 class="mt-4" th:text="#{discount.stats(${#temporals.year(#temporals.createNow())})}">Thống kê theo tháng</h3>
+        <h3 class="mt-4">Thống kê theo tháng (Năm: [[${#temporals.year(#temporals.createNow())}]])</h3>
         <table class="table table-striped">
             <thead>
             <tr>
-                <th th:text="#{discount.month}">Tháng</th>
-                <th th:text="#{discount.count}">Số phiếu</th>
+                <th>Tháng</th>
+                <th>Số phiếu</th>
             </tr>
             </thead>
             <tbody>
@@ -109,12 +94,11 @@
             </tbody>
         </table>
 
-        <a href="/admin/products" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> <span th:text="#{common.back}"></span></a>
+        <a href="/admin/products" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> Quay lại</a>
     </div>
+    </th:block>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/admin.js}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/admin.js}"></script>
 </body>
 </html>
