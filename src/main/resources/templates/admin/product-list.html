@@ -62,7 +62,6 @@
             </td>
 
             <td>
-                <a th:href="@{/admin/products/{id}(id=${p.id})}" class="btn btn-info btn-sm me-1" title="Xem"><i class="bi bi-eye-fill"></i></a>
                 <a th:href="@{/admin/products/edit/{id}(id=${p.id})}" class="btn btn-warning btn-sm me-1" title="Sửa"><i class="bi bi-pen-fill"></i></a>
                 <a th:href="@{/admin/products/{id}/variants(id=${p.id})}" class="btn btn-outline-primary btn-sm me-1" title="Quản lý biến thể"><i class="bi bi-grid"></i></a>
                 <a th:href="@{/admin/products/delete/{id}(id=${p.id})}" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')"><i class="bi bi-trash-fill"></i></a>
