@@ -6,6 +6,8 @@
     <title layout:fragment="title" th:text="#{checkout.title}">Thanh toán - UrbanSteps</title>
     <!-- Thêm: CSRF meta tag -->
     <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- Indicate login state to page scripts (1 = logged in, 0 = anonymous) -->
+    <meta name="isLoggedIn" th:content="${isLoggedIn} ? '1' : '0'"/>
     <th:block layout:fragment="extra-css">
         <link rel="stylesheet" th:href="@{/css/gio-hang.css}">
         <script th:src="@{/js/checkout-fix.js}"></script>
@@ -98,10 +100,10 @@
                                 <input type="text" name="maGiamGia" class="form-control"
                                        th:placeholder="#{checkout.promo.placeholder}"
                                        placeholder="Nhập mã giảm giá nếu có">
-                                <button id="openVoucherModalBtn" class="btn btn-outline-primary" type="button"
-                                        data-bs-toggle="modal" data-bs-target="#voucherModal"
-                                        th:text="#{checkout.chooseVoucher}">Chọn mã
-                                </button>
+                <button id="openVoucherModalBtn" class="btn btn-outline-primary" type="button"
+                    data-bs-toggle="modal" data-bs-target="#voucherModal"
+                    th:text="#{checkout.chooseVoucher}">Chọn mã
+                </button>
                                 <button id="applyVoucherBtn" class="btn btn-secondary" type="button" data-exclusive="1"
                                         th:text="#{checkout.apply}">Áp dụng
                                 </button>
@@ -274,22 +276,7 @@
     <script th:src="@{/js/checkout-core.js}"></script>
     <script th:src="@{/js/checkout-address-new.js}"></script>
     <script th:src="@{/js/thanh-toan.js}"></script>
-    <script>
-        // Fallback mở modal voucher nếu vì lý do nào đó data-bs-toggle không hoạt động
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('openVoucherModalBtn');
-            const modalEl = document.getElementById('voucherModal');
-            if (btn && modalEl && window.bootstrap && bootstrap.Modal) {
-                btn.addEventListener('click', function () {
-                    try {
-                        const m = bootstrap.Modal.getOrCreateInstance(modalEl);
-                        m.show();
-                    } catch (e) {
-                    }
-                });
-            }
-        });
-    </script>
+    <!-- Intentionally no bootstrap API calls here; page scripts run earlier than the bundle. -->
 </th:block>
 
 <!-- Voucher Modal -->
@@ -307,10 +294,14 @@
                 <div class="list-group" th:if="${publicVouchers != null && !publicVouchers.isEmpty()}">
                     <div class="list-group-item d-flex justify-content-between align-items-center"
                          th:each="v : ${publicVouchers}">
-                        <div>
-                            <div class="fw-bold" th:text="${v.maPhieuGiamGia}">PGG</div>
+                        <div style="flex:1; min-width:0;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="fw-bold text-truncate" th:text="${v.maPhieuGiamGia}">PGG</div>
+                                <span th:if="${v.apDungChoTatCa}" class="badge bg-success" th:text="'Áp dụng cho mọi người'"></span>
+                                <span th:if="${!v.apDungChoTatCa}" class="badge bg-secondary" th:text="'Yêu cầu mã riêng'"></span>
+                            </div>
                             <div class="small text-muted" th:text="${v.moTa}">Mô tả</div>
-                            <div class="small">
+                            <div class="small mt-1 text-muted">
                                 <span th:if="${v.giaTriDonToiThieu != null}"><span th:text="#{checkout.minOrder}">Đơn tối thiểu</span>: <span
                                         th:text="${#numbers.formatDecimal(v.giaTriDonToiThieu,0,0)} + 'đ'"></span></span>
                                 <span th:if="${v.giamToiDa != null}"> • <span th:text="#{checkout.maxDiscount}">Giảm tối đa</span>: <span
@@ -319,16 +310,16 @@
                                         th:text="${#temporals.format(v.ngayKetThuc,'dd/MM/yyyy')}"></span></span>
                             </div>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 align-items-center ms-3">
                             <button type="button" class="btn btn-sm btn-outline-secondary"
                                     th:attr="data-code=${v.maPhieuGiamGia}"
                                     onclick="navigator.clipboard.writeText(this.dataset.code)" th:text="#{common.copy}">
                                 Copy
                             </button>
-                            <button type="button" class="btn btn-sm btn-primary" th:attr="data-code=${v.maPhieuGiamGia}"
-                                    onclick="(function(btn){ const code=btn.dataset.code; const sel=document.querySelector('input[name=\'maGiamGia\']'); if(sel){sel.value=code;} document.getElementById('applyVoucherBtn')?.click(); const modalEl=document.getElementById('voucherModal'); const inst=bootstrap.Modal.getInstance(modalEl); inst&&inst.hide(); })(this)"
-                                    th:text="#{checkout.useThis}">Dùng mã
-                            </button>
+                <button type="button" class="btn btn-sm btn-primary use-voucher-btn" th:attr="data-code=${v.maPhieuGiamGia}"
+                    th:disabled="${!v.apDungChoTatCa}" 
+                    th:text="${v.apDungChoTatCa} ? #{checkout.useThis} : #{checkout.restricted}">Dùng mã
+                </button>
                         </div>
                     </div>
                 </div>
@@ -349,6 +340,7 @@
         voucher_applySuccess: '[[#{voucher.applySuccess}]]',
         voucher_invalid: '[[#{voucher.invalid}]]',
         voucher_error: '[[#{voucher.error}]]',
+    voucher_login_required: '[[#{voucher.login.required}]]',
         network_error: '[[#{common.networkError}]]',
         place_failed: '[[#{checkout.placeFailed}]]'
     });

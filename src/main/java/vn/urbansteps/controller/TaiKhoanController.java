@@ -72,6 +72,41 @@ public class TaiKhoanController {
         return "tai-khoan";
     }
 
+    // API: get current user's claimed vouchers
+    @GetMapping("/api/my-vouchers")
+    @ResponseBody
+    public java.util.List<vn.urbansteps.model.TaiKhoanPhieuGiamGia> apiMyVouchers(){
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if(username == null || "anonymousUser".equals(username)) return java.util.List.of();
+        TaiKhoan tk = taiKhoanService.findByTaiKhoan(username);
+        if(tk==null) return java.util.List.of();
+        return phieuGiamGiaService.listUserVouchers(tk.getId());
+    }
+
+    // API: claim a voucher (by id)
+    @PostMapping("/api/claim")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.Map<String,Object>> claimVoucher(@RequestBody java.util.Map<String,Object> body){
+        java.util.Map<String,Object> res = new java.util.HashMap<>();
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        if(username == null || "anonymousUser".equals(username)){
+            res.put("success", false); res.put("message","Vui lòng đăng nhập");
+            return org.springframework.http.ResponseEntity.status(401).body(res);
+        }
+        TaiKhoan tk = taiKhoanService.findByTaiKhoan(username);
+        if(tk==null){ res.put("success", false); res.put("message","Tài khoản không tồn tại"); return org.springframework.http.ResponseEntity.badRequest().body(res);}    
+        Object idObj = body.get("voucherId");
+        Integer vid = null;
+        try{ vid = idObj instanceof Number ? ((Number)idObj).intValue() : Integer.parseInt(String.valueOf(idObj)); }catch(Exception e){ }
+        if(vid==null){ res.put("success", false); res.put("message","voucherId required"); return org.springframework.http.ResponseEntity.badRequest().body(res);}        
+        boolean ok = phieuGiamGiaService.claimVoucherForUser(tk.getId(), vid);
+        res.put("success", ok);
+        res.put("message", ok?"Đã thu thập mã": "Không thể thu thập (đã có hoặc không tồn tại)");
+        return org.springframework.http.ResponseEntity.ok(res);
+    }
+
     // API: lấy danh sách voucher khả dụng (tạm thời: public vouchers). Có thể mở rộng: voucher đã claim theo user
     @GetMapping("/api/vouchers")
     @ResponseBody

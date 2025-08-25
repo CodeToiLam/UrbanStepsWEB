@@ -18,7 +18,7 @@
         <h1 class="me-3" th:text="#{discount.form.title}">Thêm/Sửa phiếu giảm giá</h1>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <!-- Use global alerts fragment in layout to avoid duplicate messages -->
 
     <form th:action="@{/admin/discount-save}" method="post" th:object="${phieuGiamGia}">
         <input type="hidden" th:field="*{id}"/>

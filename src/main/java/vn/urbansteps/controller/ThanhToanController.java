@@ -98,6 +98,8 @@ public class ThanhToanController {
                 logger.warn("Không thể load thông tin tài khoản để prefill: {}", e.getMessage());
             }
         }
+        // expose login flag for page scripts
+        model.addAttribute("isLoggedIn", username != null);
 
         if (Boolean.TRUE.equals(buyNow) && buyNowItemId != null) {
             // Mua ngay - chỉ tạo giỏ hàng tạm thời với 1 sản phẩm

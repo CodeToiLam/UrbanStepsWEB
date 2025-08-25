@@ -68,9 +68,16 @@ public class AdminActionLoggingAspect {
     }
 
     String friendly = toFriendlyAction(rawAction, path, method);
-        String details = String.format("user=%s, method=%s, path=%s%s, ip=%s, action=%s",
-                tk.getTaiKhoan(), method, path, (query!=null && !query.isBlank()? ("?"+query):""), ip, rawAction);
-        adminActionLogService.logAction(tk.getId(), friendly, details);
+        // Build a human friendly description (moTa) to show in admin UI. Keep it concise and readable in Vietnamese.
+        String pathWithQuery = (path == null ? "" : path) + (query != null && !query.isBlank() ? ("?" + query) : "");
+        String moTa = String.format("%s • %s %s • user:%s • ip:%s",
+                friendly,
+                (method == null ? "" : method),
+                (pathWithQuery == null ? "" : pathWithQuery),
+                tk.getTaiKhoan(),
+                ip == null ? "" : ip
+        );
+        adminActionLogService.logAction(tk.getId(), friendly, moTa);
     }
 
     private String toFriendlyAction(String raw, String path, String method){

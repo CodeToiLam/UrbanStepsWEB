@@ -1,5 +1,6 @@
 <div th:fragment="alerts">
   <div class="container" style="max-width: 1100px; margin: 16px auto;">
+    <!-- Render alerts as dismissible and dedupe identical messages client-side to avoid duplicate display -->
     <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <div th:if="${warning}" class="alert alert-warning" role="alert" th:text="${warning}"></div>
@@ -10,4 +11,72 @@
     <div th:if="${loginSuccess}" class="alert alert-success" role="alert" th:text="${loginSuccess}"></div>
     <div th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
   </div>
+
+  <script>
+        // make alerts dismissible, remove duplicates by identical text, and truncate very long messages
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        const container = document.querySelector('.container');
+        if (!container) return;
+        const seen = new Set();
+        const alerts = Array.from(container.querySelectorAll('.alert'));
+        alerts.forEach(a => {
+          const txt = (a.textContent || '').trim();
+          if (seen.has(txt)) {
+            a.remove();
+            return;
+          }
+          seen.add(txt);
+          // make dismissible
+          a.classList.add('alert-dismissible', 'fade', 'show');
+          if (!a.querySelector('.btn-close')) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn-close';
+            btn.setAttribute('data-bs-dismiss', 'alert');
+            btn.setAttribute('aria-label', 'Close');
+            // insert at the end for better readability
+            a.appendChild(btn);
+          }
+              // if text is very long, show truncated with "Chi tiết" collapse
+              const raw = txt;
+              const max = 420;
+              if (raw.length > max) {
+                // create summary and hidden full
+                const summary = raw.substring(0, max) + '...';
+                const collapseId = 'alert-full-' + Math.random().toString(36).slice(2,9);
+                // clear current content then add structured nodes
+                a.innerHTML = '';
+                const p = document.createElement('div');
+                p.innerText = summary;
+                a.appendChild(p);
+                const moreLink = document.createElement('a');
+                moreLink.href = '#';
+                moreLink.className = 'small d-inline-block mt-2';
+                moreLink.innerText = 'Chi tiết';
+                moreLink.addEventListener('click', function (e) { e.preventDefault(); document.getElementById(collapseId).classList.toggle('d-none'); });
+                a.appendChild(moreLink);
+                const full = document.createElement('pre');
+                full.id = collapseId;
+                full.className = 'mt-2 mb-2 p-2 bg-light text-wrap d-none';
+                full.style.whiteSpace = 'pre-wrap';
+                full.style.maxHeight = '300px';
+                full.style.overflow = 'auto';
+                full.innerText = raw;
+                a.appendChild(full);
+                // re-add close button
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-close';
+                btn.setAttribute('data-bs-dismiss', 'alert');
+                btn.setAttribute('aria-label', 'Close');
+                a.appendChild(btn);
+              }
+        });
+      } catch (e) {
+        // don't break pages if script fails
+        console.error(e);
+      }
+    });
+  </script>
 </div>

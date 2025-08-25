@@ -36,6 +36,7 @@ GO
 CREATE TABLE ThuongHieu (
   id INT IDENTITY(1,1) PRIMARY KEY,
   ten_thuong_hieu NVARCHAR(255) NOT NULL
+    ,gia_multiplier DECIMAL(10,2) NOT NULL DEFAULT 1
 );
 GO
 

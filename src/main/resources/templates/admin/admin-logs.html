@@ -62,7 +62,7 @@
                 <th th:text="#{admin.logs.table.id}">ID</th>
                 <th th:text="#{admin.logs.table.adminId}">Admin ID</th>
                 <th th:text="#{admin.logs.table.action}">Hành động</th>
-                <th th:text="#{admin.logs.table.description}">Mô tả</th>
+                <th th:text="#{admin.logs.table.description}">Mô tả (tóm tắt)</th>
                 <th th:text="#{admin.logs.table.time}">Thời gian</th>
             </tr>
             </thead>
@@ -117,13 +117,31 @@
             }
             list.forEach(r => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${r.id ?? ''}</td>
+                // short summary and a collapsible raw detail for full description
+                const summary = (r.moTaFmt || r.moTa || '').split('\n')[0] || '';
+                const raw = (r.moTa || '');
+                const id = r.id ?? '';
+                const collapseId = `raw-${id}`;
+                tr.innerHTML = `<td>${id}</td>
                         <td>${r.adminId ?? ''}</td>
                         <td><span class="label">${r.hanhDong ?? ''}</span></td>
-                        <td>${(r.moTaFmt || r.moTa || '').replaceAll('\n', '<br/>')}</td>
+                        <td>
+                          <div>${escapeHtml(summary)}</div>
+                          <div class="small text-muted mt-1"><a href="#" data-bs-toggle="collapse" data-bs-target="#${collapseId}">Chi tiết</a></div>
+                          <div id="${collapseId}" class="collapse mt-2"><pre style="white-space:pre-wrap; font-size:0.9rem;">${escapeHtml(raw)}</pre></div>
+                        </td>
                         <td>${fmtTime(r.thoiGian)}</td>`;
                 body.appendChild(tr);
             });
+        }
+
+        function escapeHtml(unsafe) {
+            return (unsafe || '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
         }
 
         fetch('/admin/logs').then(r => r.json()).then(data => {

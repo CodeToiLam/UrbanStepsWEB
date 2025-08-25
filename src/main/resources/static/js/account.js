@@ -135,12 +135,36 @@ function createVoucherCard(voucher) {
                         onclick="copyVoucherCode(this, '${voucher.maPhieuGiamGia || ''}')">
                     Copy
                 </button>
+                <button type="button" class="btn btn-sm btn-outline-success claim-voucher-btn" data-voucher-id="${voucher.id || ''}">Thu thập</button>
+                <a class="btn btn-sm btn-primary" href="/vouchers">Xem thêm</a>
             </div>
         </div>
     `;
 
     return col;
 }
+
+// Delegated handler for claim buttons
+document.addEventListener('click', function(e){
+    const btn = e.target.closest && e.target.closest('.claim-voucher-btn');
+    if(!btn) return;
+    const vid = btn.dataset.voucherId;
+    if(!vid) return;
+    btn.disabled = true;
+    const csrf = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
+    fetch('/tai-khoan/api/claim', {method:'POST', headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN': csrf}, body:JSON.stringify({voucherId: vid})})
+        .then(r=>r.json()).then(d=>{
+            if(d.success){
+                showToast(d.message || 'Đã thu thập mã','success');
+                btn.textContent = 'Đã thu';
+                btn.classList.remove('btn-outline-success');
+                btn.classList.add('btn-success');
+            } else {
+                showToast(d.message || 'Không thể thu thập','error');
+                btn.disabled = false;
+            }
+        }).catch(err=>{ console.error(err); showToast('Lỗi kết nối','error'); btn.disabled=false; });
+});
 
 /**
  * Copy voucher code functionality

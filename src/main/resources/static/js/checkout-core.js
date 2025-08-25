@@ -1,6 +1,7 @@
 // Core checkout behaviors: voucher apply, QR toggle, basic validations
 (function(){
-  const voucherInput = document.getElementById('voucherCode');
+  // Prefer the old #voucherCode select, but fall back to the visible input[name="maGiamGia"] used in the template
+  const voucherInput = document.getElementById('voucherCode') || document.querySelector('input[name="maGiamGia"]');
   const applyBtn = document.getElementById('applyVoucherBtn');
   // Do NOT bind legacy handler if the button is managed by the new exclusive handler
   if(applyBtn && applyBtn.dataset.exclusive !== '1'){

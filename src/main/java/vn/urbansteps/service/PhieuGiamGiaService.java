@@ -24,6 +24,9 @@ public class PhieuGiamGiaService {
     @Autowired
     private PhieuGiamGiaRepository phieuGiamGiaRepository;
 
+    @Autowired
+    private vn.urbansteps.repository.TaiKhoanPhieuGiamGiaRepository taiKhoanPhieuGiamGiaRepository;
+
     public List<PhieuGiamGia> getAllPhieuGiamGia() {
         logger.info("Fetching all discounts");
         return phieuGiamGiaRepository.findAll();
@@ -110,6 +113,34 @@ public class PhieuGiamGiaService {
         return phieuGiamGiaRepository.findByApDungChoTatCaAndTrangThaiTrueAndNgayKetThucAfter(true, LocalDateTime.now());
     }
 
+    public List<vn.urbansteps.model.TaiKhoanPhieuGiamGia> listUserVouchers(Integer taiKhoanId){
+        try{
+            return taiKhoanPhieuGiamGiaRepository.findByTaiKhoanId(taiKhoanId);
+        }catch(Exception e){
+            logger.warn("Error listing user vouchers: {}", e.getMessage());
+            return java.util.List.of();
+        }
+    }
+
+    public boolean claimVoucherForUser(Integer taiKhoanId, Integer phieuGiamGiaId){
+        try{
+            if(taiKhoanPhieuGiamGiaRepository.existsByTaiKhoanIdAndPhieuGiamGiaId(taiKhoanId, phieuGiamGiaId)) return false;
+            vn.urbansteps.model.TaiKhoanPhieuGiamGia tpg = new vn.urbansteps.model.TaiKhoanPhieuGiamGia();
+            vn.urbansteps.model.TaiKhoan tk = new vn.urbansteps.model.TaiKhoan(); tk.setId(taiKhoanId);
+            vn.urbansteps.model.PhieuGiamGia pg = phieuGiamGiaRepository.findById(phieuGiamGiaId).orElse(null);
+            if(pg==null) return false;
+            tpg.setTaiKhoan(tk);
+            tpg.setPhieuGiamGia(pg);
+            tpg.setClaimedAt(java.time.LocalDateTime.now());
+            tpg.setUsed(false);
+            taiKhoanPhieuGiamGiaRepository.save(tpg);
+            return true;
+        }catch(Exception e){
+            logger.warn("Error claiming voucher: {}", e.getMessage());
+            return false;
+        }
+    }
+
     public BigDecimal applyVoucher(String code, BigDecimal totalAmount) {
         logger.info("Applying voucher with code: {}", code);
         Optional<PhieuGiamGia> voucher = phieuGiamGiaRepository.findValidVoucherByCode(code, LocalDateTime.now());
@@ -171,13 +202,12 @@ public class PhieuGiamGiaService {
                     ? BigDecimal.ZERO
                     : it.getGiaTaiThoidiem().multiply(BigDecimal.valueOf(it.getSoLuong()));
             BigDecimal alloc;
-            if (count < lastIndex) {
+                if (count < lastIndex) {
                 BigDecimal ratio = line.compareTo(BigDecimal.ZERO) > 0 ? line.divide(total, 10, RoundingMode.HALF_UP) : BigDecimal.ZERO;
-                alloc = discountTotal.multiply(ratio).setScale(2, RoundingMode.HALF_UP);
+                alloc = discountTotal.multiply(ratio).setScale(0, RoundingMode.HALF_UP);
                 allocated = allocated.add(alloc);
             } else {
-                // Last item gets the remaining to make sum exact
-                alloc = discountTotal.subtract(allocated).setScale(2, RoundingMode.HALF_UP);
+                alloc = discountTotal.subtract(allocated).setScale(0, RoundingMode.HALF_UP);
             }
             map.put(it.getId(), alloc);
             count++;

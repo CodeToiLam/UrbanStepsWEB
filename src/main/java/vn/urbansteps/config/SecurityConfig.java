@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.urbansteps.security.LenientPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -72,7 +73,20 @@ public class SecurityConfig {
                         // Default - Cần đăng nhập
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
+                                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+                                        String uri = request.getRequestURI();
+                                        try{
+                                                if(uri != null && (uri.startsWith("/api/") || uri.startsWith("/checkout/api/") || uri.startsWith("/admin/api/"))){
+                                                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                                        response.setContentType("application/json;charset=UTF-8");
+                                                        response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized\"}");
+                                                        return;
+                                                }
+                                        }catch(Exception e){/* ignore */}
+                                        // Fallback for browser requests: redirect to login page
+                                        response.sendRedirect("/dang-nhap");
+                                }))
+                                .formLogin(form -> form
                         .loginPage("/dang-nhap")
                         .loginProcessingUrl("/dang-nhap")
                         .usernameParameter("taiKhoan")
