@@ -67,89 +67,23 @@
             </tr>
             </thead>
             <tbody id="logsBody">
-            <tr>
-                <td colspan="5" th:text="#{admin.logs.loading}">Đang tải...</td>
+            <tr th:each="log : ${logs}">
+                <td th:text="${log.id}"></td>
+                <td th:text="${log.adminId}"></td>
+                <td>
+                    <span class="label" th:text="${log.hanhDong}"></span>
+                </td>
+                <td th:text="${log.moTa}"></td>
+                <td th:text="${#temporals.format(log.thoiGian, 'dd/MM/yyyy HH:mm:ss')}"></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(logs)}">
+                <td colspan="5" style="text-align: center;">Không có log nào</td>
             </tr>
             </tbody>
+
+
         </table>
     </div>
-    <script>
-        let rows = [];
-
-        function fmtTime(t) {
-            try {
-                return (t || '').replace('T', ' ').substring(0, 19);
-            } catch (e) {
-                return t || '';
-            }
-        }
-
-        function prettify(r) {
-            const map = {
-                'updateOrderStatusForm': 'Cập nhật trạng thái đơn hàng',
-                'cancelOrder': 'Hủy đơn hàng',
-                'refundItem': 'Hoàn trả một phần',
-                'returnAll': 'Trả hàng toàn bộ',
-                'createReturnRequest': 'Khách gửi yêu cầu trả hàng'
-            };
-            const short = (r.hanhDong && map[r.hanhDong]) ? map[r.hanhDong] : (r.hanhDong || 'Hoạt động');
-            // r.moTa may contain query-like text; pull user, method, path, ip
-            const m = (r.moTa || '');
-            const user = (m.match(/user=([^,]+)/) || [])[1] || '';
-            const method = (m.match(/method=([^,]+)/) || [])[1] || '';
-            const path = (m.match(/path=([^,]+)/) || [])[1] || '';
-            const ip = (m.match(/ip=([^,]+)/) || [])[1] || '';
-            const more = (path ? (`• ${method} ${path}\n`) : '') + (user ? (`• user: ${user}  `) : '') + (ip ? (`• ip: ${ip}`) : '');
-            return {...r, hanhDong: short, moTaFmt: more.trim()};
-        }
-
-        function render(src) {
-            const body = document.getElementById('logsBody');
-            const q = document.getElementById('q').value?.toLowerCase() || '';
-            const list = (src || rows).map(prettify).filter(x => {
-                if (!q) return true;
-                return (x.hanhDong || '').toLowerCase().includes(q) || (x.moTa || '').toLowerCase().includes(q) || (x.moTaFmt || '').toLowerCase().includes(q);
-            });
-            body.innerHTML = '';
-            if (list.length === 0) {
-                body.innerHTML = '<tr><td colspan="5">Không có dữ liệu</td></tr>';
-                return;
-            }
-            list.forEach(r => {
-                const tr = document.createElement('tr');
-                // short summary and a collapsible raw detail for full description
-                const summary = (r.moTaFmt || r.moTa || '').split('\n')[0] || '';
-                const raw = (r.moTa || '');
-                const id = r.id ?? '';
-                const collapseId = `raw-${id}`;
-                tr.innerHTML = `<td>${id}</td>
-                        <td>${r.adminId ?? ''}</td>
-                        <td><span class="label">${r.hanhDong ?? ''}</span></td>
-                        <td>
-                          <div>${escapeHtml(summary)}</div>
-                          <div class="small text-muted mt-1"><a href="#" data-bs-toggle="collapse" data-bs-target="#${collapseId}">Chi tiết</a></div>
-                          <div id="${collapseId}" class="collapse mt-2"><pre style="white-space:pre-wrap; font-size:0.9rem;">${escapeHtml(raw)}</pre></div>
-                        </td>
-                        <td>${fmtTime(r.thoiGian)}</td>`;
-                body.appendChild(tr);
-            });
-        }
-
-        function escapeHtml(unsafe) {
-            return (unsafe || '')
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#039;');
-        }
-
-        fetch('/admin/logs').then(r => r.json()).then(data => {
-            rows = data || [];
-            render(rows);
-        }).catch(() => {
-            document.getElementById('logsBody').innerHTML = '<tr><td colspan="5">Lỗi tải log</td></tr>';
-        });
-    </script>
 </div>
 </html>

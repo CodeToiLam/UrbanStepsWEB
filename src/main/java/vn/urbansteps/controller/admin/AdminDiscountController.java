@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import vn.urbansteps.aspect.AdminAction;
 import vn.urbansteps.model.PhieuGiamGia;
 import vn.urbansteps.service.PhieuGiamGiaService;
 
@@ -63,6 +64,7 @@ public class AdminDiscountController {
         return "admin/discount-add";
     }
 
+    @AdminAction(action = "SAVE_DISCOUNT", description = "Lưu phiếu giảm giá #{id}: {code}")
     @PostMapping("/discount-save")
     @PreAuthorize("hasRole('ADMIN')")
     public String saveDiscount(@ModelAttribute PhieuGiamGia phieuGiamGia, Model model) {
@@ -100,12 +102,14 @@ public class AdminDiscountController {
         return "admin/discount-add";
     }
 
+    @AdminAction(action = "DELETE_DISCOUNT", description = "Xóa phiếu giảm giá #{id}: {code}")
     @GetMapping("/discount-delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteDiscount(@PathVariable Integer id, Model model) {
         try {
             Optional<PhieuGiamGia> discount = phieuGiamGiaService.findById(id);
             if (discount.isPresent()) {
+                model.addAttribute("discount", discount.get());
                 phieuGiamGiaService.deactivate(id);
                 // log by aspect
                 return "redirect:/admin/discount-management?success=true";

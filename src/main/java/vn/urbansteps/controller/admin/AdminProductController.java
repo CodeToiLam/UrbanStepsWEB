@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import vn.urbansteps.aspect.AdminAction;
 import vn.urbansteps.model.SanPham;
 import vn.urbansteps.model.SanPhamChiTiet;
 import vn.urbansteps.model.HinhAnh;
@@ -60,6 +61,7 @@ public class AdminProductController {
         return "redirect:/admin/products";
     }
 
+
     @GetMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     public String getProductList(Model model, @RequestParam(required = false) Boolean trangThai) {
@@ -102,6 +104,7 @@ public class AdminProductController {
         return "admin/product-add";
     }
 
+    @AdminAction(action = "CREATE_PRODUCT", description = "Thêm sản phẩm: {name}")
     @PostMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
@@ -315,6 +318,8 @@ public class AdminProductController {
         }
     }
 
+
+    @AdminAction(action = "UPDATE_PRODUCT", description = "Cập nhật sản phẩm #{id}: {name}")
     @PostMapping("/products/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateProduct(@PathVariable Integer id,
@@ -415,10 +420,14 @@ public class AdminProductController {
         }
     }
 
+    @AdminAction(action = "DELETE_PRODUCT", description = "Vô hiệu hóa sản phẩm #{id}: {name}")
     @GetMapping("/products/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteProduct(@PathVariable Integer id, Model model) {
         try {
+            var product = sanPhamService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+            model.addAttribute("product", product);
             sanPhamService.softDelete(id);
             // log by aspect
             return "redirect:/admin/products";

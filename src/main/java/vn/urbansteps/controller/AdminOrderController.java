@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import vn.urbansteps.aspect.AdminAction;
 import vn.urbansteps.repository.SanPhamRepository;
 import vn.urbansteps.service.ImageService;
 import vn.urbansteps.model.HoaDon;
@@ -70,11 +71,13 @@ public class AdminOrderController {
     }
 
     // Form-friendly endpoint: update status then redirect back (like big ecom sites)
+    @AdminAction(action = "UPDATE", description = "Cập nhật trạng thái đơn hàng #{orderId}, Mã hóa đơn #{maHoaDon}, từ trạng thái #{prevStatus} sang #{newStatus}")
     @PostMapping("/order/update-status-form")
     public String updateOrderStatusForm(@RequestParam Integer orderId,
                                         @RequestParam Byte newStatus,
                                         @RequestParam(name = "redirect", required = false, defaultValue = "/admin/order-management") String redirect,
-                                        RedirectAttributes ra) {
+                                        RedirectAttributes ra,
+                                        Model model) {
         try {
             HoaDon hoaDon = hoaDonService.getOrderById(orderId);
             if (hoaDon == null) {
@@ -105,6 +108,10 @@ public class AdminOrderController {
                     }
                 } catch (Exception ignore) {}
             }
+            String maHoaDon = hoaDon.getMaHoaDon();
+            model.addAttribute("maHoaDon", maHoaDon);
+            model.addAttribute("prevStatus", prevStatus);
+            model.addAttribute("newStatus", newStatus);
             // log by aspect
             // Email notify on any status change
             try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
@@ -178,35 +185,47 @@ public class AdminOrderController {
             return "error:Có lỗi xảy ra: " + e.getMessage();
         }
     }
-    
+    @AdminAction(action = "DELETE", description = "Hủy đơn hàng #{id}, mã hóa đơn #{maHoaDon}")
     @PostMapping("/order/cancel/{id}")
-    public String cancelOrder(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String cancelOrder(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
         try {
             HoaDon hoaDon = hoaDonService.getOrderById(id);
             if (hoaDon == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng");
                 return "redirect:/admin/order-management";
             }
-            
-            // Admin có thể hủy bất kỳ đơn hàng nào (trừ đã hủy)
+
+            // Thêm thông tin vào model để Aspect sử dụng
+            model.addAttribute("order", hoaDon);
+            model.addAttribute("prevStatus", hoaDon.getTrangThai());
+            model.addAttribute("newStatus", 4); // Trạng thái hủy
+
             if (hoaDon.getTrangThai() == 4) {
                 redirectAttributes.addFlashAttribute("error", "Đơn hàng đã được hủy trước đó");
                 return "redirect:/admin/order-detail/" + id;
             }
-            
+            if (hoaDon.getTrangThai() >= 1) {
+                hoaDonService.huyHoaDon(id);
+            }
+
             hoaDon.setTrangThai((byte) 4); // 4: Đã hủy
             hoaDonService.save(hoaDon);
-            // log by aspect
-            try { if (emailService != null) emailService.sendOrderStatusUpdateEmail(hoaDon); } catch (Exception ignore) {}
-            
+
+            try {
+                if (emailService != null)
+                    emailService.sendOrderStatusUpdateEmail(hoaDon);
+            } catch (Exception ignore) {}
+
             redirectAttributes.addFlashAttribute("success", "Đã hủy đơn hàng thành công");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
-        
+
         return "redirect:/admin/order-detail/" + id;
     }
-    
+
+
+    @AdminAction(action = "UPDATE", description = "Hoàn trả sản phẩm #{orderItemId} trong đơn hàng #{orderId}")
     @PostMapping("/order/refund-item")
     public String refundItem(@RequestParam Integer orderId,
                              @RequestParam Integer orderItemId,
@@ -252,7 +271,6 @@ public class AdminOrderController {
     // Chỉ cho phép: 0->1/2/4; 1->2/4/3; 2->3; 3/4 khóa
     if (cur == 0) return nxt == 1 || nxt == 2 || nxt == 4;
     if (cur == 1) return nxt == 2 || nxt == 3 || nxt == 4;
-    if (cur == 2) return nxt == 3;
-        return false;
+    if (cur == 2) return nxt == 3; return false;
     }
 }

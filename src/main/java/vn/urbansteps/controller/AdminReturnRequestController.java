@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import vn.urbansteps.aspect.AdminAction;
 import vn.urbansteps.model.ReturnRequest;
 import vn.urbansteps.model.HoaDonChiTiet;
 import vn.urbansteps.repository.ReturnRequestRepository;
@@ -42,6 +43,7 @@ public class AdminReturnRequestController {
     private AdminActionLogService adminActionLogService;
 
     // Quản lý yêu cầu trả hàng
+    @AdminAction(action = "VIEW", description = "Xem danh sách yêu cầu trả hàng")
     @GetMapping({"/return-requests", "/quan-ly-yeu-cau-tra-hang"})
     public String returnRequestManagement(
             @RequestParam(defaultValue = "0") int page,
@@ -91,6 +93,7 @@ public class AdminReturnRequestController {
     }
 
     // Chi tiết yêu cầu trả hàng
+    @AdminAction(action = "VIEW", description = "Xem chi tiết yêu cầu trả hàng #{id} - Mã đơn hàng {orderCode}")
     @GetMapping({"/return-request/{id}", "/yeu-cau-tra-hang/{id}"})
     public String returnRequestDetail(@PathVariable Long id, Model model, RedirectAttributes ra) {
         try {
@@ -144,6 +147,7 @@ public class AdminReturnRequestController {
     }
 
     // Phê duyệt yêu cầu trả hàng
+    @AdminAction(action = "APPROVE", description = "Phê duyệt yêu cầu trả hàng #{id}")
     @PostMapping({"/return-request/{id}/approve", "/yeu-cau-tra-hang/{id}/approve"})
     public String approveReturnRequest(@PathVariable Long id, 
                                      @RequestParam(name = "adminNote", required = false) String adminNote,
@@ -206,10 +210,6 @@ public class AdminReturnRequestController {
                 }
             }
 
-            // Lưu lịch sử admin
-            if (adminActionLogService != null) {
-                adminActionLogService.logActionCurrent("approveReturn", "Duyệt yêu cầu trả hàng #" + id + ", order=" + (request != null ? request.getOrderCode() : ""));
-            }
 
             ra.addFlashAttribute("success", "Đã phê duyệt yêu cầu trả hàng thành công!");
             // Redirect to Vietnamese-friendly detail URL
@@ -221,7 +221,7 @@ public class AdminReturnRequestController {
         }
     }
 
-    // Từ chối yêu cầu trả hàng
+    @AdminAction(action = "REJECT", description = "Từ chối yêu cầu trả hàng #{id} với lý do #{reason}")
     @PostMapping({"/return-request/{id}/reject", "/yeu-cau-tra-hang/{id}/reject"})
     public String rejectReturnRequest(@PathVariable Long id, 
                                     @RequestParam String reason,
@@ -238,10 +238,6 @@ public class AdminReturnRequestController {
                 // put form value back if needed
                 ra.addFlashAttribute("reason", reason);
                 return "redirect:/admin/yeu-cau-tra-hang/" + id;
-            }
-            // Log admin action
-            if (adminActionLogService != null) {
-                adminActionLogService.logActionCurrent("rejectReturn", "Từ chối yêu cầu trả hàng #" + id + ", reason=" + reason);
             }
             returnRequestService.reject(id, reason);
             // Nếu từ chối, cập nhật ghi chú và set trạng thái đơn sang Trả hàng thất bại (8)
@@ -280,10 +276,6 @@ public class AdminReturnRequestController {
                 }
             }
 
-            // Lưu lịch sử admin
-            if (adminActionLogService != null) {
-                adminActionLogService.logActionCurrent("rejectReturn", "Từ chối trả hàng #" + id + ", đơn: " + (request != null ? request.getOrderCode() : "") + "; lý do: " + reason);
-            }
 
             ra.addFlashAttribute("success", "Đã từ chối yêu cầu trả hàng!");
             return "redirect:/admin/yeu-cau-tra-hang/" + id;
@@ -294,6 +286,7 @@ public class AdminReturnRequestController {
     }
 
     // Đánh dấu đang xử lý
+    @AdminAction(action = "PROCESS", description = "Đánh dấu yêu cầu trả hàng #{id} đang xử lý")
     @PostMapping({"/return-request/{id}/processing", "/yeu-cau-tra-hang/{id}/processing"})
     public String markAsProcessing(@PathVariable Long id, RedirectAttributes ra) {
         try {
@@ -315,11 +308,6 @@ public class AdminReturnRequestController {
                     hoaDonService.save(order);
                 }
             } catch (Exception ignored) {}
-
-            // Ghi lịch sử admin
-            if (adminActionLogService != null) {
-                adminActionLogService.logActionCurrent("processingReturn", "Đánh dấu đang xử lý yêu cầu trả hàng #" + id);
-            }
 
             ra.addFlashAttribute("success", "Đã đánh dấu đang xử lý!");
             return "redirect:/admin/yeu-cau-tra-hang/" + id;

@@ -164,4 +164,11 @@ public class SanPham {
     public void preUpdate() {
         updateAt = LocalDateTime.now();
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s - %s",
+                this.tenSanPham != null ? this.tenSanPham : "?",
+                this.maSanPham != null ? this.maSanPham : "?");
+    }
 }

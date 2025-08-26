@@ -1,31 +1,21 @@
 package vn.urbansteps.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import vn.urbansteps.model.AdminActionLog;
 import vn.urbansteps.service.AdminActionLogService;
 
-import java.util.List;
-
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/admin-logs")
+@RequiredArgsConstructor
 public class AdminLogController {
-    @Autowired
-    private AdminActionLogService adminActionLogService;
+    private final AdminActionLogService adminLogService;
 
-    // JSON API for logs
-    @GetMapping("/logs")
-    @ResponseBody
-    public List<AdminActionLog> getAllLogs() {
-        return adminActionLogService.getAllLogs();
-    }
-
-    // View page
-    @GetMapping("/admin-logs")
-    public String logsPage() {
+    @GetMapping
+    public String showLogs(Model model) {
+        model.addAttribute("logs", adminLogService.getAllLogs());
         return "admin/admin-logs";
     }
 }

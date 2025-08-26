@@ -33,4 +33,6 @@ public interface HoaDonService {
 
     void xacNhanHoaDon(Integer hoaDonId);
 
+    void huyHoaDon(Integer hoaDonId);
+
 }

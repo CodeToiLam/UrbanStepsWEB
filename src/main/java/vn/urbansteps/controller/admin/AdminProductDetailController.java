@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import vn.urbansteps.aspect.AdminAction;
 import vn.urbansteps.model.KichCo;
 import vn.urbansteps.model.MauSac;
 import vn.urbansteps.model.SanPham;
@@ -44,6 +45,7 @@ public class AdminProductDetailController {
     @Autowired
     private HinhAnhSanPhamChiTietRepository hinhAnhSanPhamChiTietRepository;
 
+    @AdminAction(action = "VIEW", description = "Xem danh sách chi tiết sản phẩm")
     @GetMapping("/san-pham-chi-tiet")
     @PreAuthorize("hasRole('ADMIN')")
     public String listSanPhamChiTietDebug(@RequestParam(required = false) Integer sanPhamId, Model model) {
@@ -71,6 +73,7 @@ public class AdminProductDetailController {
         return "admin/product-detail-list";
     }
 
+    @AdminAction(action = "VIEW", description = "Xem form thêm chi tiết sản phẩm cho sản phẩm ID=#{id}")
     @GetMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public String showAddForm(@RequestParam(required = false) Integer sanPhamId, Model model,
@@ -107,6 +110,7 @@ public class AdminProductDetailController {
         return "admin/product-detail-form";
     }
 
+    @AdminAction(action = "CREATE", description = "Thêm hoặc cập nhật biến thể sản phẩm {name}")
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public String saveSanPhamChiTiet(@ModelAttribute SanPhamChiTiet chiTiet,
@@ -176,6 +180,7 @@ public class AdminProductDetailController {
         }
     }
 
+    @AdminAction(action = "UPDATE", description = "Mở form chỉnh sửa chi tiết sản phẩm ID=#{id}")
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Integer id, Model model,
@@ -204,6 +209,7 @@ public class AdminProductDetailController {
         return "admin/product-detail-form";
     }
 
+    @AdminAction(action = "DELETE", description = "Vô hiệu hóa chi tiết sản phẩm ID=#{id}")
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteSanPhamChiTiet(@PathVariable Integer id, Model model,

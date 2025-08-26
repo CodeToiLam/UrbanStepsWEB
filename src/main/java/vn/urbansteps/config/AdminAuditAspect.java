@@ -37,7 +37,7 @@ public class AdminAuditAspect {
                     (req.getQueryString() != null ? "?" + req.getQueryString() : "") +
                     ", ip=" + req.getRemoteAddr();
 
-            logService.logActionCurrent(action, details);
+//            logService.logActionCurrent(action, details);
         } catch (Exception ignored) {}
         return out;
     }

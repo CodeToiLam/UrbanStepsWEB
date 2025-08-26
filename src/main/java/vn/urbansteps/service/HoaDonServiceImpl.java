@@ -391,5 +391,25 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setTrangThai((byte) HoaDon.TrangThaiHoaDon.DA_XAC_NHAN.getValue());; // Cập nhật trạng thái hóa đơn
         hoaDonRepository.save(hoaDon);
     }
+    @Transactional
+    @Override
+    public void huyHoaDon(Integer hoaDonId) {
+        HoaDon hoaDon = hoaDonRepository.findById(hoaDonId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        // Kiểm tra trạng thái nếu cần, chỉ cho phép hủy những trạng thái được phép
+
+        // Hoàn lại số lượng hàng cho từng sản phẩm chi tiết
+        for (HoaDonChiTiet chiTiet : hoaDon.getHoaDonChiTietList()) {
+            SanPhamChiTiet spct = chiTiet.getSanPhamChiTiet();
+            int soLuong = chiTiet.getSoLuong();
+            // Cộng lại số lượng vừa được trừ đi trước đây
+            spct.setSoLuong(spct.getSoLuong() + soLuong);
+            sanPhamChiTietRepository.save(spct);
+        }
+
+        hoaDon.setTrangThai((byte) HoaDon.TrangThaiHoaDon.DA_HUY.getValue());
+        hoaDonRepository.save(hoaDon);
+    }
 
 }

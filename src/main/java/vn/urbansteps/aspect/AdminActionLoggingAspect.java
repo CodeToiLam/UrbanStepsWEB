@@ -1,139 +1,142 @@
 package vn.urbansteps.aspect;
 
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import vn.urbansteps.model.TaiKhoan;
+import org.springframework.ui.Model;
+import vn.urbansteps.model.HoaDon;
+import vn.urbansteps.model.SanPham;
+import vn.urbansteps.model.PhieuGiamGia;
+import vn.urbansteps.model.SanPhamChiTiet;
 import vn.urbansteps.service.AdminActionLogService;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.security.core.userdetails.User;
-import vn.urbansteps.service.TaiKhoanService;
+
+import java.util.Map;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class AdminActionLoggingAspect {
 
-    @Autowired
-    private AdminActionLogService adminActionLogService;
-    @Autowired
-    private TaiKhoanService taiKhoanService;
+    private final AdminActionLogService adminLogService;
 
-    @Pointcut("within(vn.urbansteps.controller.admin..*) || execution(* vn.urbansteps.controller.AdminOrderController.*(..))")
-    public void adminControllers() {}
-
-    @AfterReturning("adminControllers()")
-    public void logAdminAction(JoinPoint joinPoint) {
+    @AfterReturning(pointcut = "@annotation(adminAction)", returning = "result")
+    public void logAction(JoinPoint joinPoint, AdminAction adminAction, Object result) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getPrincipal() == null) return;
+        String adminName = (auth != null && auth.getName() != null) ? auth.getName() : "Unknown";
 
-        TaiKhoan tk = null;
-        if (auth.getPrincipal() instanceof TaiKhoan principalTk) {
-            tk = principalTk;
-        } else if (auth.getPrincipal() instanceof User springUser) {
-            tk = taiKhoanService.findByTaiKhoan(springUser.getUsername());
-        }
-        if (tk == null) return;
-        if (tk.getRole() == null || !tk.getRole().contains("ADMIN")) return;
-        String rawAction = joinPoint.getSignature().toShortString();
-        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String path = "";
-        String ip = "";
-        String method = "";
-        String query = "";
-        if (attrs != null && attrs.getRequest() != null) {
-            try {
-                path = attrs.getRequest().getRequestURI();
-                String xff = attrs.getRequest().getHeader("X-Forwarded-For");
-                ip = (xff != null && !xff.isBlank()) ? xff.split(",")[0].trim() : attrs.getRequest().getRemoteAddr();
-                method = attrs.getRequest().getMethod();
-                query = attrs.getRequest().getQueryString();
-            } catch (Exception ignored) {}
-        }
-    boolean isMutating = method != null && (
-        method.equalsIgnoreCase("POST") ||
-        method.equalsIgnoreCase("PUT") ||
-        method.equalsIgnoreCase("PATCH") ||
-        method.equalsIgnoreCase("DELETE")
-    );
-    if (!isMutating) {
-        String p = path == null ? "" : path;
-        boolean allowGet = p.contains("/delete/") || p.contains("/discount-delete/") || p.contains("/deactivate/") || p.contains("/toggle/");
-        if (!allowGet) return; 
-    }
+        Object[] args = joinPoint.getArgs();
+        String description = adminAction.description();
 
-    String friendly = toFriendlyAction(rawAction, path, method);
-        // Build a human friendly description (moTa) to show in admin UI. Keep it concise and readable in Vietnamese.
-        String pathWithQuery = (path == null ? "" : path) + (query != null && !query.isBlank() ? ("?" + query) : "");
-        String moTa = String.format("%s • %s %s • user:%s • ip:%s",
-                friendly,
-                (method == null ? "" : method),
-                (pathWithQuery == null ? "" : pathWithQuery),
-                tk.getTaiKhoan(),
-                ip == null ? "" : ip
+        Integer idValue = null;
+        String productName = null;
+        String discountCode = null;
+
+        // Duyệt qua các tham số của controller
+        for (Object arg : args) {
+            if (arg instanceof Integer) {
+                idValue = (Integer) arg;
+
+            } else if (arg instanceof Long) {
+                idValue = ((Long) arg).intValue();
+
+            } else if (arg instanceof Model model) {
+                // Lấy tất cả attribute trong Model và thay thế
+                Map<String, Object> modelMap = model.asMap();
+                for (Map.Entry<String, Object> entry : modelMap.entrySet()) {
+                    if (entry.getValue() != null) {
+                        String value = entry.getKey().equals("prevStatus") || entry.getKey().equals("newStatus")
+                                ? convertStatus(entry.getValue().toString())
+                                : entry.getValue().toString();
+
+                        description = description.replace(
+                                "#{" + entry.getKey() + "}",
+                                value
+                        );
+                    }
+                }
+
+                // Lấy tên sản phẩm nếu có
+                Object productObj = modelMap.get("product");
+                if (productObj instanceof SanPham sp) {
+                    productName = sp.getTenSanPham();
+                }
+
+                // Lấy mã phiếu giảm giá nếu có
+                Object discountObj = modelMap.get("discount");
+                if (discountObj instanceof PhieuGiamGia discount) {
+                    discountCode = discount.getMaPhieuGiamGia();
+                }
+
+                // Lấy mã đơn hàng nếu có object "order"
+                Object orderObj = modelMap.get("order");
+                if (orderObj instanceof HoaDon hoaDonModel) {
+                    description = description.replace("#{maHoaDon}", hoaDonModel.getMaHoaDon());
+                }
+
+            } else if (arg instanceof SanPham sp) {
+                productName = sp.getTenSanPham();
+                idValue = sp.getId();
+
+            } else if (arg instanceof PhieuGiamGia discount) {
+                discountCode = discount.getMaPhieuGiamGia();
+                idValue = discount.getId();
+
+            } else if (arg instanceof SanPhamChiTiet chiTiet) {
+                if (chiTiet.getSanPham() != null) {
+                    productName = chiTiet.getSanPham().getTenSanPham();
+                    idValue = chiTiet.getId();
+                }
+
+            } else if (arg instanceof HoaDon hoaDon) {
+                productName = "Đơn hàng #" + (hoaDon.getMaHoaDon() != null ? hoaDon.getMaHoaDon() : hoaDon.getId());
+                idValue = hoaDon.getId();
+                description = description.replace("#{maHoaDon}", hoaDon.getMaHoaDon());
+            }
+        }
+
+        // Thay thế các placeholder cơ bản
+        if (idValue != null) {
+            description = description.replace("#{id}", String.valueOf(idValue))
+                    .replace("#{orderId}", String.valueOf(idValue))
+                    .replace("#{orderItemId}", String.valueOf(idValue));
+        }
+        if (productName != null) {
+            description = description.replace("{name}", productName);
+        }
+        if (discountCode != null) {
+            description = description.replace("{code}", discountCode);
+        }
+
+        // Ghi log
+        adminLogService.logAction(
+                1,
+                adminAction.action(),
+                "Admin " + adminName + " thực hiện hành động: " + description
         );
-        adminActionLogService.logAction(tk.getId(), friendly, moTa);
     }
 
-    private String toFriendlyAction(String raw, String path, String method){
+    // Helper: Chuyển trạng thái từ mã số sang tên trạng thái
+    private String convertStatus(String statusValue) {
         try {
-            String m = method == null ? "" : method.toUpperCase();
-            String p = path == null ? "" : path;
-
-            // Products
-            if (p.startsWith("/admin/products")) {
-                if (m.equals("GET")) {
-                    if (p.matches("^/admin/products(/\\d+)?$")) return "Xem danh sách/chi tiết sản phẩm";
-                    if (p.contains("/edit/")) return "Mở form sửa sản phẩm";
-                    if (p.contains("/add")) return "Mở form thêm sản phẩm";
-                    if (p.contains("/delete/")) return "Xóa sản phẩm"; // some deletes via GET link
-                }
-                if (m.equals("POST")) {
-                    if (p.equals("/admin/products")) return "Thêm sản phẩm";
-                    if (p.matches("^/admin/products/\\d+$")) return "Cập nhật sản phẩm";
-                }
-                return "Quản lý sản phẩm";
-            }
-
-            // Orders
-            if (p.startsWith("/admin/order")) {
-                if (p.contains("/refund")) return "Hoàn tiền một phần đơn hàng";
-                if (p.contains("/return-all")) return "Trả hàng toàn bộ đơn";
-                if (p.contains("/cancel")) return "Hủy đơn hàng";
-                if (p.contains("/update-status")) return "Cập nhật trạng thái đơn hàng";
-                return "Quản lý đơn hàng";
-            }
-
-            // Discounts
-            if (p.startsWith("/admin/discount")) {
-                if (m.equals("POST")) return "Lưu phiếu giảm giá";
-                if (p.contains("/delete/")) return "Xóa phiếu giảm giá";
-                return "Quản lý phiếu giảm giá";
-            }
-
-            // POS
-            if (p.startsWith("/admin/pos")) return "Mở POS";
-
-            if (raw != null) {
-                if (raw.contains("addProduct")) return "Thêm sản phẩm";
-                if (raw.contains("updateProduct")) return "Cập nhật sản phẩm";
-                if (raw.contains("deleteProduct")) return "Xóa sản phẩm";
-                if (raw.contains("saveDiscount")) return "Lưu phiếu giảm giá";
-                if (raw.contains("deleteDiscount")) return "Xóa phiếu giảm giá";
-                if (raw.contains("updateOrderStatus")) return "Cập nhật trạng thái đơn hàng";
-                if (raw.contains("orderManagement")) return "Xem quản lý đơn hàng";
-                if (raw.contains("refundItem")) return "Hoàn tiền một phần đơn hàng";
-                if (raw.contains("getProductList")) return "Xem danh sách sản phẩm";
-                if (raw.contains("pos")) return "Mở POS";
-            }
-            return (m.isEmpty()?"":m+" ") + p;
-        } catch (Exception e){
-            return (method==null?"":method+" ") + (path==null?"":path);
+            int status = Integer.parseInt(statusValue);
+            return switch (status) {
+                case 0 -> "Chờ xác nhận";
+                case 1 -> "Đã xác nhận";
+                case 2 -> "Đang giao hàng";
+                case 3 -> "Hoàn thành";
+                case 4 -> "Đã hủy";
+                case 5 -> "Đã Thanh Toán";
+                case 6 -> "Trả hàng";
+                case 7 -> "Xử lý trả hàng";
+                case 8 -> "Trả hàng thất bại";
+                default -> "Không xác định";
+            };
+        } catch (NumberFormatException e) {
+            return statusValue;
         }
     }
 }
